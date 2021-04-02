@@ -36,5 +36,6 @@ export default {
   external: [
     ...Object.keys(pkg.devDependencies || {}),
     ...Object.keys(pkg.peerDependencies || {}),
+    ...Object.keys(pkg.dependencies || {}),
   ],
 };
