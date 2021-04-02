@@ -1,0 +1,6 @@
+{
+  "*.{ts,tsx,js,jsx,json}": [
+    "prettier --write",
+    "jest --bail --findRelatedTests"
+  ]
+}
