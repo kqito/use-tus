@@ -2,85 +2,43 @@ import {
   createContext,
   Dispatch,
   FC,
-  Reducer,
   useContext,
+  useMemo,
   useReducer,
 } from 'react';
-import { Upload } from 'tus-js-client';
 
-type TusClientState = {
-  uploads: {
-    [uploadKey: string]: Upload;
-  };
-  dispatch?: Dispatch<TusClientActions>;
-};
+import {
+  tusClientInitialState,
+  tusClientReducer,
+  TusClientState,
+  TusClientActions,
+} from './tusClientReducer';
 
-type TusClientActions = ReturnType<
-  typeof insertUploadInstance | typeof removeUploadInstance
->;
+const TusClientStateContext = createContext<TusClientState | undefined>(
+  undefined
+);
+const TusClientDispatchContext = createContext<
+  Dispatch<TusClientActions> | undefined
+>(undefined);
 
-export const insertUploadInstance = (uploadKey: string, upload: Upload) =>
-  ({
-    type: 'INSERT_UPLOAD_INSTANCE',
-    payload: {
-      uploadKey,
-      upload,
-    },
-  } as const);
+export const useTusClientState = () => {
+  const tusClientState = useContext(TusClientStateContext);
 
-export const removeUploadInstance = (uploadKey: string) =>
-  ({
-    type: 'REMOVE_UPLOAD_INSTANCE',
-    payload: {
-      uploadKey,
-    },
-  } as const);
-
-const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
-  state,
-  actions
-) => {
-  switch (actions.type) {
-    case 'INSERT_UPLOAD_INSTANCE': {
-      const { uploadKey, upload } = actions.payload;
-
-      return {
-        ...state,
-        uploads: {
-          ...state.uploads,
-          [uploadKey]: upload,
-        },
-      };
-    }
-
-    case 'REMOVE_UPLOAD_INSTANCE': {
-      const { uploadKey } = actions.payload;
-
-      const newUploads = state.uploads;
-      delete newUploads[uploadKey];
-
-      return {
-        ...state,
-        uploads: newUploads,
-      };
-    }
-
-    default:
-      return state;
-  }
-};
-const tusClientInitialState: TusClientState = { uploads: {} };
-
-const DefaultContext = createContext<TusClientState | undefined>(undefined);
-
-export const useTusClient = () => {
-  const tusClient = useContext(DefaultContext);
-
-  if (!tusClient) {
+  if (!tusClientState) {
     throw new Error('No TusClient set, use TusClientProvider to set one');
   }
 
-  return tusClient;
+  return useMemo(() => tusClientState, [tusClientState]);
+};
+
+export const useTusClientDispatch = () => {
+  const tusClientDispatch = useContext(TusClientDispatchContext);
+
+  if (!tusClientDispatch) {
+    throw new Error('No TusClient set, use TusClientProvider to set one');
+  }
+
+  return useMemo(() => tusClientDispatch, [tusClientDispatch]);
 };
 
 export const TusClientProvider: FC = ({ children }) => {
@@ -89,11 +47,11 @@ export const TusClientProvider: FC = ({ children }) => {
     tusClientInitialState
   );
 
-  const contextValue = { ...tusClientState, dispatch: tusClientDispatch };
-
   return (
-    <DefaultContext.Provider value={contextValue}>
-      {children}
-    </DefaultContext.Provider>
+    <TusClientStateContext.Provider value={tusClientState}>
+      <TusClientDispatchContext.Provider value={tusClientDispatch}>
+        {children}
+      </TusClientDispatchContext.Provider>
+    </TusClientStateContext.Provider>
   );
 };
