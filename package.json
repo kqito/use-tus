@@ -74,5 +74,8 @@
   },
   "peerDependencies": {
     "react": ">=16.8.0"
+  },
+  "dependencies": {
+    "tus-js-client": "^2.2.0"
   }
 }
