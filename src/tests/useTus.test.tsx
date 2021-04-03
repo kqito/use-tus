@@ -8,6 +8,13 @@ import {
 import { useTus } from '../core/useTus';
 import { getBlob } from './utils/getBlob';
 
+const useTusWithContextValue = (uploadKey: string) => {
+  const tus = useTus(uploadKey);
+  const tusClientState = useTusClientState();
+
+  return { tus, tusClientState };
+};
+
 const getDefaultOptions: () => Upload['options'] = () => ({
   endpoint: 'http://tus.io/uploads',
   uploadUrl: 'http://tus.io/files/upload',
@@ -35,16 +42,20 @@ describe('useTus', () => {
       const options: Upload['options'] = getDefaultOptions();
 
       expect(result.current.upload).toBeUndefined();
+      expect(result.current.isSuccess).toBeFalsy();
+      expect(result.current.error).toBeUndefined();
+      expect(typeof result.current.setUpload).toBe('function');
+      expect(typeof result.current.remove).toBe('function');
 
       result.current.setUpload(file, options);
       await waitForNextUpdate();
-      expect(result.current.upload).toEqual(new Upload(file, options));
+      expect(result.current.upload).toBeInstanceOf(Upload);
 
       rerender({ uploadKey: 'new' });
       expect(result.current.upload).toBeUndefined();
 
       rerender({ uploadKey: 'test' });
-      expect(result.current.upload).toEqual(new Upload(file, options));
+      expect(result.current.upload).toBeInstanceOf(Upload);
 
       result.current.remove();
       expect(result.current.upload).toBeUndefined();
@@ -52,13 +63,6 @@ describe('useTus', () => {
   });
 
   it('Should be reflected onto the TusClientProvider', async () => {
-    const useTusWithContextValue = (uploadKey: string) => {
-      const tus = useTus(uploadKey);
-      const tusClientState = useTusClientState();
-
-      return { tus, tusClientState };
-    };
-
     await act(async () => {
       const { result, waitForNextUpdate } = renderHook(
         ({ uploadKey }: { uploadKey: string }) =>
@@ -76,7 +80,7 @@ describe('useTus', () => {
 
       result.current.tus.setUpload(file, options);
       await waitForNextUpdate();
-      expect(result.current.tus.upload).toEqual(new Upload(file, options));
+      expect(result.current.tus.upload).toBeInstanceOf(Upload);
 
       await result.current.tus.upload?.abort(true);
 
