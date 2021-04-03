@@ -17,7 +17,13 @@
     "prepublishOnly": "npm run build",
     "prepare": "husky install"
   },
-  "keywords": [],
+  "keywords": [
+    "react",
+    "react-hooks",
+    "hooks",
+    "tus",
+    "tus-js-client"
+  ],
   "files": [
     "dist",
     "LICENSE",
