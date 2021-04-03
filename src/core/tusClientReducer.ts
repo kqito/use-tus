@@ -3,7 +3,7 @@ import { Upload } from 'tus-js-client';
 
 export type TusClientState = {
   uploads: {
-    [uploadKey: string]: Upload;
+    [uploadKey: string]: Upload | undefined;
   };
 };
 

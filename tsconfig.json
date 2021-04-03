@@ -6,7 +6,6 @@
     "module": "ESNext",
     "lib": ["ESNext", "dom"],
     "jsx": "react-jsx",
-    "allowJs": false,
     "checkJs": false,
     "skipLibCheck": true,
     "declaration": true,
