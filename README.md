@@ -9,7 +9,7 @@ Reusable React Hooks for <a href="https://github.com/tus/tus-js-client">tus-js-c
 <p align="center">
   <a href="https://github.com/kqito/use-tus/actions/workflows/node.js.yml"><img src="https://github.com/kqito/use-tus/workflows/Node.js%20CI/badge.svg" alt="Build status"></a>
   <a href="https://badge.fury.io/js/use-tus"><img src="https://badge.fury.io/js/use-tus.svg" alt="Npm version"></a>
-  <a href="https://github.com/kqito/use-tus/blob/master/LICENSE"><img src="https://img.shields.io/github/license/kqito/use-tus" alt="License"></a>
+  <a href="https://github.com/kqito/use-tus/blob/main/LICENSE"><img src="https://img.shields.io/github/license/kqito/use-tus" alt="License"></a>
 </p>
 
 ## Features
