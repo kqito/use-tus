@@ -7,14 +7,14 @@ Reusable React Hooks for <a href="https://github.com/tus/tus-js-client">tus-js-c
 </p>
 
 <p align="center">
-  <a href="https://github.com/kqito/use-tus/actions/workflows/test.yml"><img src="https://github.com/kqito/use-tus/workflows/Node.js%20CI/badge.svg" alt="Build status"></a>
+  <a href="https://github.com/kqito/use-tus/actions/workflows/test.yml"><img src="https://github.com/kqito/use-tus/workflows/Test/badge.svg" alt="Build status"></a>
   <a href="https://badge.fury.io/js/use-tus"><img src="https://badge.fury.io/js/use-tus.svg" alt="Npm version"></a>
   <a href="https://github.com/kqito/use-tus/blob/main/LICENSE"><img src="https://img.shields.io/github/license/kqito/use-tus" alt="License"></a>
 </p>
 
 ## Features
 - Generating tus with react hooks.
-- Reuse the upload instances by context.
+- Reuse the `Upload` instances by context.
 - One dependency(tus-js-client).
 - TypeScript support.
 
@@ -35,22 +35,31 @@ yarn add use-tus
 ### `useTus` hooks
 
 ```js
-const { upload, setUpload } = useTus(uploadKey);
+const { upload, setUpload, isSuccess, error, remove } = useTus(uploadKey);
 ```
 
-`useTus` is a hooks to get or create an upload instance of tus.
+`useTus` is a hooks to get or create an `Upload` instance of tus.
 
 ### Arguments
 - `uploadKey` (type: `string`)
-  - Specify the key associated with the upload instance.
+  - Specify the key associated with the `Upload` instance.
 
 
 ### Returns
 - `upload` (type: `tus.Upload | undefined`)
-  - The value of the upload instance associated with the uploadKey in the TusClientProvider. If not present, undefined.
+  - The value of the `Upload` instance associated with the uploadKey in the TusClientProvider. If not present, undefined.
 
 - `setUpload` (type: `(file: tus.Upload['file'], options: tus.Upload['options']) => void`)
-  - Function to create an Upload instance and store it in TusClientProvider.
+  - Function to create an `Upload` instance and store it in TusClientProvider.
+
+- `isSuccess` (type: `boolean`)
+  - Whether the upload was successful or not.
+
+- `error` (type: `Error | undefined`)
+  - Error when upload fails.
+
+- `remove` (type: `() => void`)
+  - Function to delete the `Upload` Instance associated with uploadKey.
 
 ### Example
 We can use `useTus` as following.
@@ -65,7 +74,7 @@ const App = () => (
 );
 
 const Uploader = () => {
-  const { upload, setUpload } = useTus('upload-key');
+  const { upload, setUpload, isSuccess, error } = useTus('upload-key');
 
   const handleSetUpload = useCallback(
     (event) => {
