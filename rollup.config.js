@@ -1,8 +1,14 @@
 import resolve from '@rollup/plugin-node-resolve';
+import typescriptPlugin from 'rollup-plugin-typescript2';
 import babel from '@rollup/plugin-babel';
+import commonjs from '@rollup/plugin-commonjs';
 import pkg from './package.json';
 
+const typescript = require('typescript');
 const { presets } = require('./babel.config');
+
+const extensions = ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'];
+const globals = { react: 'React', 'react-dom': 'ReactDOM' };
 
 export default {
   input: 'src/index.ts',
@@ -10,6 +16,7 @@ export default {
     {
       file: pkg.main,
       format: 'cjs',
+      globals,
     },
     {
       file: pkg.module,
@@ -17,11 +24,18 @@ export default {
     },
   ],
   plugins: [
+    commonjs(),
     resolve({
-      extensions: ['.mjs', '.js', '.json', '.node', '.ts', '.tsx'],
+      extensions,
+    }),
+    typescriptPlugin({
+      typescript,
+      tsconfigOverride: {
+        exclude: ['**/tests', '**/*.test.ts', '**/*.test.tsx'],
+      },
     }),
     babel({
-      extensions: ['.js', '.jsx', '.es6', '.es', '.mjs', 'ts', 'tsx'],
+      extensions,
       babelHelpers: 'bundled',
       presets,
     }),

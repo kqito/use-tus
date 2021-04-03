@@ -1,6 +1,6 @@
 {
   "name": "use-tus",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -40,6 +40,7 @@
     "@babel/preset-react": "^7.13.13",
     "@babel/preset-typescript": "^7.13.0",
     "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^18.0.0",
     "@rollup/plugin-node-resolve": "^11.2.1",
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.6",
@@ -69,6 +70,7 @@
     "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
     "rollup": "^2.44.0",
+    "rollup-plugin-typescript2": "^0.30.0",
     "ts-jest": "^26.5.4",
     "typescript": "^4.2.3"
   },

@@ -2,7 +2,7 @@ name: Automatic release
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - "!*"
 
@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 14
       - run: yarn add can-npm-publish
       - run: npx can-npm-publish --verbose
         env:
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 14
       - run: yarn install --frozen-lockfile
       - run: yarn test
 
@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 14
           registry-url: https://registry.npmjs.org/
       - run: yarn install --frozen-lockfile
       - run: yarn publish
