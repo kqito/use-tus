@@ -6,7 +6,7 @@ import {
   insertUploadInstance,
   removeUploadInstance,
   successUpload,
-} from './tusClientReducer';
+} from './tucClientActions';
 
 export const useTus = (uploadKey: string) => {
   const tusClientState = useTusClientState();
