@@ -6,13 +6,16 @@ import {
   useMemo,
   useReducer,
 } from 'react';
+import { TusClientActions } from './tucClientActions';
 
 import {
   tusClientInitialState,
   tusClientReducer,
   TusClientState,
-  TusClientActions,
 } from './tusClientReducer';
+
+const TUS_CLIENT_CONTEXT_HAS_NOT_FOUND_ERROR_MESSAGE =
+  'No TusClient set, use TusClientProvider to set one';
 
 const TusClientStateContext = createContext<TusClientState | undefined>(
   undefined
@@ -25,7 +28,7 @@ export const useTusClientState = () => {
   const tusClientState = useContext(TusClientStateContext);
 
   if (!tusClientState) {
-    throw new Error('No TusClient set, use TusClientProvider to set one');
+    throw new Error(TUS_CLIENT_CONTEXT_HAS_NOT_FOUND_ERROR_MESSAGE);
   }
 
   return useMemo(() => tusClientState, [tusClientState]);
@@ -35,7 +38,7 @@ export const useTusClientDispatch = () => {
   const tusClientDispatch = useContext(TusClientDispatchContext);
 
   if (!tusClientDispatch) {
-    throw new Error('No TusClient set, use TusClientProvider to set one');
+    throw new Error(TUS_CLIENT_CONTEXT_HAS_NOT_FOUND_ERROR_MESSAGE);
   }
 
   return useMemo(() => tusClientDispatch, [tusClientDispatch]);
