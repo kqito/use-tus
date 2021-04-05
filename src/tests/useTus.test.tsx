@@ -9,13 +9,6 @@ import {
 import { useTus } from '../useTus';
 import { getBlob } from './utils/getBlob';
 
-const useTusWithContextValue = (uploadKey: string) => {
-  const tus = useTus(uploadKey);
-  const tusClientState = useTusClientState();
-
-  return { tus, tusClientState };
-};
-
 const getDefaultOptions: () => Upload['options'] = () => ({
   endpoint: 'http://tus.io/uploads',
   uploadUrl: 'http://tus.io/files/upload',
@@ -66,8 +59,12 @@ describe('useTus', () => {
   it('Should be reflected onto the TusClientProvider', async () => {
     await act(async () => {
       const { result, waitForNextUpdate } = renderHook(
-        ({ uploadKey }: { uploadKey: string }) =>
-          useTusWithContextValue(uploadKey),
+        ({ uploadKey }: { uploadKey: string }) => {
+          const tus = useTus(uploadKey);
+          const tusClientState = useTusClientState();
+
+          return { tus, tusClientState };
+        },
         {
           initialProps: { uploadKey: 'test' },
           wrapper,

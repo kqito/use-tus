@@ -79,5 +79,23 @@ describe('TusClientProvider', () => {
         expect(result.current.getTus.defaultOptions.endpoint).toBe('hoge');
       });
     });
+
+    it('All props', async () => {
+      render(
+        <TusClientProvider
+          defaultOptions={{ endpoint: 'hoge' }}
+          canStoreURLs={false}
+        />
+      );
+
+      hooksAct(() => {
+        const { result } = renderHook(() => coreTus.useTusHandler());
+
+        expect(result.current.getTus.canStoreURLs).toBe(false);
+        expect(result.current.getTus.isSupported).toBe(actualTus.isSupported);
+        expect(result.current.getTus.Upload).toBe(actualTus.Upload);
+        expect(result.current.getTus.defaultOptions.endpoint).toBe('hoge');
+      });
+    });
   });
 });
