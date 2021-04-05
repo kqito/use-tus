@@ -1,2 +1,3 @@
-export { useTus } from './core/useTus';
-export { TusClientProvider } from './core/TusClientProvider';
+export { useTus } from './useTus';
+export { TusClientProvider } from './TusClientProvider';
+export type { TusClientProviderProps } from './TusClientProvider';

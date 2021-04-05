@@ -33,7 +33,8 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 0,
     'react/jsx-uses-react': 'off',
     'react/react-in-jsx-scope': 'off',
-    'react/prop-types': [2, { ignore: ['children'] }],
+    'react/prop-types': 'off',
+    'react/display-name': 'off',
     'import/extensions': ['error', 'always', { ts: 'never', tsx: 'never' }],
     'import/prefer-default-export': 'off',
     'import/no-extraneous-dependencies': [

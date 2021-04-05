@@ -1,4 +1,4 @@
-import { Upload } from 'tus-js-client';
+import type { Upload } from 'tus-js-client';
 
 export type TusClientActions = ReturnType<
   | typeof insertUploadInstance

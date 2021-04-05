@@ -1,20 +1,20 @@
+import type { FC, Dispatch } from 'react';
 import {
   createContext,
-  Dispatch,
-  FC,
   useContext,
   useEffect,
   useMemo,
   useReducer,
 } from 'react';
-import { isSupported } from 'tus-js-client';
-import { TusClientActions } from './tucClientActions';
+import type { UploadOptions } from 'tus-js-client';
+import type { TusClientActions } from './core/tucClientActions';
+import { useTusHandler } from './core/tus';
 
 import {
   tusClientInitialState,
   tusClientReducer,
   TusClientState,
-} from './tusClientReducer';
+} from './core/tusClientReducer';
 
 export const ERROR_MESSAGES = {
   tusClientHasNotFounded: 'No TusClient set, use TusClientProvider to set one',
@@ -49,18 +49,56 @@ export const useTusClientDispatch = () => {
   return useMemo(() => tusClientDispatch, [tusClientDispatch]);
 };
 
-export const TusClientProvider: FC = ({ children }) => {
+export type TusClientProviderProps = Readonly<
+  Partial<{
+    canStoreURLs: boolean;
+    defaultOptions: UploadOptions;
+  }>
+>;
+
+export const TusClientProvider: FC<TusClientProviderProps> = ({
+  canStoreURLs,
+  defaultOptions,
+  children,
+}) => {
+  const tusHandler = useTusHandler();
   const [tusClientState, tusClientDispatch] = useReducer(
     tusClientReducer,
     tusClientInitialState
   );
 
   useEffect(() => {
-    if (!isSupported && process.env.NODE_ENV !== 'production') {
+    if (
+      !tusHandler.getTus.isSupported &&
+      process.env.NODE_ENV !== 'production'
+    ) {
       // eslint-disable-next-line no-console
       console.error(ERROR_MESSAGES.tusIsNotSupported);
     }
-  }, []);
+  }, [tusHandler]);
+
+  useEffect(() => {
+    if (canStoreURLs === undefined) {
+      return;
+    }
+
+    tusHandler.setCanStoreURLs = canStoreURLs;
+  }, [canStoreURLs, tusHandler]);
+
+  useEffect(() => {
+    if (defaultOptions === undefined) {
+      return;
+    }
+
+    tusHandler.setDefaultOptions = defaultOptions;
+  }, [defaultOptions, tusHandler]);
+
+  useEffect(
+    () => () => {
+      tusHandler.reset();
+    },
+    [tusHandler]
+  );
 
   return (
     <TusClientStateContext.Provider value={tusClientState}>
