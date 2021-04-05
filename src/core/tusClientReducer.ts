@@ -1,5 +1,5 @@
-import { Reducer } from 'react';
-import { Upload } from 'tus-js-client';
+import type { Reducer } from 'react';
+import type { Upload } from 'tus-js-client';
 import { TusClientActions } from './tucClientActions';
 
 export type UploadState = {

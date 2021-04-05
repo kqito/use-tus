@@ -1,14 +1,15 @@
+import type { FC, Dispatch } from 'react';
 import {
   createContext,
-  Dispatch,
-  FC,
   useContext,
   useEffect,
   useMemo,
   useReducer,
 } from 'react';
 import { isSupported } from 'tus-js-client';
-import { TusClientActions } from './core/tucClientActions';
+import type { UploadOptions } from 'tus-js-client';
+import type { TusClientActions } from './core/tucClientActions';
+import { useTusHandler } from './core/tus';
 
 import {
   tusClientInitialState,
@@ -49,7 +50,19 @@ export const useTusClientDispatch = () => {
   return useMemo(() => tusClientDispatch, [tusClientDispatch]);
 };
 
-export const TusClientProvider: FC = ({ children }) => {
+type TusClientProviderProps = Readonly<
+  Partial<{
+    canStoreURLs: boolean;
+    defaultOptions: UploadOptions;
+  }>
+>;
+
+export const TusClientProvider: FC<TusClientProviderProps> = ({
+  canStoreURLs,
+  defaultOptions,
+  children,
+}) => {
+  const tusHandler = useTusHandler();
   const [tusClientState, tusClientDispatch] = useReducer(
     tusClientReducer,
     tusClientInitialState
@@ -61,6 +74,29 @@ export const TusClientProvider: FC = ({ children }) => {
       console.error(ERROR_MESSAGES.tusIsNotSupported);
     }
   }, []);
+
+  useEffect(() => {
+    if (canStoreURLs === undefined) {
+      return;
+    }
+
+    tusHandler.setCanStoreURLs = canStoreURLs;
+  }, [canStoreURLs, tusHandler]);
+
+  useEffect(() => {
+    if (defaultOptions === undefined) {
+      return;
+    }
+
+    tusHandler.setDefaultOptions = defaultOptions;
+  }, [defaultOptions, tusHandler]);
+
+  useEffect(
+    () => () => {
+      tusHandler.reset();
+    },
+    [tusHandler]
+  );
 
   return (
     <TusClientStateContext.Provider value={tusClientState}>
