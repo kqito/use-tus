@@ -34,6 +34,7 @@ module.exports = {
     'react/jsx-uses-react': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
+    'react/display-name': 'off',
     'import/extensions': ['error', 'always', { ts: 'never', tsx: 'never' }],
     'import/prefer-default-export': 'off',
     'import/no-extraneous-dependencies': [

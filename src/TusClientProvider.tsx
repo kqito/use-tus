@@ -6,7 +6,6 @@ import {
   useMemo,
   useReducer,
 } from 'react';
-import { isSupported } from 'tus-js-client';
 import type { UploadOptions } from 'tus-js-client';
 import type { TusClientActions } from './core/tucClientActions';
 import { useTusHandler } from './core/tus';
@@ -50,7 +49,7 @@ export const useTusClientDispatch = () => {
   return useMemo(() => tusClientDispatch, [tusClientDispatch]);
 };
 
-type TusClientProviderProps = Readonly<
+export type TusClientProviderProps = Readonly<
   Partial<{
     canStoreURLs: boolean;
     defaultOptions: UploadOptions;
@@ -69,11 +68,14 @@ export const TusClientProvider: FC<TusClientProviderProps> = ({
   );
 
   useEffect(() => {
-    if (!isSupported && process.env.NODE_ENV !== 'production') {
+    if (
+      !tusHandler.getTus.isSupported &&
+      process.env.NODE_ENV !== 'production'
+    ) {
       // eslint-disable-next-line no-console
       console.error(ERROR_MESSAGES.tusIsNotSupported);
     }
-  }, []);
+  }, [tusHandler]);
 
   useEffect(() => {
     if (canStoreURLs === undefined) {

@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react';
 import type { Upload } from 'tus-js-client';
-import { useCoreTus } from './core/tus';
 import { useTusClientState, useTusClientDispatch } from './TusClientProvider';
 import {
   errorUpload,
@@ -8,9 +7,10 @@ import {
   removeUploadInstance,
   successUpload,
 } from './core/tucClientActions';
+import { useTusHandler } from './core/tus';
 
 export const useTus = (uploadKey: string) => {
-  const tus = useCoreTus();
+  const tus = useTusHandler().getTus;
   const tusClientState = useTusClientState();
   const tusClientDispatch = useTusClientDispatch();
   const uploadState = useMemo(() => tusClientState.uploads[uploadKey], [
