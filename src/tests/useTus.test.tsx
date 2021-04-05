@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { Upload } from 'tus-js-client';
 import { renderHook, act } from '@testing-library/react-hooks';
 import {
+  ERROR_MESSAGES,
   TusClientProvider,
   useTusClientState,
 } from '../core/TusClientProvider';
@@ -87,6 +88,15 @@ describe('useTus', () => {
       const pastTusClientState = result.all.find((_, i) => i === 0);
       expect(pastTusClientState).not.toBeUndefined();
       expect(pastTusClientState).not.toEqual(result.current.tusClientState);
+    });
+  });
+
+  it('Should throw if the TusClientProvider has not found', async () => {
+    await act(async () => {
+      const { result } = renderHook(() => useTus(''));
+      expect(result.error).toEqual(
+        Error(ERROR_MESSAGES.tusClientHasNotFounded)
+      );
     });
   });
 });
