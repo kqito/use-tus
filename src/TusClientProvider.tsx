@@ -8,13 +8,13 @@ import {
   useReducer,
 } from 'react';
 import { isSupported } from 'tus-js-client';
-import { TusClientActions } from './tucClientActions';
+import { TusClientActions } from './core/tucClientActions';
 
 import {
   tusClientInitialState,
   tusClientReducer,
   TusClientState,
-} from './tusClientReducer';
+} from './core/tusClientReducer';
 
 export const ERROR_MESSAGES = {
   tusClientHasNotFounded: 'No TusClient set, use TusClientProvider to set one',

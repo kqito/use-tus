@@ -5,8 +5,8 @@ import {
   ERROR_MESSAGES,
   TusClientProvider,
   useTusClientState,
-} from '../core/TusClientProvider';
-import { useTus } from '../core/useTus';
+} from '../TusClientProvider';
+import { useTus } from '../useTus';
 import { getBlob } from './utils/getBlob';
 
 const useTusWithContextValue = (uploadKey: string) => {

@@ -1,5 +1,5 @@
 import { render, act } from '@testing-library/react';
-import { ERROR_MESSAGES, TusClientProvider } from '../core/TusClientProvider';
+import { ERROR_MESSAGES, TusClientProvider } from '../TusClientProvider';
 import { createConsoleErrorMock } from './utils/mock';
 
 /* eslint-disable no-console */
