@@ -5,13 +5,16 @@ import { ERROR_MESSAGES } from './core/constants';
 import {
   TusClientDispatchContext,
   TusClientStateContext,
-} from './core/contexts';
-import { useTusHandler } from './core/tusHandler';
+  useTusClientDispatch,
+  useTusClientState,
+} from './core/tusContexts';
+import { updateTusHandlerOptions } from './core/tucClientActions';
 
 import {
   tusClientInitialState,
   tusClientReducer,
 } from './core/tusClientReducer';
+import { TusHandler } from './core/tusHandler';
 
 export type TusClientProviderProps = Readonly<
   Partial<{
@@ -25,50 +28,67 @@ export const TusClientProvider: FC<TusClientProviderProps> = ({
   defaultOptions,
   children,
 }) => {
-  const tusHandler = useTusHandler();
-  const [tusClientState, tusClientDispatch] = useReducer(
-    tusClientReducer,
-    tusClientInitialState
-  );
-
-  useEffect(() => {
-    if (
-      !tusHandler.getTus.isSupported &&
-      process.env.NODE_ENV !== 'production'
-    ) {
-      // eslint-disable-next-line no-console
-      console.error(ERROR_MESSAGES.tusIsNotSupported);
-    }
-  }, [tusHandler]);
-
-  useEffect(() => {
-    if (canStoreURLs === undefined) {
-      return;
-    }
-
-    tusHandler.setCanStoreURLs = canStoreURLs;
-  }, [canStoreURLs, tusHandler]);
-
-  useEffect(() => {
-    if (defaultOptions === undefined) {
-      return;
-    }
-
-    tusHandler.setDefaultOptions = defaultOptions;
-  }, [defaultOptions, tusHandler]);
-
-  useEffect(
-    () => () => {
-      tusHandler.reset();
-    },
-    [tusHandler]
-  );
+  const [tusClientState, tusClientDispatch] = useReducer(tusClientReducer, {
+    ...tusClientInitialState,
+    tusHandler: new TusHandler({
+      canStoreURLs,
+      defaultOptions,
+    }),
+  });
 
   return (
     <TusClientStateContext.Provider value={tusClientState}>
       <TusClientDispatchContext.Provider value={tusClientDispatch}>
-        {children}
+        <TusController
+          canStoreURLs={canStoreURLs}
+          defaultOptions={defaultOptions}
+        >
+          {children}
+        </TusController>
       </TusClientDispatchContext.Provider>
     </TusClientStateContext.Provider>
   );
+};
+
+const TusController: FC<TusClientProviderProps> = ({
+  canStoreURLs,
+  defaultOptions,
+  children,
+}) => {
+  const { tusHandler } = useTusClientState();
+  const tus = tusHandler.getTus;
+  const tusClientDispatch = useTusClientDispatch();
+
+  useEffect(() => {
+    if (
+      tusHandler.getTus.isSupported ||
+      process.env.NODE_ENV === 'production'
+    ) {
+      return;
+    }
+
+    // eslint-disable-next-line no-console
+    console.error(ERROR_MESSAGES.tusIsNotSupported);
+  }, [tusHandler.getTus.isSupported]);
+
+  useEffect(() => {
+    if (
+      tus.defaultOptions === defaultOptions &&
+      tus.canStoreURLs === canStoreURLs
+    ) {
+      return;
+    }
+
+    tusClientDispatch(
+      updateTusHandlerOptions({ canStoreURLs, defaultOptions })
+    );
+  }, [
+    tusClientDispatch,
+    canStoreURLs,
+    defaultOptions,
+    tus.canStoreURLs,
+    tus.defaultOptions,
+  ]);
+
+  return <>{children}</>;
 };

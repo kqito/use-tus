@@ -5,7 +5,7 @@ import { TusClientProvider } from '../TusClientProvider';
 import { useTus } from '../useTus';
 import { getBlob } from './utils/getBlob';
 import { ERROR_MESSAGES } from '../core/constants';
-import { useTusClientState } from '../core/contexts';
+import { useTusClientState } from '../core/tusContexts';
 
 const getDefaultOptions: () => Upload['options'] = () => ({
   endpoint: 'http://tus.io/uploads',
