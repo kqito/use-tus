@@ -1,9 +1,10 @@
 import { render, act as renderAct } from '@testing-library/react';
 import { renderHook, act as hooksAct } from '@testing-library/react-hooks';
 import * as tus from 'tus-js-client';
-import { ERROR_MESSAGES, TusClientProvider } from '../TusClientProvider';
+import { TusClientProvider } from '../TusClientProvider';
 import { createConsoleErrorMock } from './utils/mock';
-import * as coreTus from '../core/tus';
+import * as coreTus from '../core/tusHandler';
+import { ERROR_MESSAGES } from '../core/constants';
 
 const actualTus = jest.requireActual<typeof tus>('tus-js-client');
 

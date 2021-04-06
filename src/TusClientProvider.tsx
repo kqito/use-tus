@@ -1,53 +1,17 @@
-import type { FC, Dispatch } from 'react';
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-} from 'react';
+import type { FC } from 'react';
+import { useEffect, useReducer } from 'react';
 import type { UploadOptions } from 'tus-js-client';
-import type { TusClientActions } from './core/tucClientActions';
-import { useTusHandler } from './core/tus';
+import { ERROR_MESSAGES } from './core/constants';
+import {
+  TusClientDispatchContext,
+  TusClientStateContext,
+} from './core/contexts';
+import { useTusHandler } from './core/tusHandler';
 
 import {
   tusClientInitialState,
   tusClientReducer,
-  TusClientState,
 } from './core/tusClientReducer';
-
-export const ERROR_MESSAGES = {
-  tusClientHasNotFounded: 'No TusClient set, use TusClientProvider to set one',
-  tusIsNotSupported:
-    'This browser does not support uploads. Please use a modern browser instead.',
-};
-
-const TusClientStateContext = createContext<TusClientState | undefined>(
-  undefined
-);
-const TusClientDispatchContext = createContext<
-  Dispatch<TusClientActions> | undefined
->(undefined);
-
-export const useTusClientState = () => {
-  const tusClientState = useContext(TusClientStateContext);
-
-  if (!tusClientState) {
-    throw new Error(ERROR_MESSAGES.tusClientHasNotFounded);
-  }
-
-  return useMemo(() => tusClientState, [tusClientState]);
-};
-
-export const useTusClientDispatch = () => {
-  const tusClientDispatch = useContext(TusClientDispatchContext);
-
-  if (!tusClientDispatch) {
-    throw new Error(ERROR_MESSAGES.tusClientHasNotFounded);
-  }
-
-  return useMemo(() => tusClientDispatch, [tusClientDispatch]);
-};
 
 export type TusClientProviderProps = Readonly<
   Partial<{

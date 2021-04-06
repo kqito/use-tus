@@ -1,13 +1,13 @@
 import { useCallback, useMemo } from 'react';
 import type { Upload } from 'tus-js-client';
-import { useTusClientState, useTusClientDispatch } from './TusClientProvider';
+import { useTusClientDispatch, useTusClientState } from './core/contexts';
 import {
   errorUpload,
   insertUploadInstance,
   removeUploadInstance,
   successUpload,
 } from './core/tucClientActions';
-import { useTusHandler } from './core/tus';
+import { useTusHandler } from './core/tusHandler';
 
 export const useTus = (uploadKey: string) => {
   const tus = useTusHandler().getTus;
