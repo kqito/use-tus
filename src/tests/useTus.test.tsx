@@ -1,20 +1,11 @@
 import { FC } from 'react';
 import { Upload } from 'tus-js-client';
 import { renderHook, act } from '@testing-library/react-hooks';
-import {
-  ERROR_MESSAGES,
-  TusClientProvider,
-  useTusClientState,
-} from '../TusClientProvider';
+import { TusClientProvider } from '../TusClientProvider';
 import { useTus } from '../useTus';
 import { getBlob } from './utils/getBlob';
-
-const useTusWithContextValue = (uploadKey: string) => {
-  const tus = useTus(uploadKey);
-  const tusClientState = useTusClientState();
-
-  return { tus, tusClientState };
-};
+import { ERROR_MESSAGES } from '../core/constants';
+import { useTusClientState } from '../core/tusContexts';
 
 const getDefaultOptions: () => Upload['options'] = () => ({
   endpoint: 'http://tus.io/uploads',
@@ -66,8 +57,12 @@ describe('useTus', () => {
   it('Should be reflected onto the TusClientProvider', async () => {
     await act(async () => {
       const { result, waitForNextUpdate } = renderHook(
-        ({ uploadKey }: { uploadKey: string }) =>
-          useTusWithContextValue(uploadKey),
+        ({ uploadKey }: { uploadKey: string }) => {
+          const tus = useTus(uploadKey);
+          const tusClientState = useTusClientState();
+
+          return { tus, tusClientState };
+        },
         {
           initialProps: { uploadKey: 'test' },
           wrapper,

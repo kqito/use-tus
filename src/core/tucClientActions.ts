@@ -1,10 +1,11 @@
-import type { Upload } from 'tus-js-client';
+import type { Upload, UploadOptions } from 'tus-js-client';
 
 export type TusClientActions = ReturnType<
   | typeof insertUploadInstance
   | typeof removeUploadInstance
   | typeof successUpload
   | typeof errorUpload
+  | typeof updateTusHandlerOptions
 >;
 
 export const insertUploadInstance = (uploadKey: string, upload: Upload) =>
@@ -42,4 +43,15 @@ export const removeUploadInstance = (uploadKey: string) =>
     payload: {
       uploadKey,
     },
+  } as const);
+
+export const updateTusHandlerOptions = (
+  payload: Partial<{
+    canStoreURLs: boolean;
+    defaultOptions: UploadOptions;
+  }>
+) =>
+  ({
+    type: 'UPDATE_TUS_HANDLER_OPTIONS',
+    payload,
   } as const);
