@@ -4,7 +4,10 @@ import { TusClientProvider } from '../TusClientProvider';
 import { useTus } from '../useTus';
 import { getBlob } from './utils/getBlob';
 import { ERROR_MESSAGES } from '../core/constants';
-import { useTusClientState } from '../core/tusContexts';
+import { useTusClientDispatch, useTusClientState } from '../core/tusContexts';
+import { createConsoleErrorMock } from './utils/mock';
+
+/* eslint-disable no-console */
 
 const getDefaultOptions: () => Upload['options'] = () => ({
   endpoint: 'http://tus.io/uploads',
@@ -105,9 +108,23 @@ describe('useTus', () => {
     });
   });
 
-  it('Should throw if the TusClientProvider has not found', async () => {
-    await act(async () => {
+  describe('Should throw if the TusClientProvider has not found', () => {
+    it('useTus', async () => {
       const { result } = renderHook(() => useTus(''));
+      expect(result.error).toEqual(
+        Error(ERROR_MESSAGES.tusClientHasNotFounded)
+      );
+    });
+
+    it('useTusClientState', async () => {
+      const { result } = renderHook(() => useTusClientState());
+      expect(result.error).toEqual(
+        Error(ERROR_MESSAGES.tusClientHasNotFounded)
+      );
+    });
+
+    it('useTusClientDispatch', async () => {
+      const { result } = renderHook(() => useTusClientDispatch());
       expect(result.error).toEqual(
         Error(ERROR_MESSAGES.tusClientHasNotFounded)
       );
@@ -180,7 +197,13 @@ describe('useTus', () => {
       expect(typeof result.current.setUpload).toBe('function');
       expect(typeof result.current.remove).toBe('function');
 
-      result.current.setUpload(getBlob('hello'), getDefaultOptions());
+      const consoleErrorMock = createConsoleErrorMock();
+      result.current.setUpload(getBlob('hello'), {
+        ...getDefaultOptions(),
+        onSuccess: () => {
+          console.error();
+        },
+      });
       await waitForNextUpdate();
 
       expect(result.current.upload).toBeInstanceOf(Upload);
@@ -201,6 +224,7 @@ describe('useTus', () => {
       expect(result.current.error).toBeUndefined();
       expect(typeof result.current.setUpload).toBe('function');
       expect(typeof result.current.remove).toBe('function');
+      expect(consoleErrorMock).toHaveBeenCalledWith();
     });
   });
 
@@ -222,7 +246,13 @@ describe('useTus', () => {
       expect(typeof result.current.setUpload).toBe('function');
       expect(typeof result.current.remove).toBe('function');
 
-      result.current.setUpload(getBlob('hello'), getDefaultOptions());
+      const consoleErrorMock = createConsoleErrorMock();
+      result.current.setUpload(getBlob('hello'), {
+        ...getDefaultOptions(),
+        onError: () => {
+          console.error();
+        },
+      });
       await waitForNextUpdate();
 
       expect(result.current.upload).toBeInstanceOf(Upload);
@@ -243,6 +273,7 @@ describe('useTus', () => {
       expect(result.current.error).toEqual(new Error());
       expect(typeof result.current.setUpload).toBe('function');
       expect(typeof result.current.remove).toBe('function');
+      expect(consoleErrorMock).toHaveBeenCalledWith();
     });
   });
 });
