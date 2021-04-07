@@ -24,10 +24,6 @@ export const useTus = (uploadKey: string) => {
 
   const setUpload = useCallback(
     (file: Upload['file'], options: Upload['options']) => {
-      if (!tusClientDispatch) {
-        return;
-      }
-
       const onSuccess = () => {
         tusClientDispatch(successUpload(uploadKey));
 
@@ -48,6 +44,7 @@ export const useTus = (uploadKey: string) => {
         insertUploadInstance(
           uploadKey,
           new tus.Upload(file, {
+            ...tus.defaultOptions,
             ...options,
             onSuccess,
             onError,

@@ -4,7 +4,6 @@ import {
   act as hooksAct,
   cleanup,
 } from '@testing-library/react-hooks';
-import * as tus from 'tus-js-client';
 import type { ReactNode } from 'react';
 import { TusClientProvider } from '../TusClientProvider';
 import { createConsoleErrorMock } from './utils/mock';
@@ -13,7 +12,9 @@ import { ERROR_MESSAGES } from '../core/constants';
 import { TusClientState } from '../core/tusClientReducer';
 import { TusConfigs, TusHandler } from '../core/tusHandler';
 
-const actualTus = jest.requireActual<typeof tus>('tus-js-client');
+const actualTus = jest.requireActual<typeof import('tus-js-client')>(
+  'tus-js-client'
+);
 
 describe('TusClientProvider', () => {
   let useTusHandlerMock: jest.SpyInstance<TusClientState, []> | undefined;
@@ -51,7 +52,7 @@ describe('TusClientProvider', () => {
   describe('Should pass each props', () => {
     it('Nothing to pass', async () => {
       const { result } = renderHook(() => tusContexts.useTusClientState(), {
-        wrapper: ({ children }: { children: ReactNode }) => (
+        wrapper: ({ children }) => (
           <TusClientProvider>{children}</TusClientProvider>
         ),
       });
@@ -71,7 +72,7 @@ describe('TusClientProvider', () => {
     it('canStoreURLs', async () => {
       hooksAct(() => {
         const { result } = renderHook(() => tusContexts.useTusClientState(), {
-          wrapper: ({ children }: { children: ReactNode }) => (
+          wrapper: ({ children }) => (
             <TusClientProvider canStoreURLs={false}>
               {children}
             </TusClientProvider>
@@ -92,7 +93,7 @@ describe('TusClientProvider', () => {
     it('defaultOptions', async () => {
       hooksAct(() => {
         const { result } = renderHook(() => tusContexts.useTusClientState(), {
-          wrapper: ({ children }: { children: ReactNode }) => (
+          wrapper: ({ children }) => (
             <TusClientProvider defaultOptions={{ endpoint: 'hoge' }}>
               {children}
             </TusClientProvider>
@@ -115,7 +116,7 @@ describe('TusClientProvider', () => {
     it('All props', async () => {
       hooksAct(() => {
         const { result } = renderHook(() => tusContexts.useTusClientState(), {
-          wrapper: ({ children }: { children: ReactNode }) => (
+          wrapper: ({ children }) => (
             <TusClientProvider
               canStoreURLs={false}
               defaultOptions={{ endpoint: 'hoge' }}

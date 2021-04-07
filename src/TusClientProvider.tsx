@@ -1,6 +1,5 @@
 import type { FC } from 'react';
 import { useEffect, useReducer } from 'react';
-import type { UploadOptions } from 'tus-js-client';
 import { ERROR_MESSAGES } from './core/constants';
 import {
   TusClientDispatchContext,
@@ -14,14 +13,9 @@ import {
   tusClientInitialState,
   tusClientReducer,
 } from './core/tusClientReducer';
-import { TusHandler } from './core/tusHandler';
+import { TusConfigs, TusHandler } from './core/tusHandler';
 
-export type TusClientProviderProps = Readonly<
-  Partial<{
-    canStoreURLs: boolean;
-    defaultOptions: UploadOptions;
-  }>
->;
+export type TusClientProviderProps = Readonly<TusConfigs>;
 
 export const TusClientProvider: FC<TusClientProviderProps> = ({
   canStoreURLs,
