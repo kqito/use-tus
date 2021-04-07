@@ -203,4 +203,46 @@ describe('useTus', () => {
       expect(typeof result.current.remove).toBe('function');
     });
   });
+
+  it('Should change error state on error', async () => {
+    await act(async () => {
+      const { result, waitForNextUpdate } = renderHook(
+        ({ uploadKey }: { uploadKey: string }) => useTus(uploadKey),
+        {
+          initialProps: { uploadKey: 'test' },
+          wrapper: ({ children }) => (
+            <TusClientProvider>{children}</TusClientProvider>
+          ),
+        }
+      );
+
+      expect(result.current.upload).toBeUndefined();
+      expect(result.current.isSuccess).toBeFalsy();
+      expect(result.current.error).toBeUndefined();
+      expect(typeof result.current.setUpload).toBe('function');
+      expect(typeof result.current.remove).toBe('function');
+
+      result.current.setUpload(getBlob('hello'), getDefaultOptions());
+      await waitForNextUpdate();
+
+      expect(result.current.upload).toBeInstanceOf(Upload);
+      expect(result.current.isSuccess).toBeFalsy();
+      expect(result.current.error).toBeUndefined();
+      expect(typeof result.current.setUpload).toBe('function');
+      expect(typeof result.current.remove).toBe('function');
+
+      const onError = result.current.upload?.options?.onError;
+      if (!onError) {
+        throw new Error('onError is falsly.');
+      }
+
+      onError(new Error());
+
+      expect(result.current.upload).toBeInstanceOf(Upload);
+      expect(result.current.isSuccess).toBeFalsy();
+      expect(result.current.error).toEqual(new Error());
+      expect(typeof result.current.setUpload).toBe('function');
+      expect(typeof result.current.remove).toBe('function');
+    });
+  });
 });
