@@ -7,14 +7,18 @@ import {
   removeUploadInstance,
   successUpload,
 } from './core/tucClientActions';
+import { createUid } from './utils/uid';
 
-export const useTus = (uploadKey: string) => {
+export const useTus = (uploadKey?: string) => {
+  const internalUploadKey = useMemo(() => uploadKey || createUid(), [
+    uploadKey,
+  ]);
   const tusClientState = useTusClientState();
   const tusClientDispatch = useTusClientDispatch();
   const tus = tusClientState.tusHandler.getTus;
-  const uploadState = useMemo(() => tusClientState.uploads[uploadKey], [
+  const uploadState = useMemo(() => tusClientState.uploads[internalUploadKey], [
     tusClientState,
-    uploadKey,
+    internalUploadKey,
   ]);
   const upload = useMemo(() => uploadState?.upload, [uploadState]);
   const isSuccess = useMemo(() => uploadState?.isSuccess ?? false, [
@@ -25,7 +29,7 @@ export const useTus = (uploadKey: string) => {
   const setUpload = useCallback(
     (file: Upload['file'], options: Upload['options']) => {
       const onSuccess = () => {
-        tusClientDispatch(successUpload(uploadKey));
+        tusClientDispatch(successUpload(internalUploadKey));
 
         if (options.onSuccess) {
           options.onSuccess();
@@ -33,7 +37,7 @@ export const useTus = (uploadKey: string) => {
       };
 
       const onError = (err: Error) => {
-        tusClientDispatch(errorUpload(uploadKey, err));
+        tusClientDispatch(errorUpload(internalUploadKey, err));
 
         if (options.onError) {
           options.onError(err);
@@ -42,7 +46,7 @@ export const useTus = (uploadKey: string) => {
 
       tusClientDispatch(
         insertUploadInstance(
-          uploadKey,
+          internalUploadKey,
           new tus.Upload(file, {
             ...tus.defaultOptions,
             ...options,
@@ -52,12 +56,12 @@ export const useTus = (uploadKey: string) => {
         )
       );
     },
-    [tusClientDispatch, uploadKey, tus]
+    [tusClientDispatch, internalUploadKey, tus]
   );
 
   const remove = useCallback(() => {
-    tusClientDispatch(removeUploadInstance(uploadKey));
-  }, [tusClientDispatch, uploadKey]);
+    tusClientDispatch(removeUploadInstance(internalUploadKey));
+  }, [tusClientDispatch, internalUploadKey]);
 
   return { upload, setUpload, remove, isSuccess, error };
 };

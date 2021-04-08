@@ -22,12 +22,12 @@ const actualTus = jest.requireActual<typeof import('tus-js-client')>(
 );
 
 describe('useTus', () => {
-  it('Should generate tus instance', async () => {
+  it('Should generate tus instance if uploadKey is not undefined', async () => {
     await act(async () => {
       const { result, waitForNextUpdate, rerender } = renderHook(
         ({ uploadKey }: { uploadKey: string }) => useTus(uploadKey),
         {
-          initialProps: { uploadKey: 'test' },
+          initialProps: { uploadKey: 'test1' },
           wrapper: ({ children }) => (
             <TusClientProvider>{children}</TusClientProvider>
           ),
@@ -45,20 +45,21 @@ describe('useTus', () => {
 
       result.current.setUpload(file, options);
       await waitForNextUpdate();
+
       expect(result.current.upload).toBeInstanceOf(Upload);
       expect(result.current.isSuccess).toBeFalsy();
       expect(result.current.error).toBeUndefined();
       expect(typeof result.current.setUpload).toBe('function');
       expect(typeof result.current.remove).toBe('function');
 
-      rerender({ uploadKey: 'new' });
+      rerender({ uploadKey: 'test2' });
       expect(result.current.upload).toBeUndefined();
       expect(result.current.isSuccess).toBeFalsy();
       expect(result.current.error).toBeUndefined();
       expect(typeof result.current.setUpload).toBe('function');
       expect(typeof result.current.remove).toBe('function');
 
-      rerender({ uploadKey: 'test' });
+      rerender({ uploadKey: 'test1' });
       expect(result.current.upload).toBeInstanceOf(Upload);
       expect(result.current.isSuccess).toBeFalsy();
       expect(result.current.error).toBeUndefined();
@@ -71,6 +72,90 @@ describe('useTus', () => {
       expect(result.current.error).toBeUndefined();
       expect(typeof result.current.setUpload).toBe('function');
       expect(typeof result.current.remove).toBe('function');
+    });
+  });
+
+  it('Should generate tus instance if uploadKey is undefined', async () => {
+    await act(async () => {
+      const { result, waitForNextUpdate, rerender } = renderHook(
+        ({ uploadKey }: { uploadKey: string }) => {
+          const tus = useTus(uploadKey);
+          const tusClientState = useTusClientState();
+
+          return { tus, tusClientState };
+        },
+        {
+          initialProps: { uploadKey: '' },
+          wrapper: ({ children }) => (
+            <TusClientProvider>{children}</TusClientProvider>
+          ),
+        }
+      );
+
+      const file: Upload['file'] = getBlob('hello');
+      const options: Upload['options'] = getDefaultOptions();
+
+      expect(result.current.tus.upload).toBeUndefined();
+      expect(result.current.tus.isSuccess).toBeFalsy();
+      expect(result.current.tus.error).toBeUndefined();
+      expect(typeof result.current.tus.setUpload).toBe('function');
+      expect(typeof result.current.tus.remove).toBe('function');
+
+      result.current.tus.setUpload(file, options);
+      await waitForNextUpdate();
+
+      const randomUploadKey = Object.keys(
+        result.current.tusClientState.uploads
+      )[0];
+      const randomUploadState =
+        result.current.tusClientState.uploads[randomUploadKey];
+
+      expect(result.current.tus.upload).toBeInstanceOf(Upload);
+      expect(result.current.tus.isSuccess).toBeFalsy();
+      expect(result.current.tus.error).toBeUndefined();
+      expect(Object.keys(result.current.tusClientState.uploads).length).toBe(1);
+      expect(result.current.tusClientState.uploads[randomUploadKey]).toEqual(
+        randomUploadState
+      );
+      expect(typeof randomUploadKey).not.toBeUndefined();
+      expect(typeof result.current.tus.setUpload).toBe('function');
+      expect(typeof result.current.tus.remove).toBe('function');
+
+      rerender({ uploadKey: 'test1' });
+
+      expect(result.current.tus.upload).toBeUndefined();
+      expect(result.current.tus.isSuccess).toBeFalsy();
+      expect(result.current.tus.error).toBeUndefined();
+      expect(Object.keys(result.current.tusClientState.uploads).length).toBe(1);
+      expect(result.current.tusClientState.uploads[randomUploadKey]).toEqual(
+        randomUploadState
+      );
+      expect(typeof result.current.tus.setUpload).toBe('function');
+      expect(typeof result.current.tus.remove).toBe('function');
+
+      result.current.tus.setUpload(file, options);
+
+      expect(result.current.tus.upload).toBeInstanceOf(Upload);
+      expect(result.current.tus.isSuccess).toBeFalsy();
+      expect(result.current.tus.error).toBeUndefined();
+      expect(Object.keys(result.current.tusClientState.uploads).length).toBe(2);
+      expect(result.current.tusClientState.uploads[randomUploadKey]).toEqual(
+        randomUploadState
+      );
+      expect(typeof result.current.tus.setUpload).toBe('function');
+      expect(typeof result.current.tus.remove).toBe('function');
+
+      rerender({ uploadKey: randomUploadKey });
+
+      expect(result.current.tus.upload).toEqual(randomUploadState?.upload);
+      expect(result.current.tus.isSuccess).toBeFalsy();
+      expect(result.current.tus.error).toBeUndefined();
+      expect(Object.keys(result.current.tusClientState.uploads).length).toBe(2);
+      expect(result.current.tusClientState.uploads[randomUploadKey]).toEqual(
+        randomUploadState
+      );
+      expect(typeof result.current.tus.setUpload).toBe('function');
+      expect(typeof result.current.tus.remove).toBe('function');
     });
   });
 
