@@ -41,8 +41,8 @@ const { upload, setUpload, isSuccess, error, remove } = useTus(uploadKey);
 `useTus` is a hooks to get or create an `Upload` instance of tus.
 
 ### Arguments
-- `uploadKey` (type: `string`)
-  - Specify the key associated with the `Upload` instance.
+- `uploadKey` (type: `string | undefined`)
+  - Specify the key associated with the `Upload` instance. if it's undefined, a random string will be specified.
 
 
 ### Returns
