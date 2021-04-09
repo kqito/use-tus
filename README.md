@@ -3,7 +3,7 @@
 </h3>
 
 <p align="center">
-Reusable React Hooks for <a href="https://github.com/tus/tus-js-client">tus-js-client</a>.
+  React hooks for resumable file uploads using <a href="https://github.com/tus/tus-js-client">tus-js-client</a>.
 </p>
 
 <p align="center">
@@ -13,20 +13,20 @@ Reusable React Hooks for <a href="https://github.com/tus/tus-js-client">tus-js-c
 </p>
 
 ## Features
-- Generating tus with react hooks.
-- Reuse the `Upload` instances by context.
-- One dependency(tus-js-client).
+- Resumable file uploads on react.
+- Managing the [Upload](https://github.com/tus/tus-js-client/blob/master/docs/api.md#tusuploadfile-options) by using context.
+- One dependency ([tus-js-client](https://github.com/tus/tus-js-client)).
 - TypeScript support.
 
 
 ## Installation
 You can install the package from npm.
-```
+```sh
 npm install use-tus
 ```
 
 or
-```
+```sh
 yarn add use-tus
 ```
 
@@ -38,19 +38,19 @@ yarn add use-tus
 const { upload, setUpload, isSuccess, error, remove } = useTus(uploadKey);
 ```
 
-`useTus` is a hooks to get or create an `Upload` instance of tus.
+`useTus` is a hooks to get or create an `Upload` of tus.
 
 ### Arguments
 - `uploadKey` (type: `string | undefined`)
-  - Specify the key associated with the `Upload` instance. if it's undefined, a random string will be specified.
+  - Specify the key associated with the `Upload` if it's undefined, a random string will be specified.
 
 
 ### Returns
 - `upload` (type: `tus.Upload | undefined`)
-  - The value of the `Upload` instance associated with the uploadKey in the TusClientProvider. If not present, undefined.
+  - The value of the `Upload` associated with the uploadKey in the TusClientProvider. If not present, undefined.
 
 - `setUpload` (type: `(file: tus.Upload['file'], options: tus.Upload['options']) => void`)
-  - Function to create an `Upload` instance and store it in TusClientProvider.
+  - Function to create an `Upload` and store it in TusClientProvider.
 
 - `isSuccess` (type: `boolean`)
   - Whether the upload was successful or not.
@@ -59,19 +59,19 @@ const { upload, setUpload, isSuccess, error, remove } = useTus(uploadKey);
   - Error when upload fails.
 
 - `remove` (type: `() => void`)
-  - Function to delete the `Upload` Instance associated with uploadKey.
+  - Function to delete the `Upload` associated with uploadKey.
 
 ### `TusClientProvider`
 
 ```js
 () => (
   <TusClientProvider>
-    {someYourComponents}
+    {children}
   </TusClientProvider>
 )
 ```
 
-`TusClientProvider` is the provider that stores the `Upload` instance with `useTus` hooks.
+`TusClientProvider` is the provider that stores the `Upload` with `useTus` hooks.
 
 ### Props
 - `canStoreURLs` (type: `boolean | undefined`)
@@ -82,8 +82,8 @@ const { upload, setUpload, isSuccess, error, remove } = useTus(uploadKey);
 
 
 ## Example
+### Simple usage
 We can use `useTus` as following.
-
 ```tsx
 import { useTus, TusClientProvider } from 'use-tus'
 
@@ -94,7 +94,7 @@ const App = () => (
 );
 
 const Uploader = () => {
-  const { upload, setUpload, isSuccess, error } = useTus('upload-key');
+  const { upload, setUpload, isSuccess, error, remove } = useTus();
 
   const handleSetUpload = useCallback(
     (event) => {
@@ -126,11 +126,9 @@ const Uploader = () => {
   return (
     <div>
       <input type="file" onChange={handleSetUpload} />
-      {upload && (
-        <button type="button" onClick={handleStart}>
-          Upload
-        </button>
-      )}
+      <button type="button" onClick={handleStart}>
+        Upload
+      </button>
     </div>
   );
 };
