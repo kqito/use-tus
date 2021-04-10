@@ -9,7 +9,7 @@ import {
 } from './core/tucClientActions';
 import { createUid } from './utils/uid';
 
-type TusResult = {
+export type TusResult = {
   upload?: Upload;
   setUpload: (file: Upload['file'], options?: Upload['options']) => void;
   remove: () => void;
