@@ -63,5 +63,11 @@ export const useTus = (uploadKey?: string) => {
     tusClientDispatch(removeUploadInstance(internalUploadKey));
   }, [tusClientDispatch, internalUploadKey]);
 
-  return { upload, setUpload, remove, isSuccess, error };
+  return useMemo(() => ({ upload, setUpload, remove, isSuccess, error }), [
+    upload,
+    setUpload,
+    remove,
+    isSuccess,
+    error,
+  ]);
 };
