@@ -30,8 +30,62 @@ or
 yarn add use-tus
 ```
 
-
 ## Usage
+We can use `useTus` as following.
+
+```tsx
+import { useTus, TusClientProvider } from 'use-tus'
+
+const App = () => (
+  <TusClientProvider>
+    <Uploader />
+  </TusClientProvider>
+);
+
+const Uploader = () => {
+  const { upload, setUpload, isSuccess, error, remove } = useTus();
+
+  const handleSetUpload = useCallback(
+    (event) => {
+      const file = event.target.files.item(0);
+
+      if (!file) {
+        return;
+      }
+
+      setUpload(file, {
+        endpoint: 'https://tusd.tusdemo.net/files/',
+        metadata: {
+          filename: file.name,
+          filetype: file.type,
+        },
+      });
+    },
+    [setUpload]
+  );
+
+  const handleStart = useCallback(() => {
+    if (!upload) {
+      return;
+    }
+
+    // Start upload the file.
+    upload.start();
+  }, [upload]);
+
+  return (
+    <div>
+      <input type="file" onChange={handleSetUpload} />
+      <button type="button" onClick={handleStart}>
+        Upload
+      </button>
+    </div>
+  );
+};
+```
+
+
+## API
 ### `useTus` hooks
 
 ```js
@@ -73,67 +127,14 @@ const { upload, setUpload, isSuccess, error, remove } = useTus(uploadKey);
 
 `TusClientProvider` is the provider that stores the `Upload` with `useTus` hooks.
 
+**In order to use `useTus`, you need to set `TusClientProvider`.**
+
 ### Props
 - `canStoreURLs` (type: `boolean | undefined`)
   - A boolean indicating whether the current environment allows storing URLs enabling the corresponding upload to be resumed. [detail](https://github.com/tus/tus-js-client/blob/master/docs/api.md#tuscanstoreurls)
 
 - `defaultOptions` (type: `tus.DefaltOptions | undefined`)
   - An object containing the default options used when creating a new upload. [detail](https://github.com/tus/tus-js-client/blob/master/docs/api.md#tusdefaultoptions)
-
-
-## Example
-### Simple usage
-We can use `useTus` as following.
-```tsx
-import { useTus, TusClientProvider } from 'use-tus'
-
-const App = () => (
-  <TusClientProvider>
-    <Uploader />
-  </TusClientProvider>
-);
-
-const Uploader = () => {
-  const { upload, setUpload, isSuccess, error, remove } = useTus();
-
-  const handleSetUpload = useCallback(
-    (event) => {
-      const file = event.target.files.item(0);
-
-      if (!file) {
-        return;
-      }
-
-      setUpload(file, {
-        endpoint: 'https://tusd.tusdemo.net/files/',
-        metadata: {
-          filename: file.name,
-          filetype: file.type,
-        },
-      });
-    },
-    [setUpload]
-  );
-
-  const handleStart = useCallback(() => {
-    if (!upload) {
-      return;
-    }
-
-    upload.start();
-  }, [upload]);
-
-  return (
-    <div>
-      <input type="file" onChange={handleSetUpload} />
-      <button type="button" onClick={handleStart}>
-        Upload
-      </button>
-    </div>
-  );
-};
-```
-
 
 
 ## License
