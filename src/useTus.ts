@@ -9,7 +9,15 @@ import {
 } from './core/tucClientActions';
 import { createUid } from './utils/uid';
 
-export const useTus = (uploadKey?: string) => {
+type TusResult = {
+  upload?: Upload;
+  setUpload: (file: Upload['file'], options?: Upload['options']) => void;
+  remove: () => void;
+  isSuccess: boolean;
+  error?: Error;
+};
+
+export const useTus = (uploadKey?: string): TusResult => {
   const internalUploadKey = useMemo(() => uploadKey || createUid(), [
     uploadKey,
   ]);
@@ -26,8 +34,8 @@ export const useTus = (uploadKey?: string) => {
   ]);
   const error = useMemo(() => uploadState?.error, [uploadState]);
 
-  const setUpload = useCallback(
-    (file: Upload['file'], options: Upload['options']) => {
+  const setUpload: TusResult['setUpload'] = useCallback(
+    (file, options = {}) => {
       const onSuccess = () => {
         tusClientDispatch(successUpload(internalUploadKey));
 

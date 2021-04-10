@@ -193,6 +193,23 @@ describe('useTus', () => {
     });
   });
 
+  it('Should setUpload without option args', async () => {
+    await act(async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useTus(), {
+        wrapper: ({ children }) => (
+          <TusClientProvider defaultOptions={{ endpoint: 'hoge' }}>
+            {children}
+          </TusClientProvider>
+        ),
+      });
+
+      result.current.setUpload(getBlob('hello'));
+      await waitForNextUpdate();
+
+      expect(result.current.upload?.options.endpoint).toBe('hoge');
+    });
+  });
+
   describe('Should throw if the TusClientProvider has not found', () => {
     it('useTus', async () => {
       const { result } = renderHook(() => useTus(''));

@@ -136,6 +136,24 @@ const { upload, setUpload, isSuccess, error, remove } = useTus(uploadKey);
 - `defaultOptions` (type: `tus.DefaltOptions | undefined`)
   - An object containing the default options used when creating a new upload. [detail](https://github.com/tus/tus-js-client/blob/master/docs/api.md#tusdefaultoptions)
 
+## Examples
+### Specify upload key
+If you specify `uploadKey` as an argument to useTus, you can get the `upload` associated with it. This is useful for resuming uploads, etc.
+
+```js
+const Uploader1 = (file) => {
+  // Create upload accosiated with 'upload-thumbnail' key
+  const { upload, setUpload } = useTus('upload-thumbnail')
+
+  setUpload(file, {})
+}
+
+const Uploader2 = () => {
+  // Get the same upload created above.
+  const { upload } = useTus('upload-thumbnail')
+}
+```
+
 
 ## License
 [MIT © kqito](./LICENSE)
