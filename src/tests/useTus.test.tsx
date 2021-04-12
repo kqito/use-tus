@@ -1,11 +1,12 @@
 import { Upload } from 'tus-js-client';
 import { renderHook, act } from '@testing-library/react-hooks';
+import { cleanup } from '@testing-library/react';
 import { TusClientProvider } from '../TusClientProvider';
 import { useTus } from '../useTus';
 import { getBlob } from './utils/getBlob';
 import { ERROR_MESSAGES } from '../core/constants';
 import { useTusClientDispatch, useTusClientState } from '../core/tusContexts';
-import { createConsoleErrorMock } from './utils/mock';
+import { createConsoleErrorMock, insertEnvValue } from './utils/mock';
 
 /* eslint-disable no-console */
 
@@ -17,17 +18,22 @@ const getDefaultOptions: () => Upload['options'] = () => ({
   },
 });
 
+const originProcess = process;
 const actualTus = jest.requireActual<typeof import('tus-js-client')>(
   'tus-js-client'
 );
 
 describe('useTus', () => {
-  it('Should generate tus instance if uploadKey is not undefined', async () => {
+  beforeEach(() => {
+    window.process = originProcess;
+  });
+
+  it('Should generate tus instance if cacheKey is not undefined', async () => {
     await act(async () => {
       const { result, waitForNextUpdate, rerender } = renderHook(
-        ({ uploadKey }: { uploadKey: string }) => useTus(uploadKey),
+        ({ cacheKey }: { cacheKey: string }) => useTus(cacheKey),
         {
-          initialProps: { uploadKey: 'test1' },
+          initialProps: { cacheKey: 'test1' },
           wrapper: ({ children }) => (
             <TusClientProvider>{children}</TusClientProvider>
           ),
@@ -52,14 +58,14 @@ describe('useTus', () => {
       expect(typeof result.current.setUpload).toBe('function');
       expect(typeof result.current.remove).toBe('function');
 
-      rerender({ uploadKey: 'test2' });
+      rerender({ cacheKey: 'test2' });
       expect(result.current.upload).toBeUndefined();
       expect(result.current.isSuccess).toBeFalsy();
       expect(result.current.error).toBeUndefined();
       expect(typeof result.current.setUpload).toBe('function');
       expect(typeof result.current.remove).toBe('function');
 
-      rerender({ uploadKey: 'test1' });
+      rerender({ cacheKey: 'test1' });
       expect(result.current.upload).toBeInstanceOf(Upload);
       expect(result.current.isSuccess).toBeFalsy();
       expect(result.current.error).toBeUndefined();
@@ -75,17 +81,17 @@ describe('useTus', () => {
     });
   });
 
-  it('Should generate tus instance if uploadKey is undefined', async () => {
+  it('Should generate tus instance if cacheKey is undefined', async () => {
     await act(async () => {
       const { result, waitForNextUpdate, rerender } = renderHook(
-        ({ uploadKey }: { uploadKey: string }) => {
-          const tus = useTus(uploadKey);
+        ({ cacheKey }: { cacheKey: string }) => {
+          const tus = useTus(cacheKey);
           const tusClientState = useTusClientState();
 
           return { tus, tusClientState };
         },
         {
-          initialProps: { uploadKey: '' },
+          initialProps: { cacheKey: '' },
           wrapper: ({ children }) => (
             <TusClientProvider>{children}</TusClientProvider>
           ),
@@ -121,7 +127,7 @@ describe('useTus', () => {
       expect(typeof result.current.tus.setUpload).toBe('function');
       expect(typeof result.current.tus.remove).toBe('function');
 
-      rerender({ uploadKey: 'test1' });
+      rerender({ cacheKey: 'test1' });
 
       expect(result.current.tus.upload).toBeUndefined();
       expect(result.current.tus.isSuccess).toBeFalsy();
@@ -145,7 +151,7 @@ describe('useTus', () => {
       expect(typeof result.current.tus.setUpload).toBe('function');
       expect(typeof result.current.tus.remove).toBe('function');
 
-      rerender({ uploadKey: randomUploadKey });
+      rerender({ cacheKey: randomUploadKey });
 
       expect(result.current.tus.upload).toEqual(randomUploadState?.upload);
       expect(result.current.tus.isSuccess).toBeFalsy();
@@ -162,14 +168,14 @@ describe('useTus', () => {
   it('Should be reflected onto the TusClientProvider', async () => {
     await act(async () => {
       const { result, waitForNextUpdate } = renderHook(
-        ({ uploadKey }: { uploadKey: string }) => {
-          const tus = useTus(uploadKey);
+        ({ cacheKey }: { cacheKey: string }) => {
+          const tus = useTus(cacheKey);
           const tusClientState = useTusClientState();
 
           return { tus, tusClientState };
         },
         {
-          initialProps: { uploadKey: 'test' },
+          initialProps: { cacheKey: 'test' },
           wrapper: ({ children }) => (
             <TusClientProvider>{children}</TusClientProvider>
           ),
@@ -210,7 +216,11 @@ describe('useTus', () => {
     });
   });
 
-  describe('Should throw if the TusClientProvider has not found', () => {
+  describe('Should throw if the TusClientProvider has not found on development env', () => {
+    beforeEach(() => {
+      insertEnvValue({ NODE_ENV: 'development' });
+    });
+
     it('useTus', async () => {
       const { result } = renderHook(() => useTus(''));
       expect(result.error).toEqual(
@@ -233,17 +243,38 @@ describe('useTus', () => {
     });
   });
 
+  describe('Should not throw even if the TusClientProvider has not found on production env', () => {
+    beforeEach(() => {
+      insertEnvValue({ NODE_ENV: 'production' });
+    });
+
+    it('useTus', async () => {
+      const { result } = renderHook(() => useTus(''));
+      expect(result.error).toBeInstanceOf(TypeError);
+    });
+
+    it('useTusClientState', async () => {
+      const { result } = renderHook(() => useTusClientState());
+      expect(result.error).toEqual(undefined);
+    });
+
+    it('useTusClientDispatch', async () => {
+      const { result } = renderHook(() => useTusClientDispatch());
+      expect(result.error).toEqual(undefined);
+    });
+  });
+
   it('Should set tus config from context value', async () => {
     await act(async () => {
       const { result, waitForNextUpdate } = renderHook(
-        ({ uploadKey }: { uploadKey: string }) => {
-          const tus = useTus(uploadKey);
+        ({ cacheKey }: { cacheKey: string }) => {
+          const tus = useTus(cacheKey);
           const tusClientState = useTusClientState();
 
           return { tus, tusClientState };
         },
         {
-          initialProps: { uploadKey: 'test' },
+          initialProps: { cacheKey: 'test' },
           wrapper: ({ children }) => (
             <TusClientProvider
               canStoreURLs={false}
@@ -284,9 +315,9 @@ describe('useTus', () => {
   it('Should change isSuccess state on success', async () => {
     await act(async () => {
       const { result, waitForNextUpdate } = renderHook(
-        ({ uploadKey }: { uploadKey: string }) => useTus(uploadKey),
+        ({ cacheKey }: { cacheKey: string }) => useTus(cacheKey),
         {
-          initialProps: { uploadKey: 'test' },
+          initialProps: { cacheKey: 'test' },
           wrapper: ({ children }) => (
             <TusClientProvider>{children}</TusClientProvider>
           ),
@@ -333,9 +364,9 @@ describe('useTus', () => {
   it('Should change error state on error', async () => {
     await act(async () => {
       const { result, waitForNextUpdate } = renderHook(
-        ({ uploadKey }: { uploadKey: string }) => useTus(uploadKey),
+        ({ cacheKey }: { cacheKey: string }) => useTus(cacheKey),
         {
-          initialProps: { uploadKey: 'test' },
+          initialProps: { cacheKey: 'test' },
           wrapper: ({ children }) => (
             <TusClientProvider>{children}</TusClientProvider>
           ),

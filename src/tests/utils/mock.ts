@@ -3,3 +3,13 @@ export const createConsoleErrorMock = () => {
   consoleMock.mockImplementation(() => undefined);
   return consoleMock;
 };
+
+export const insertEnvValue = (value: NodeJS.Process['env']) => {
+  window.process = {
+    ...window.process,
+    env: {
+      ...window.process.env,
+      ...value,
+    },
+  };
+};

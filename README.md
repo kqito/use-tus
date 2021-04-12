@@ -89,19 +89,19 @@ const Uploader = () => {
 ### `useTus` hooks
 
 ```js
-const { upload, setUpload, isSuccess, error, remove } = useTus(uploadKey);
+const { upload, setUpload, isSuccess, error, remove } = useTus(cacheKey);
 ```
 
 `useTus` is a hooks to get or create an `Upload` of tus.
 
 ### Arguments
-- `uploadKey` (type: `string | undefined`)
+- `cacheKey` (type: `string | undefined`)
   - Specify the key associated with the `Upload` if it's undefined, a random string will be specified.
 
 
 ### Returns
 - `upload` (type: `tus.Upload | undefined`)
-  - The value of the `Upload` associated with the uploadKey in the TusClientProvider. If not present, undefined.
+  - The value of the `Upload` associated with the cacheKey in the TusClientProvider. If not present, undefined.
 
 - `setUpload` (type: `(file: tus.Upload['file'], options?: tus.Upload['options']) => void`)
   - Function to create an `Upload` and store it in TusClientProvider.
@@ -113,7 +113,7 @@ const { upload, setUpload, isSuccess, error, remove } = useTus(uploadKey);
   - Error when upload fails.
 
 - `remove` (type: `() => void`)
-  - Function to delete the `Upload` associated with uploadKey.
+  - Function to delete the `Upload` associated with cacheKey.
 
 ### `TusClientProvider`
 
@@ -138,7 +138,7 @@ const { upload, setUpload, isSuccess, error, remove } = useTus(uploadKey);
 
 ## Examples
 ### Specify upload key
-If you specify `uploadKey` as an argument to useTus, you can get the `upload` associated with it. This is useful for resuming uploads, etc.
+If you specify `cacheKey` as an argument to useTus, you can get the `upload` associated with it. This is useful for resuming uploads, etc.
 
 ```js
 const Uploader1 = (file) => {

@@ -17,16 +17,14 @@ export type TusResult = {
   error?: Error;
 };
 
-export const useTus = (uploadKey?: string): TusResult => {
-  const internalUploadKey = useMemo(() => uploadKey || createUid(), [
-    uploadKey,
-  ]);
+export const useTus = (cacheKey?: string): TusResult => {
+  const internalCacheKey = useMemo(() => cacheKey || createUid(), [cacheKey]);
   const tusClientState = useTusClientState();
   const tusClientDispatch = useTusClientDispatch();
   const tus = tusClientState.tusHandler.getTus;
-  const uploadState = useMemo(() => tusClientState.uploads[internalUploadKey], [
+  const uploadState = useMemo(() => tusClientState.uploads[internalCacheKey], [
     tusClientState,
-    internalUploadKey,
+    internalCacheKey,
   ]);
   const upload = useMemo(() => uploadState?.upload, [uploadState]);
   const isSuccess = useMemo(() => uploadState?.isSuccess ?? false, [
@@ -37,7 +35,7 @@ export const useTus = (uploadKey?: string): TusResult => {
   const setUpload: TusResult['setUpload'] = useCallback(
     (file, options = {}) => {
       const onSuccess = () => {
-        tusClientDispatch(successUpload(internalUploadKey));
+        tusClientDispatch(successUpload(internalCacheKey));
 
         if (options.onSuccess) {
           options.onSuccess();
@@ -45,7 +43,7 @@ export const useTus = (uploadKey?: string): TusResult => {
       };
 
       const onError = (err: Error) => {
-        tusClientDispatch(errorUpload(internalUploadKey, err));
+        tusClientDispatch(errorUpload(internalCacheKey, err));
 
         if (options.onError) {
           options.onError(err);
@@ -54,7 +52,7 @@ export const useTus = (uploadKey?: string): TusResult => {
 
       tusClientDispatch(
         insertUploadInstance(
-          internalUploadKey,
+          internalCacheKey,
           new tus.Upload(file, {
             ...tus.defaultOptions,
             ...options,
@@ -64,12 +62,12 @@ export const useTus = (uploadKey?: string): TusResult => {
         )
       );
     },
-    [tusClientDispatch, internalUploadKey, tus]
+    [tusClientDispatch, internalCacheKey, tus]
   );
 
   const remove = useCallback(() => {
-    tusClientDispatch(removeUploadInstance(internalUploadKey));
-  }, [tusClientDispatch, internalUploadKey]);
+    tusClientDispatch(removeUploadInstance(internalCacheKey));
+  }, [tusClientDispatch, internalCacheKey]);
 
   return useMemo(() => ({ upload, setUpload, remove, isSuccess, error }), [
     upload,

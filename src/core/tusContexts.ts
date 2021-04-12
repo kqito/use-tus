@@ -14,19 +14,21 @@ export const TusClientDispatchContext = createContext<
 export const useTusClientState = () => {
   const tusClientState = useContext(TusClientStateContext);
 
-  if (!tusClientState) {
+  if (!tusClientState && process.env.NODE_ENV !== 'production') {
     throw new Error(ERROR_MESSAGES.tusClientHasNotFounded);
   }
 
-  return useMemo(() => tusClientState, [tusClientState]);
+  return useMemo(() => tusClientState as TusClientState, [tusClientState]);
 };
 
 export const useTusClientDispatch = () => {
   const tusClientDispatch = useContext(TusClientDispatchContext);
 
-  if (!tusClientDispatch) {
+  if (!tusClientDispatch && process.env.NODE_ENV !== 'production') {
     throw new Error(ERROR_MESSAGES.tusClientHasNotFounded);
   }
 
-  return useMemo(() => tusClientDispatch, [tusClientDispatch]);
+  return useMemo(() => tusClientDispatch as Dispatch<TusClientActions>, [
+    tusClientDispatch,
+  ]);
 };
