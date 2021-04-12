@@ -103,7 +103,7 @@ const { upload, setUpload, isSuccess, error, remove } = useTus(uploadKey);
 - `upload` (type: `tus.Upload | undefined`)
   - The value of the `Upload` associated with the uploadKey in the TusClientProvider. If not present, undefined.
 
-- `setUpload` (type: `(file: tus.Upload['file'], options: tus.Upload['options']) => void`)
+- `setUpload` (type: `(file: tus.Upload['file'], options?: tus.Upload['options']) => void`)
   - Function to create an `Upload` and store it in TusClientProvider.
 
 - `isSuccess` (type: `boolean`)
@@ -145,7 +145,7 @@ const Uploader1 = (file) => {
   // Create upload accosiated with 'upload-thumbnail' key
   const { upload, setUpload } = useTus('upload-thumbnail')
 
-  setUpload(file, {})
+  setUpload(file)
 }
 
 const Uploader2 = () => {

@@ -1,5 +1,6 @@
 // useTus
 export { useTus } from './useTus';
+export type { TusResult } from './useTus';
 
 // TusClientProvider
 export { TusClientProvider } from './TusClientProvider';
