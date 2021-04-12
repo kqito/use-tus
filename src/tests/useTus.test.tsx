@@ -1,11 +1,12 @@
 import { Upload } from 'tus-js-client';
 import { renderHook, act } from '@testing-library/react-hooks';
+import { cleanup } from '@testing-library/react';
 import { TusClientProvider } from '../TusClientProvider';
 import { useTus } from '../useTus';
 import { getBlob } from './utils/getBlob';
 import { ERROR_MESSAGES } from '../core/constants';
 import { useTusClientDispatch, useTusClientState } from '../core/tusContexts';
-import { createConsoleErrorMock } from './utils/mock';
+import { createConsoleErrorMock, insertEnvValue } from './utils/mock';
 
 /* eslint-disable no-console */
 
@@ -17,11 +18,16 @@ const getDefaultOptions: () => Upload['options'] = () => ({
   },
 });
 
+const originProcess = process;
 const actualTus = jest.requireActual<typeof import('tus-js-client')>(
   'tus-js-client'
 );
 
 describe('useTus', () => {
+  beforeEach(() => {
+    window.process = originProcess;
+  });
+
   it('Should generate tus instance if cacheKey is not undefined', async () => {
     await act(async () => {
       const { result, waitForNextUpdate, rerender } = renderHook(
@@ -210,7 +216,11 @@ describe('useTus', () => {
     });
   });
 
-  describe('Should throw if the TusClientProvider has not found', () => {
+  describe('Should throw if the TusClientProvider has not found on development env', () => {
+    beforeEach(() => {
+      insertEnvValue({ NODE_ENV: 'development' });
+    });
+
     it('useTus', async () => {
       const { result } = renderHook(() => useTus(''));
       expect(result.error).toEqual(
@@ -230,6 +240,27 @@ describe('useTus', () => {
       expect(result.error).toEqual(
         Error(ERROR_MESSAGES.tusClientHasNotFounded)
       );
+    });
+  });
+
+  describe('Should not throw even if the TusClientProvider has not found on production env', () => {
+    beforeEach(() => {
+      insertEnvValue({ NODE_ENV: 'production' });
+    });
+
+    it('useTus', async () => {
+      const { result } = renderHook(() => useTus(''));
+      expect(result.error).toBeInstanceOf(TypeError);
+    });
+
+    it('useTusClientState', async () => {
+      const { result } = renderHook(() => useTusClientState());
+      expect(result.error).toEqual(undefined);
+    });
+
+    it('useTusClientDispatch', async () => {
+      const { result } = renderHook(() => useTusClientDispatch());
+      expect(result.error).toEqual(undefined);
     });
   });
 
