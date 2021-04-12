@@ -11,7 +11,7 @@ export type UploadState = {
 
 export type TusClientState = {
   uploads: {
-    [uploadKey: string]: UploadState | undefined;
+    [cacheKey: string]: UploadState | undefined;
   };
   tusHandler: TusHandler;
 };
@@ -22,21 +22,21 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
 ) => {
   switch (actions.type) {
     case 'INSERT_UPLOAD_INSTANCE': {
-      const { uploadKey, uploadState } = actions.payload;
+      const { cacheKey, uploadState } = actions.payload;
 
       return {
         ...state,
         uploads: {
           ...state.uploads,
-          [uploadKey]: uploadState,
+          [cacheKey]: uploadState,
         },
       };
     }
 
     case 'SUCCESS_UPLOAD': {
-      const { uploadKey } = actions.payload;
+      const { cacheKey } = actions.payload;
 
-      const target = state.uploads[uploadKey];
+      const target = state.uploads[cacheKey];
 
       if (!target) {
         return state;
@@ -46,7 +46,7 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
         ...state,
         uploads: {
           ...state.uploads,
-          [uploadKey]: {
+          [cacheKey]: {
             ...(target || {}),
             isSuccess: true,
           },
@@ -55,9 +55,9 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
     }
 
     case 'ERROR_UPLOAD': {
-      const { uploadKey, error } = actions.payload;
+      const { cacheKey, error } = actions.payload;
 
-      const target = state.uploads[uploadKey];
+      const target = state.uploads[cacheKey];
 
       if (!target) {
         return state;
@@ -67,7 +67,7 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
         ...state,
         uploads: {
           ...state.uploads,
-          [uploadKey]: {
+          [cacheKey]: {
             ...target,
             error,
           },
@@ -76,10 +76,10 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
     }
 
     case 'REMOVE_UPLOAD_INSTANCE': {
-      const { uploadKey } = actions.payload;
+      const { cacheKey } = actions.payload;
 
       const newUploads = state.uploads;
-      delete newUploads[uploadKey];
+      delete newUploads[cacheKey];
 
       return {
         ...state,

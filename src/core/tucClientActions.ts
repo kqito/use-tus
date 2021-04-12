@@ -9,11 +9,11 @@ export type TusClientActions = ReturnType<
   | typeof updateTusHandlerOptions
 >;
 
-export const insertUploadInstance = (uploadKey: string, upload: Upload) =>
+export const insertUploadInstance = (cacheKey: string, upload: Upload) =>
   ({
     type: 'INSERT_UPLOAD_INSTANCE',
     payload: {
-      uploadKey,
+      cacheKey,
       uploadState: {
         upload,
         isSuccess: false,
@@ -21,28 +21,28 @@ export const insertUploadInstance = (uploadKey: string, upload: Upload) =>
     },
   } as const);
 
-export const successUpload = (uploadKey: string) =>
+export const successUpload = (cacheKey: string) =>
   ({
     type: 'SUCCESS_UPLOAD',
     payload: {
-      uploadKey,
+      cacheKey,
     },
   } as const);
 
-export const errorUpload = (uploadKey: string, error?: Error) =>
+export const errorUpload = (cacheKey: string, error?: Error) =>
   ({
     type: 'ERROR_UPLOAD',
     payload: {
-      uploadKey,
+      cacheKey,
       error,
     },
   } as const);
 
-export const removeUploadInstance = (uploadKey: string) =>
+export const removeUploadInstance = (cacheKey: string) =>
   ({
     type: 'REMOVE_UPLOAD_INSTANCE',
     payload: {
-      uploadKey,
+      cacheKey,
     },
   } as const);
 
