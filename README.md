@@ -18,6 +18,9 @@
 - One dependency ([tus-js-client](https://github.com/tus/tus-js-client)).
 - TypeScript support.
 
+## Demo
+You can try the [use-tus demo](https://kqito.github.io/use-tus/?path=/story/usetus--basic).
+
 
 ## Installation
 You can install the package from npm.
