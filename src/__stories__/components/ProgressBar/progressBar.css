@@ -1,0 +1,33 @@
+.progress-wrapper {
+  display: flex;
+  gap: 4px;
+  border-radius: 8px;
+  overflow: hidden;
+  align-items: center;
+  flex-direction: column;
+}
+
+.progress-status {
+  margin: 0;
+}
+
+.progress-bar {
+  margin: 4px;
+  display: inline-block;
+  height: 32px;
+  width: 400px;
+  border: solid 1px #d0efff;
+  border-radius: 8px;
+  box-shadow: 2px 2px 4px #d0efff;
+  -webkit-appearance: none;
+}
+
+.progress-bar::-webkit-progress-bar {
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+.progress-bar::-webkit-progress-value {
+  border-radius: 8px;
+  background-color: #2a9df4;
+}
