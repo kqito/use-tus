@@ -15,7 +15,12 @@
     "format:lint": "eslint ./src --ext .ts,.tsx",
     "clean": "rimraf ./dist",
     "prepublishOnly": "npm run build",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "storybook": "start-storybook -p 6006",
+    "storybook:build": "build-storybook",
+    "storybook:static": "gh-pages -d storybook-static",
+    "storybook:deploy": "npm-run-all -s storybook:build storybook:static",
+    "build-storybook": "build-storybook"
   },
   "keywords": [
     "react",
@@ -66,6 +71,7 @@
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-react": "^7.23.1",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "gh-pages": "^3.1.0",
     "husky": "^6.0.0",
     "jest": "^26.6.3",
     "jest-dom": "^4.0.0",
