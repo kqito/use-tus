@@ -1,13 +1,13 @@
 import { useCallback, useMemo } from 'react';
 import type { Upload } from 'tus-js-client';
-import { useTusClientDispatch, useTusClientState } from './core/tusContexts';
+import { useTusClientDispatch, useTusClientState } from '../core/contexts';
 import {
   errorUpload,
   insertUploadInstance,
   removeUploadInstance,
   successUpload,
-} from './core/tucClientActions';
-import { createUid } from './utils/uid';
+} from '../core/tucClientActions';
+import { createUid } from '../utils/uid';
 
 export type TusResult = {
   upload?: Upload;

@@ -1,11 +1,10 @@
 import { Upload } from 'tus-js-client';
 import { renderHook, act } from '@testing-library/react-hooks';
-import { cleanup } from '@testing-library/react';
 import { TusClientProvider } from '../TusClientProvider';
 import { useTus } from '../useTus';
 import { getBlob } from './utils/getBlob';
 import { ERROR_MESSAGES } from '../core/constants';
-import { useTusClientDispatch, useTusClientState } from '../core/tusContexts';
+import { useTusClientDispatch, useTusClientState } from '../core/contexts';
 import { createConsoleErrorMock, insertEnvValue } from './utils/mock';
 
 /* eslint-disable no-console */

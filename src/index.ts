@@ -1,10 +1,5 @@
-// useTus
-export { useTus } from './useTus';
-export type { TusResult } from './useTus';
-
-// TusClientProvider
-export { TusClientProvider } from './TusClientProvider';
-export type { TusClientProviderProps } from './TusClientProvider';
+export * from './useTus';
+export * from './TusClientProvider';
 
 // tus-js-client
 export type {
