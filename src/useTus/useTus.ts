@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import { Upload } from 'tus-js-client';
 import { useTusClientDispatch, useTusClientState } from '../core/contexts';
 import {
@@ -10,6 +10,7 @@ import {
 
 export type UseTusOptions = {
   cacheKey?: string;
+  autoAbort?: boolean;
 };
 export type UseTusResult = {
   upload?: Upload;
@@ -20,6 +21,11 @@ export type UseTusResult = {
 };
 type UseTusState = Pick<UseTusResult, 'upload' | 'isSuccess' | 'error'>;
 
+const defaultUseTusOptionsValue: UseTusOptions = {
+  cacheKey: undefined,
+  autoAbort: true,
+};
+
 const initialUseTusState: UseTusState = {
   upload: undefined,
   isSuccess: false,
@@ -27,7 +33,10 @@ const initialUseTusState: UseTusState = {
 };
 
 export const useTus = (useTusOptions?: UseTusOptions): UseTusResult => {
-  const { cacheKey } = useTusOptions || {};
+  const { cacheKey, autoAbort } = {
+    ...defaultUseTusOptionsValue,
+    ...(useTusOptions || {}),
+  };
   const [internalTusState, setInternalTusState] = useState<UseTusState>(
     initialUseTusState
   );
@@ -122,6 +131,24 @@ export const useTus = (useTusOptions?: UseTusOptions): UseTusResult => {
       remove,
     };
   }, [setUpload, remove, cacheKey, internalTusState, tusClientState]);
+
+  useEffect(() => {
+    const abortUploading = async () => {
+      if (!tusResult.upload) {
+        return;
+      }
+
+      await tusResult.upload.abort();
+    };
+
+    return () => {
+      if (!autoAbort) {
+        return;
+      }
+
+      abortUploading();
+    };
+  }, [autoAbort, tusResult.upload]);
 
   return tusResult;
 };

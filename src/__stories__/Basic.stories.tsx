@@ -20,6 +20,8 @@ const Uploader = () => {
   const { upload, setUpload, isSuccess, error } = useTus();
   const [progress, setProgress] = useState(0);
 
+  console.log(upload);
+
   const handleOnSelectFile = () => {
     if (!inputRef.current) {
       return;
@@ -59,12 +61,13 @@ const Uploader = () => {
     upload.start();
   }, [upload]);
 
-  const handleOnAbort = useCallback(() => {
+  const handleOnAbort = useCallback(async () => {
     if (!upload) {
       return;
     }
 
-    upload.abort();
+    await upload.abort();
+    console.log(upload);
   }, [upload]);
 
   const fileName = inputRef.current?.files?.item(0)?.name;

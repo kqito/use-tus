@@ -414,4 +414,109 @@ describe('useTus', () => {
       expect(consoleErrorMock).toHaveBeenCalledWith();
     });
   });
+
+  describe('Options', () => {
+    describe('autoAbort', () => {
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      it('Should abort on unmount', async () => {
+        await act(async () => {
+          const {
+            result,
+            waitForNextUpdate,
+            unmount,
+            waitForValueToChange,
+          } = renderHook<
+            UseTusOptions,
+            {
+              tus: UseTusResult;
+              tusClientState: TusClientState;
+            }
+          >(
+            (options) => {
+              const tus = useTus(options);
+              const tusClientState = useTusClientState();
+
+              return { tus, tusClientState };
+            },
+            {
+              initialProps: { cacheKey: 'test', autoAbort: true },
+              wrapper: ({ children }) => (
+                <TusClientProvider>{children}</TusClientProvider>
+              ),
+            }
+          );
+
+          const file: Upload['file'] = getBlob('hello');
+          const options: Upload['options'] = getDefaultOptions();
+
+          expect(result.current.tus.upload?.abort).toBeUndefined();
+
+          result.current.tus.setUpload(file, options);
+          await waitForNextUpdate();
+
+          expect(
+            (result.current.tusClientState.uploads?.test?.upload as any)
+              ._aborted
+          ).toBeFalsy();
+
+          unmount();
+          await waitForValueToChange(
+            () =>
+              (result.current.tusClientState.uploads?.test?.upload as any)
+                ._aborted
+          );
+
+          expect(
+            (result.current.tusClientState.uploads?.test?.upload as any)
+              ._aborted
+          ).toBeTruthy();
+        });
+      });
+
+      it('Should not abort on unmount', async () => {
+        await act(async () => {
+          const { result, waitForNextUpdate, unmount } = renderHook<
+            UseTusOptions,
+            {
+              tus: UseTusResult;
+              tusClientState: TusClientState;
+            }
+          >(
+            (options) => {
+              const tus = useTus(options);
+              const tusClientState = useTusClientState();
+
+              return { tus, tusClientState };
+            },
+            {
+              initialProps: { cacheKey: 'test', autoAbort: false },
+              wrapper: ({ children }) => (
+                <TusClientProvider>{children}</TusClientProvider>
+              ),
+            }
+          );
+
+          const file: Upload['file'] = getBlob('hello');
+          const options: Upload['options'] = getDefaultOptions();
+
+          expect(result.current.tus.upload?.abort).toBeUndefined();
+
+          result.current.tus.setUpload(file, options);
+          await waitForNextUpdate();
+
+          expect(
+            (result.current.tusClientState.uploads?.test?.upload as any)
+              ._aborted
+          ).toBeFalsy();
+
+          unmount();
+
+          expect(
+            (result.current.tusClientState.uploads?.test?.upload as any)
+              ._aborted
+          ).toBeFalsy();
+        });
+      });
+    });
+  });
 });
