@@ -7,7 +7,7 @@ import {
 import type { ReactNode } from 'react';
 import { TusClientProvider } from '../TusClientProvider';
 import { createConsoleErrorMock } from './utils/mock';
-import * as tusContexts from '../core/tusContexts';
+import * as tusContexts from '../core/contexts';
 import { ERROR_MESSAGES } from '../core/constants';
 import { TusClientState } from '../core/tusClientReducer';
 import { TusConfigs, TusHandler } from '../core/tusHandler';

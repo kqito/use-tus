@@ -92,7 +92,7 @@ const Uploader = () => {
 ### `useTus` hooks
 
 ```js
-const { upload, setUpload, isSuccess, error, remove } = useTus(cacheKey);
+const { upload, setUpload, isSuccess, error, remove } = useTus({ cacheKey, autoAbort });
 ```
 
 `useTus` is a hooks to get or create an `Upload` of tus.
@@ -101,6 +101,8 @@ const { upload, setUpload, isSuccess, error, remove } = useTus(cacheKey);
 - `cacheKey` (type: `string | undefined`)
   - Specify the key associated with the `Upload` if it's undefined, a random string will be specified.
 
+- `autoAbort` (type: `boolean | undefined`) (default: true)
+  - Whether or not to automatically abort uploads when useTus hooks is unmounted.
 
 ### Returns
 - `upload` (type: `tus.Upload | undefined`)
@@ -144,16 +146,17 @@ const { upload, setUpload, isSuccess, error, remove } = useTus(cacheKey);
 If you specify `cacheKey` as an argument to useTus, you can get the `upload` associated with it. This is useful for resuming uploads, etc.
 
 ```js
-const Uploader1 = (file) => {
+const SelectFileComponent = (file) => {
   // Create upload accosiated with 'upload-thumbnail' key
-  const { upload, setUpload } = useTus('upload-thumbnail')
+  const { setUpload } = useTus({cacheKey: 'upload-thumbnail'})
 
   setUpload(file)
 }
 
-const Uploader2 = () => {
-  // Get the same upload created above.
-  const { upload } = useTus('upload-thumbnail')
+const UploadFileComponent = () => {
+  const { upload } = useTus({cacheKey: 'upload-thumbnail'})
+
+  upload.start()
 }
 ```
 

@@ -7,6 +7,8 @@ module.exports = {
   },
   roots: ['<rootDir>/src'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  testMatch: ['**/__tests__/**/*.test.ts?(x)', '**/?(*.)+(spec|test).ts?(x)'],
+
   globals: {
     'ts-jest': {
       babelConfig: false,
