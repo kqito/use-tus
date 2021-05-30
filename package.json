@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "npm-run-all -s type clean build:rollup",
-    "build:rollup": "rollup -c",
+    "build:rollup": "cross-env NODE_ENV=production rollup -c",
     "test": "cross-env NODE_ENV=TEST jest",
     "type": "tsc --noEmit",
     "format": "npm-run-all -s format:*",
