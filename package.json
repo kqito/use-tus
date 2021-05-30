@@ -1,13 +1,13 @@
 {
   "name": "use-tus",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "React hooks for resumable file uploads using tus-js-client",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "npm-run-all -s type clean build:rollup",
-    "build:rollup": "rollup -c",
+    "build:rollup": "cross-env NODE_ENV=production rollup -c",
     "test": "cross-env NODE_ENV=TEST jest",
     "type": "tsc --noEmit",
     "format": "npm-run-all -s format:*",

@@ -31,7 +31,7 @@ export default {
     typescriptPlugin({
       typescript,
       tsconfigOverride: {
-        exclude: ['**/tests', '**/*.test.ts', '**/*.test.tsx'],
+        exclude: ['**/__tests__', '**/__stories__'],
       },
     }),
     babel({
