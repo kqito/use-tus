@@ -7,6 +7,7 @@ import { ERROR_MESSAGES } from '../core/constants';
 import { useTusClientDispatch, useTusClientState } from '../core/contexts';
 import { createConsoleErrorMock, insertEnvValue } from './utils/mock';
 import { TusClientState } from '../core/tusClientReducer';
+import * as useTusUtils from '../useTus/utils';
 
 /* eslint-disable no-console */
 
@@ -515,6 +516,92 @@ describe('useTus', () => {
             (result.current.tusClientState.uploads?.test?.upload as any)
               ._aborted
           ).toBeFalsy();
+        });
+      });
+    });
+
+    describe('autoStart', () => {
+      it('Should not call startOrResumeUpload function when autoStart is false', async () => {
+        const startOrResumeUploadMock = jest
+          .spyOn(useTusUtils, 'startOrResumeUpload')
+          .mockImplementationOnce(() => jest.fn());
+        await act(async () => {
+          const { result, waitForNextUpdate } = renderHook<
+            UseTusOptions,
+            {
+              tus: UseTusResult;
+              tusClientState: TusClientState;
+            }
+          >(
+            (options) => {
+              const tus = useTus(options);
+              const tusClientState = useTusClientState();
+
+              return { tus, tusClientState };
+            },
+            {
+              initialProps: {
+                cacheKey: 'test',
+                autoAbort: true,
+                autoStart: false,
+              },
+              wrapper: ({ children }) => (
+                <TusClientProvider>{children}</TusClientProvider>
+              ),
+            }
+          );
+
+          const file: Upload['file'] = getBlob('hello');
+          const options: Upload['options'] = getDefaultOptions();
+
+          expect(result.current.tus.upload?.abort).toBeUndefined();
+
+          result.current.tus.setUpload(file, options);
+          await waitForNextUpdate();
+
+          expect(startOrResumeUploadMock).toBeCalledTimes(0);
+        });
+      });
+
+      it('Should call startOrResumeUpload function when autoStart is true', async () => {
+        const startOrResumeUploadMock = jest
+          .spyOn(useTusUtils, 'startOrResumeUpload')
+          .mockImplementationOnce(() => jest.fn());
+        await act(async () => {
+          const { result, waitForNextUpdate } = renderHook<
+            UseTusOptions,
+            {
+              tus: UseTusResult;
+              tusClientState: TusClientState;
+            }
+          >(
+            (options) => {
+              const tus = useTus(options);
+              const tusClientState = useTusClientState();
+
+              return { tus, tusClientState };
+            },
+            {
+              initialProps: {
+                cacheKey: 'test',
+                autoAbort: true,
+                autoStart: true,
+              },
+              wrapper: ({ children }) => (
+                <TusClientProvider>{children}</TusClientProvider>
+              ),
+            }
+          );
+
+          const file: Upload['file'] = getBlob('hello');
+          const options: Upload['options'] = getDefaultOptions();
+
+          expect(result.current.tus.upload?.abort).toBeUndefined();
+
+          result.current.tus.setUpload(file, options);
+          await waitForNextUpdate();
+
+          expect(startOrResumeUploadMock).toBeCalledTimes(1);
         });
       });
     });
