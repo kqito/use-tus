@@ -13,11 +13,11 @@ const defaultUseTusOptionsValue: UseTusOptions = {
   autoStart: false,
 };
 
-const initialUseTusState: UseTusState = {
+const initialUseTusState: Readonly<UseTusState> = Object.freeze({
   upload: undefined,
   isSuccess: false,
   error: undefined,
-};
+});
 
 export const useTus = (useTusOptions?: UseTusOptions): UseTusResult => {
   const { cacheKey, autoAbort, autoStart } = {
@@ -60,11 +60,11 @@ export const useTus = (useTusOptions?: UseTusOptions): UseTusResult => {
       }
 
       setInternalTusState({
-        ...internalTusState,
+        ...initialUseTusState,
         upload,
       });
     },
-    [tusClientDispatch, cacheKey, tus, internalTusState, autoStart]
+    [tusClientDispatch, cacheKey, tus, autoStart]
   );
 
   const remove = useCallback(() => {

@@ -1,9 +1,10 @@
 import { Meta } from '@storybook/react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { ProgressBar } from './components/ProgressBar';
 
 import { useTus, TusClientProvider } from '../index';
 import { BasicButton } from './components/BasicButton';
+import { defaultOptions } from './constants';
 
 export default {
   title: 'useTus',
@@ -17,10 +18,14 @@ export const Basic = () => (
 
 const Uploader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { upload, setUpload, isSuccess, error } = useTus();
+  const { upload, setUpload, isSuccess } = useTus({
+    autoStart: true,
+  });
   const [progress, setProgress] = useState(0);
-
-  console.log(upload);
+  const uploadedUrl = useMemo(() => isSuccess && upload?.url, [
+    upload,
+    isSuccess,
+  ]);
 
   const handleOnSelectFile = () => {
     if (!inputRef.current) {
@@ -39,7 +44,7 @@ const Uploader = () => {
       }
 
       setUpload(file, {
-        endpoint: 'https://tusd.tusdemo.net/files/',
+        ...defaultOptions,
         chunkSize: 20000,
         metadata: {
           filename: file.name,
@@ -67,7 +72,6 @@ const Uploader = () => {
     }
 
     await upload.abort();
-    console.log(upload);
   }, [upload]);
 
   const fileName = inputRef.current?.files?.item(0)?.name;
@@ -116,6 +120,28 @@ const Uploader = () => {
         }}
       >
         <ProgressBar value={progress} />
+      </div>
+
+      <div
+        style={{
+          marginTop: '16px',
+          display: 'flex',
+          gap: '16px',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}
+      >
+        {uploadedUrl && (
+          <img
+            src={uploadedUrl}
+            alt="upload"
+            style={{
+              display: 'inline-block',
+              width: '400px',
+              height: '400px',
+            }}
+          />
+        )}
       </div>
     </div>
   );
