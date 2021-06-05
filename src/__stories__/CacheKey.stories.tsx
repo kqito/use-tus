@@ -1,5 +1,5 @@
 import { Meta } from '@storybook/react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { ProgressBar } from './components/ProgressBar';
 
 import { useTus, TusClientProvider } from '../index';
@@ -10,7 +10,7 @@ export default {
   title: 'useTus',
 } as Meta;
 
-export const Basic = () => (
+export const CacheKey = () => (
   <TusClientProvider>
     <Uploader />
   </TusClientProvider>
@@ -18,10 +18,12 @@ export const Basic = () => (
 
 const Uploader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [cacheKey, setCacheKey] = useState('example');
+  const [progress, setProgress] = useState(0);
   const { upload, setUpload, isSuccess } = useTus({
     autoStart: true,
+    cacheKey,
   });
-  const [progress, setProgress] = useState(0);
   const uploadedUrl = useMemo(() => isSuccess && upload?.url, [
     upload,
     isSuccess,
@@ -34,6 +36,13 @@ const Uploader = () => {
 
     inputRef.current.click();
   };
+
+  const handleOnChangeText = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setCacheKey(event.target.value);
+    },
+    []
+  );
 
   const handleOnSetUpload = useCallback(
     (event) => {
@@ -88,6 +97,15 @@ const Uploader = () => {
       >
         <p style={{ margin: 0 }}>use-tus</p>
         <p style={{ margin: 0 }}>File: {fileName || 'no selected'}</p>
+        <div>
+          <span>Cache key</span>
+          <input
+            type="text"
+            onChange={handleOnChangeText}
+            defaultValue={cacheKey}
+            style={{ marginLeft: '8px' }}
+          />
+        </div>
         <input hidden type="file" onChange={handleOnSetUpload} ref={inputRef} />
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <BasicButton
