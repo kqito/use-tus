@@ -92,7 +92,7 @@ const Uploader = () => {
 ### `useTus` hooks
 
 ```js
-const { upload, setUpload, isSuccess, error, remove } = useTus({ cacheKey, autoAbort });
+const { upload, setUpload, isSuccess, error, remove } = useTus({ cacheKey, autoAbort, autoStart });
 ```
 
 `useTus` is a hooks to get or create an `Upload` of tus.
@@ -103,6 +103,9 @@ const { upload, setUpload, isSuccess, error, remove } = useTus({ cacheKey, autoA
 
 - `autoAbort` (type: `boolean | undefined`) (default: true)
   - Whether or not to automatically abort uploads when useTus hooks is unmounted.
+
+- `autoStart` (type: `boolean | undefined`) (default: false)
+  - Whether or not to start upload the file after `setUpload` function.
 
 ### Returns
 - `upload` (type: `tus.Upload | undefined`)
