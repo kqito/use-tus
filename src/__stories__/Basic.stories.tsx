@@ -5,6 +5,8 @@ import { ProgressBar } from './components/ProgressBar';
 import { useTus, TusClientProvider } from '../index';
 import { BasicButton } from './components/BasicButton';
 import { defaultOptions } from './constants';
+import { UploadIcon } from './components/UploadIcon';
+import { LoadingCircle } from './components/LoadingCircle';
 
 export default {
   title: 'useTus',
@@ -74,22 +76,17 @@ const Uploader = () => {
     await upload.abort();
   }, [upload]);
 
-  const fileName = inputRef.current?.files?.item(0)?.name;
-
   return (
-    <div>
-      <div
-        style={{
-          display: 'flex',
-          gap: '16px',
-          alignItems: 'center',
-          flexDirection: 'column',
-        }}
-      >
-        <p style={{ margin: 0 }}>use-tus</p>
-        <p style={{ margin: 0 }}>File: {fileName || 'no selected'}</p>
+    <div className="flex items-center justify-center">
+      <div className="flex flex-col items-center w-full min-h-screen p-2 border shadow md:w-8/12 rounded-xl md:p-6">
+        <div className="mt-8">
+          <UploadIcon />
+        </div>
+        <div className="w-full mt-4 md:w-6/12">
+          <ProgressBar value={progress} title={`${progress}%`} />
+        </div>
         <input hidden type="file" onChange={handleOnSetUpload} ref={inputRef} />
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+        <div className="flex flex-col items-center w-full mt-8 md:flex-row gap-4">
           <BasicButton
             title="Select an image"
             styleColor="basic"
@@ -108,39 +105,15 @@ const Uploader = () => {
             disabled={!upload}
           />
         </div>
-      </div>
-
-      <div
-        style={{
-          marginTop: '16px',
-          display: 'flex',
-          gap: '16px',
-          alignItems: 'center',
-          flexDirection: 'column',
-        }}
-      >
-        <ProgressBar value={progress} />
-      </div>
-
-      <div
-        style={{
-          marginTop: '16px',
-          display: 'flex',
-          gap: '16px',
-          alignItems: 'center',
-          flexDirection: 'column',
-        }}
-      >
+        {upload && !isSuccess && (
+          <div className="mt-8">
+            <LoadingCircle />
+          </div>
+        )}
         {uploadedUrl && (
-          <img
-            src={uploadedUrl}
-            alt="upload"
-            style={{
-              display: 'inline-block',
-              width: '400px',
-              height: '400px',
-            }}
-          />
+          <div className="flex flex-col items-center flex-1 mt-8">
+            <img src={uploadedUrl} alt="upload" />
+          </div>
         )}
       </div>
     </div>
