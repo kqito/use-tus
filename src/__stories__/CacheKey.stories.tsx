@@ -20,10 +20,12 @@ export const CacheKey = () => (
 
 const Uploader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [cacheKey, setCacheKey] = useState('example');
   const { upload, setUpload, isSuccess } = useTus({
+    cacheKey,
+    autoAbort: true,
     autoStart: true,
   });
-  const [cacheKey, setCacheKey] = useState('example');
   const [progress, setProgress] = useState(0);
   const uploadedUrl = useMemo(() => isSuccess && upload?.url, [
     upload,
