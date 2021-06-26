@@ -21,7 +21,7 @@ export const CacheKey = () => (
 const Uploader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [cacheKey, setCacheKey] = useState('example');
-  const { upload, setUpload, isSuccess } = useTus({
+  const { upload, setUpload, isSuccess, isAborted } = useTus({
     cacheKey,
     autoAbort: true,
     autoStart: true,
@@ -115,16 +115,16 @@ const Uploader = () => {
             title="Resume"
             styleColor="primary"
             onClick={handleOnStart}
-            disabled={!upload?.abort}
+            disabled={!isAborted}
           />
           <BasicButton
             title="Abort"
             styleColor="error"
             onClick={handleOnAbort}
-            disabled={!upload}
+            disabled={!upload || isAborted}
           />
         </div>
-        {upload && !isSuccess && (
+        {upload && !isAborted && (
           <div className="mt-8">
             <LoadingCircle />
           </div>

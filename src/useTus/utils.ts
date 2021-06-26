@@ -1,29 +1,36 @@
 import { SetStateAction } from 'react';
-import type { Upload } from 'tus-js-client';
+import { Upload } from 'tus-js-client';
 import {
-  errorUpload,
-  successUpload,
+  updateErrorUpload,
+  updateSuccessUpload,
   TusClientActions,
+  updateIsAbortedUpload,
 } from '../core/tucClientActions';
 import { UseTusOptions, UseTusState } from './types';
 
-type Handlers = Pick<Upload['options'], 'onError' | 'onSuccess'>;
-type CreateHandlerArgs = {
-  handlers: Handlers;
+export type Dispatcher = {
   dispatch: (value: TusClientActions) => void;
   internalDispatch: (value: SetStateAction<UseTusState>) => void;
   cacheKey: UseTusOptions['cacheKey'];
 };
+type OptionHandler = Pick<Upload['options'], 'onError' | 'onSuccess'>;
+type CreateUpload = (
+  file: Upload['file'],
+  options: Upload['options'],
+  dispatcher: Dispatcher
+) => Upload;
+type CreateOptionHandler = (
+  handlers: OptionHandler,
+  dispatcher: Dispatcher
+) => OptionHandler;
 
-export const createHandler = ({
+export const createOptionHandler: CreateOptionHandler = (
   handlers,
-  dispatch,
-  internalDispatch,
-  cacheKey,
-}: CreateHandlerArgs): Handlers => {
+  { dispatch, internalDispatch, cacheKey }
+) => {
   const onSuccess = () => {
     if (cacheKey) {
-      dispatch(successUpload(cacheKey));
+      dispatch(updateSuccessUpload(cacheKey));
     }
 
     if (!cacheKey) {
@@ -40,7 +47,7 @@ export const createHandler = ({
 
   const onError = (err: Error) => {
     if (cacheKey) {
-      dispatch(errorUpload(cacheKey, err));
+      dispatch(updateErrorUpload(cacheKey, err));
     }
 
     if (!cacheKey) {
@@ -69,4 +76,41 @@ export const startOrResumeUpload = (upload: Upload): void => {
 
     upload.start();
   });
+};
+
+export const createUpload: CreateUpload = (
+  file,
+  options,
+  { dispatch, internalDispatch, cacheKey }
+) => {
+  const upload = new Upload(file, options);
+  const originalStart = upload.start.bind(upload);
+  const originalAbort = upload.abort.bind(upload);
+
+  const dispatchIsAborted = (isAborted: boolean) => {
+    if (cacheKey) {
+      dispatch(updateIsAbortedUpload(cacheKey, isAborted));
+      return;
+    }
+
+    internalDispatch((internalTusState) => ({
+      ...internalTusState,
+      isAborted,
+    }));
+  };
+
+  const start = () => {
+    originalStart();
+    dispatchIsAborted(false);
+  };
+
+  const abort = async () => {
+    originalAbort();
+    dispatchIsAborted(true);
+  };
+
+  upload.start = start;
+  upload.abort = abort;
+
+  return upload;
 };

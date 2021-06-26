@@ -4,8 +4,9 @@ import { TusConfigs } from './tusHandler';
 export type TusClientActions = ReturnType<
   | typeof insertUploadInstance
   | typeof removeUploadInstance
-  | typeof successUpload
-  | typeof errorUpload
+  | typeof updateSuccessUpload
+  | typeof updateErrorUpload
+  | typeof updateIsAbortedUpload
   | typeof updateTusHandlerOptions
 >;
 
@@ -17,24 +18,34 @@ export const insertUploadInstance = (cacheKey: string, upload: Upload) =>
       uploadState: {
         upload,
         isSuccess: false,
+        isAborted: false,
       },
     },
   } as const);
 
-export const successUpload = (cacheKey: string) =>
+export const updateSuccessUpload = (cacheKey: string) =>
   ({
-    type: 'SUCCESS_UPLOAD',
+    type: 'UPDATE_SUCCESS_UPLOAD',
     payload: {
       cacheKey,
     },
   } as const);
 
-export const errorUpload = (cacheKey: string, error?: Error) =>
+export const updateErrorUpload = (cacheKey: string, error?: Error) =>
   ({
-    type: 'ERROR_UPLOAD',
+    type: 'UPDATE_ERROR_UPLOAD',
     payload: {
       cacheKey,
       error,
+    },
+  } as const);
+
+export const updateIsAbortedUpload = (cacheKey: string, isAborted: boolean) =>
+  ({
+    type: 'UPDATE_IS_ABORTED_UPLOAD',
+    payload: {
+      cacheKey,
+      isAborted,
     },
   } as const);
 

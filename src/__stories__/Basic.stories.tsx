@@ -1,5 +1,5 @@
 import { Meta } from '@storybook/react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ProgressBar } from './components/ProgressBar';
 
 import { useTus, TusClientProvider } from '../index';
@@ -20,7 +20,7 @@ export const Basic = () => (
 
 const Uploader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { upload, setUpload, isSuccess } = useTus({
+  const { upload, setUpload, isSuccess, isAborted } = useTus({
     autoStart: true,
   });
   const [progress, setProgress] = useState(0);
@@ -96,16 +96,16 @@ const Uploader = () => {
             title="Resume"
             styleColor="primary"
             onClick={handleOnStart}
-            disabled={!upload?.abort}
+            disabled={!isAborted}
           />
           <BasicButton
             title="Abort"
             styleColor="error"
             onClick={handleOnAbort}
-            disabled={!upload}
+            disabled={!upload || isAborted}
           />
         </div>
-        {upload && !isSuccess && (
+        {upload && !isAborted && (
           <div className="mt-8">
             <LoadingCircle />
           </div>
