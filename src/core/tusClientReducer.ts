@@ -6,6 +6,7 @@ import { TusHandler } from './tusHandler';
 export type UploadState = {
   upload: Upload | undefined;
   isSuccess: boolean;
+  isAborted: boolean;
   error?: Error;
 };
 
@@ -33,7 +34,7 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
       };
     }
 
-    case 'SUCCESS_UPLOAD': {
+    case 'UPDATE_SUCCESS_UPLOAD': {
       const { cacheKey } = actions.payload;
 
       const target = state.uploads[cacheKey];
@@ -54,7 +55,7 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
       };
     }
 
-    case 'ERROR_UPLOAD': {
+    case 'UPDATE_ERROR_UPLOAD': {
       const { cacheKey, error } = actions.payload;
 
       const target = state.uploads[cacheKey];
@@ -70,6 +71,27 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
           [cacheKey]: {
             ...target,
             error,
+          },
+        },
+      };
+    }
+
+    case 'UPDATE_IS_ABORTED_UPLOAD': {
+      const { cacheKey, isAborted } = actions.payload;
+
+      const target = state.uploads[cacheKey];
+
+      if (!target) {
+        return state;
+      }
+
+      return {
+        ...state,
+        uploads: {
+          ...state.uploads,
+          [cacheKey]: {
+            ...target,
+            isAborted,
           },
         },
       };

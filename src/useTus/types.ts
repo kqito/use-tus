@@ -10,6 +10,10 @@ export type UseTusResult = {
   setUpload: (file: Upload['file'], options?: Upload['options']) => void;
   remove: () => void;
   isSuccess: boolean;
+  isAborted: boolean;
   error?: Error;
 };
-export type UseTusState = Pick<UseTusResult, 'upload' | 'isSuccess' | 'error'>;
+export type UseTusState = Pick<
+  UseTusResult,
+  'upload' | 'isSuccess' | 'error' | 'isAborted'
+>;
