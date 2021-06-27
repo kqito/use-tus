@@ -80,29 +80,33 @@ export const useTus = (useTusOptions?: UseTusOptions): UseTusResult => {
     [tusClientDispatch, cacheKey, tus, autoStart]
   );
 
+  const targetTusState = useMemo(
+    () => (cacheKey ? tusClientState.uploads[cacheKey] : internalTusState),
+    [cacheKey, tusClientState, internalTusState]
+  );
+
   const remove = useCallback(() => {
+    targetTusState?.upload?.abort();
+
     if (!cacheKey) {
       setInternalTusState(initialUseTusState);
       return;
     }
 
     tusClientDispatch(removeUploadInstance(cacheKey));
-  }, [tusClientDispatch, cacheKey]);
+  }, [targetTusState, tusClientDispatch, cacheKey]);
 
-  const tusResult: UseTusResult = useMemo(() => {
-    const targetTusState = cacheKey
-      ? tusClientState.uploads[cacheKey]
-      : internalTusState;
-
-    return {
+  const tusResult: UseTusResult = useMemo(
+    () => ({
       upload: targetTusState?.upload,
       isSuccess: targetTusState?.isSuccess ?? false,
       error: targetTusState?.error,
       isAborted: targetTusState?.isAborted ?? false,
       setUpload,
       remove,
-    };
-  }, [cacheKey, tusClientState, setUpload, remove, internalTusState]);
+    }),
+    [targetTusState, setUpload, remove]
+  );
 
   // For autoAbort option
   useEffect(() => {

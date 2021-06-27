@@ -115,13 +115,13 @@ const Uploader = () => {
             title="Resume"
             styleColor="primary"
             onClick={handleOnStart}
-            disabled={!isAborted}
+            disabled={isSuccess || !isAborted}
           />
           <BasicButton
             title="Abort"
             styleColor="error"
             onClick={handleOnAbort}
-            disabled={!upload || isAborted}
+            disabled={isSuccess || !upload || isAborted}
           />
         </div>
         {upload && !isAborted && (
