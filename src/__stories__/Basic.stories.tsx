@@ -1,5 +1,5 @@
 import { Meta } from '@storybook/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { ProgressBar } from './components/ProgressBar';
 
 import { useTus, TusClientProvider } from '../index';
@@ -38,8 +38,8 @@ const Uploader = () => {
   };
 
   const handleOnSetUpload = useCallback(
-    (event) => {
-      const file = event.target.files.item(0);
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target?.files?.item(0);
 
       if (!file) {
         return;
@@ -47,7 +47,7 @@ const Uploader = () => {
 
       setUpload(file, {
         ...defaultOptions,
-        chunkSize: 20000,
+        chunkSize: file.size / 10,
         metadata: {
           filename: file.name,
           filetype: file.type,
@@ -81,6 +81,13 @@ const Uploader = () => {
       <div className="flex flex-col items-center w-full min-h-screen p-2 border shadow md:w-8/12 rounded-xl md:p-6">
         <div className="mt-8">
           <UploadIcon />
+        </div>
+        <div className="mt-8 flex justify-center items-center flex-col text-sm text-gray-700">
+          <p>
+            In this demo, you can upload to the demo-only server provided by tus
+            official.
+          </p>
+          <p>Also, please be careful about the images you upload.</p>
         </div>
         <div className="w-full mt-4 md:w-6/12">
           <ProgressBar value={progress} title={`${progress}%`} />

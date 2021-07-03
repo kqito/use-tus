@@ -48,8 +48,8 @@ const Uploader = () => {
   );
 
   const handleOnSetUpload = useCallback(
-    (event) => {
-      const file = event.target.files.item(0);
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target?.files?.item(0);
 
       if (!file) {
         return;
@@ -57,7 +57,7 @@ const Uploader = () => {
 
       setUpload(file, {
         ...defaultOptions,
-        chunkSize: 20000,
+        chunkSize: file.size / 10,
         metadata: {
           filename: file.name,
           filetype: file.type,
@@ -91,6 +91,13 @@ const Uploader = () => {
       <div className="flex flex-col items-center w-full min-h-screen p-2 border shadow md:w-8/12 rounded-xl md:p-6">
         <div className="mt-8">
           <UploadIcon />
+        </div>
+        <div className="mt-8 flex justify-center items-center flex-col text-sm text-gray-700">
+          <p>
+            In this demo, you can upload to the demo-only server provided by tus
+            official.
+          </p>
+          <p>Also, please be careful about the images you upload.</p>
         </div>
         <div className="flex flex-col justify-center mt-4">
           <span className="text-sm text-gray-700">Cache key</span>
