@@ -48,8 +48,8 @@ const Uploader = () => {
   );
 
   const handleOnSetUpload = useCallback(
-    (event) => {
-      const file = event.target.files.item(0);
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target?.files?.item(0);
 
       if (!file) {
         return;
@@ -57,7 +57,7 @@ const Uploader = () => {
 
       setUpload(file, {
         ...defaultOptions,
-        chunkSize: 20000,
+        chunkSize: file.size / 10,
         metadata: {
           filename: file.name,
           filetype: file.type,
