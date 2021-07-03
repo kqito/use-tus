@@ -82,6 +82,13 @@ const Uploader = () => {
         <div className="mt-8">
           <UploadIcon />
         </div>
+        <div className="mt-8 flex justify-center items-center flex-col text-sm text-gray-700">
+          <p>
+            In this demo, you can upload to the demo-only server provided by tus
+            official.
+          </p>
+          <p>Also, please be careful about the images you upload.</p>
+        </div>
         <div className="w-full mt-4 md:w-6/12">
           <ProgressBar value={progress} title={`${progress}%`} />
         </div>

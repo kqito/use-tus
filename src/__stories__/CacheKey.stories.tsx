@@ -92,6 +92,13 @@ const Uploader = () => {
         <div className="mt-8">
           <UploadIcon />
         </div>
+        <div className="mt-8 flex justify-center items-center flex-col text-sm text-gray-700">
+          <p>
+            In this demo, you can upload to the demo-only server provided by tus
+            official.
+          </p>
+          <p>Also, please be careful about the images you upload.</p>
+        </div>
         <div className="flex flex-col justify-center mt-4">
           <span className="text-sm text-gray-700">Cache key</span>
           <input
