@@ -18,10 +18,12 @@ const defaultOptions: DefaultOptions = (contents) => {
   return {
     endpoint: TUS_DEMO_ENDPOINT,
     chunkSize: file?.size ? file.size / 10 : undefined,
-    metadata: {
-      filename: file?.name || '',
-      filetype: file?.type || '',
-    },
+    metadata: file
+      ? {
+          filename: file.name,
+          filetype: file.type,
+        }
+      : undefined,
   };
 };
 
