@@ -6,7 +6,7 @@ import { useTus, TusClientProvider } from '../index';
 import { BasicButton } from './components/BasicButton';
 import { LoadingCircle } from './components/LoadingCircle';
 import { UploadIcon } from './components/UploadIcon';
-import { defaultOptions } from './constants';
+import { TUS_DEMO_ENDPOINT } from './constants';
 
 export default {
   title: 'useTus',
@@ -56,7 +56,7 @@ const Uploader = () => {
       }
 
       setUpload(file, {
-        ...defaultOptions,
+        endpoint: TUS_DEMO_ENDPOINT,
         chunkSize: file.size / 10,
         metadata: {
           filename: file.name,
@@ -92,7 +92,7 @@ const Uploader = () => {
         <div className="mt-8">
           <UploadIcon />
         </div>
-        <div className="mt-8 flex justify-center items-center flex-col text-sm text-gray-700">
+        <div className="flex flex-col items-center justify-center mt-8 text-sm text-gray-700">
           <p>
             In this demo, you can upload to the demo-only server provided by tus
             official.

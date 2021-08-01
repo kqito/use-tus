@@ -1,5 +1,1 @@
-import { Upload } from 'tus-js-client';
-
-export const defaultOptions: Upload['options'] = {
-  endpoint: 'https://tusd.tusdemo.net/files/',
-};
+export const TUS_DEMO_ENDPOINT = 'https://tusd.tusdemo.net/files/' as const;
