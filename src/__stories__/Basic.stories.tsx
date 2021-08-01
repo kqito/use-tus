@@ -112,7 +112,7 @@ const Uploader = () => {
             disabled={isSuccess || !upload || isAborted}
           />
         </div>
-        {upload && !isAborted && (
+        {upload && !isAborted && !isSuccess && (
           <div className="mt-8">
             <LoadingCircle />
           </div>
