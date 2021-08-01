@@ -47,17 +47,22 @@ export const useTus = (useTusOptions?: UseTusOptions): UseTusResult => {
         dispatch: tusClientDispatch,
         internalDispatch: setInternalTusState,
       };
+
+      const targetOptions = {
+        ...tus.defaultOptions(file),
+        ...options,
+      };
+
       const { onSuccess, onError } = createOptionHandler(
         {
-          onError: options.onError,
-          onSuccess: options.onSuccess,
+          onError: targetOptions.onError,
+          onSuccess: targetOptions.onSuccess,
         },
         dispatcher
       );
 
       const uploadOptions: Upload['options'] = {
-        ...tus.defaultOptions?.(file),
-        ...options,
+        ...targetOptions,
         onSuccess,
         onError,
       };
