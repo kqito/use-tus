@@ -54,8 +54,9 @@ export const useTus = (useTusOptions?: UseTusOptions): UseTusResult => {
         },
         dispatcher
       );
+
       const uploadOptions: Upload['options'] = {
-        ...tus.defaultOptions,
+        ...tus.defaultOptions?.(file),
         ...options,
         onSuccess,
         onError,

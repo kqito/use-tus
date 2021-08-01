@@ -2,13 +2,13 @@ import { FC, useEffect } from 'react';
 import { ERROR_MESSAGES } from '../core/constants';
 import { updateTusHandlerOptions } from '../core/tucClientActions';
 import { useTusClientDispatch, useTusClientState } from '../core/contexts';
-import { TusConfigs } from '../core/tusHandler';
+import { initialDefaultOptions, TusConfigs } from '../core/tusHandler';
 
 export type TusControllerProps = Readonly<TusConfigs>;
 
 export const TusController: FC<TusControllerProps> = ({
   canStoreURLs,
-  defaultOptions,
+  defaultOptions = initialDefaultOptions,
   children,
 }) => {
   const { tusHandler } = useTusClientState();

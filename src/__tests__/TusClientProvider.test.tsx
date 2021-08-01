@@ -10,7 +10,8 @@ import { createConsoleErrorMock } from './utils/mock';
 import * as tusContexts from '../core/contexts';
 import { ERROR_MESSAGES } from '../core/constants';
 import { TusClientState } from '../core/tusClientReducer';
-import { TusConfigs, TusHandler } from '../core/tusHandler';
+import { TusConfigs, TusHandler, DefaultOptions } from '../core/tusHandler';
+import { getBlob } from './utils/getBlob';
 
 const actualTus = jest.requireActual<typeof import('tus-js-client')>(
   'tus-js-client'
@@ -64,9 +65,9 @@ describe('TusClientProvider', () => {
         actualTus.isSupported
       );
       expect(result.current.tusHandler.getTus.Upload).toBe(actualTus.Upload);
-      expect(result.current.tusHandler.getTus.defaultOptions).toBe(
-        actualTus.defaultOptions
-      );
+      expect(
+        result.current.tusHandler.getTus.defaultOptions(getBlob(''))
+      ).toStrictEqual(actualTus.defaultOptions);
     });
 
     it('canStoreURLs', async () => {
@@ -84,17 +85,28 @@ describe('TusClientProvider', () => {
           actualTus.isSupported
         );
         expect(result.current.tusHandler.getTus.Upload).toBe(actualTus.Upload);
-        expect(result.current.tusHandler.getTus.defaultOptions).toBe(
-          actualTus.defaultOptions
-        );
+        expect(
+          result.current.tusHandler.getTus.defaultOptions(getBlob(''))
+        ).toStrictEqual(actualTus.defaultOptions);
       });
     });
 
     it('defaultOptions', async () => {
+      const defaultOptions: DefaultOptions = (file) => ({
+        endpoint: 'hoge',
+        metadata:
+          file instanceof File
+            ? {
+                filename: file.name,
+                filetype: file.type,
+              }
+            : undefined,
+      });
+
       hooksAct(() => {
         const { result } = renderHook(() => tusContexts.useTusClientState(), {
           wrapper: ({ children }) => (
-            <TusClientProvider defaultOptions={{ endpoint: 'hoge' }}>
+            <TusClientProvider defaultOptions={defaultOptions}>
               {children}
             </TusClientProvider>
           ),
@@ -107,19 +119,31 @@ describe('TusClientProvider', () => {
           actualTus.isSupported
         );
         expect(result.current.tusHandler.getTus.Upload).toBe(actualTus.Upload);
-        expect(result.current.tusHandler.getTus.defaultOptions.endpoint).toBe(
-          'hoge'
-        );
+        expect(
+          result.current.tusHandler.getTus.defaultOptions(
+            new File([], 'name', { type: 'type' })
+          )
+        ).toStrictEqual({
+          endpoint: 'hoge',
+          metadata: {
+            filename: 'name',
+            filetype: 'type',
+          },
+        });
       });
     });
 
     it('All props', async () => {
+      const defaultOptions: DefaultOptions = () => ({
+        endpoint: 'hoge',
+      });
+
       hooksAct(() => {
         const { result } = renderHook(() => tusContexts.useTusClientState(), {
           wrapper: ({ children }) => (
             <TusClientProvider
               canStoreURLs={false}
-              defaultOptions={{ endpoint: 'hoge' }}
+              defaultOptions={defaultOptions}
             >
               {children}
             </TusClientProvider>
@@ -131,9 +155,9 @@ describe('TusClientProvider', () => {
           actualTus.isSupported
         );
         expect(result.current.tusHandler.getTus.Upload).toBe(actualTus.Upload);
-        expect(result.current.tusHandler.getTus.defaultOptions.endpoint).toBe(
-          'hoge'
-        );
+        expect(
+          result.current.tusHandler.getTus.defaultOptions(getBlob('hello'))
+        ).toStrictEqual({ endpoint: 'hoge' });
       });
     });
 
@@ -163,13 +187,13 @@ describe('TusClientProvider', () => {
         actualTus.isSupported
       );
       expect(result.current.tusHandler.getTus.Upload).toBe(actualTus.Upload);
-      expect(result.current.tusHandler.getTus.defaultOptions).toBe(
-        actualTus.defaultOptions
-      );
+      expect(
+        result.current.tusHandler.getTus.defaultOptions(getBlob(''))
+      ).toStrictEqual(actualTus.defaultOptions);
 
       rerender({
         canStoreURLs: false,
-        defaultOptions: { endpoint: 'fuga' },
+        defaultOptions: () => ({ endpoint: 'hoge' }),
       });
 
       expect(result.current.tusHandler.getTus.canStoreURLs).toBe(false);
@@ -177,9 +201,23 @@ describe('TusClientProvider', () => {
         actualTus.isSupported
       );
       expect(result.current.tusHandler.getTus.Upload).toBe(actualTus.Upload);
-      expect(result.current.tusHandler.getTus.defaultOptions.endpoint).toBe(
-        'fuga'
+      expect(
+        result.current.tusHandler.getTus.defaultOptions(getBlob('hello'))
+      ).toStrictEqual({ endpoint: 'hoge' });
+
+      rerender({
+        canStoreURLs: true,
+        defaultOptions: () => ({ endpoint: 'piyo' }),
+      });
+
+      expect(result.current.tusHandler.getTus.canStoreURLs).toBe(true);
+      expect(result.current.tusHandler.getTus.isSupported).toBe(
+        actualTus.isSupported
       );
+      expect(result.current.tusHandler.getTus.Upload).toBe(actualTus.Upload);
+      expect(
+        result.current.tusHandler.getTus.defaultOptions(getBlob('hello'))
+      ).toStrictEqual({ endpoint: 'piyo' });
     });
   });
 });
