@@ -143,7 +143,7 @@ const { upload, setUpload, isSuccess, isAborted, error, remove } = useTus({ cach
 - `canStoreURLs` (type: `boolean | undefined`)
   - A boolean indicating whether the current environment allows storing URLs enabling the corresponding upload to be resumed. [detail](https://github.com/tus/tus-js-client/blob/master/docs/api.md#tuscanstoreurls)
 
-- `defaultOptions` (type: `tus.DefaltOptions | undefined`)
+- `defaultOptions` (type: `(file: tus.Upload['file']) => tus.DefaltOptions | undefined`)
   - An object containing the default options used when creating a new upload. [detail](https://github.com/tus/tus-js-client/blob/master/docs/api.md#tusdefaultoptions)
 
 ## Examples
@@ -272,11 +272,21 @@ const Uploader = () => {
 You can specify default options in the `defaultOptions` props of the `TusClientProvider`.
 
 ```tsx
-import { useTus, TusClientProvider } from 'use-tus'
+import { useTus, DefaultOptions, TusClientProvider } from 'use-tus'
 
-const defaultOptions = {
-  endpoint: 'https://tusd.tusdemo.net/files/',
-}
+const defaultOptions: DefaultOptions = (contents) => {
+  const file = contents instanceof File ? contents : undefined;
+
+  return {
+    endpoint: 'https://tusd.tusdemo.net/files/',
+    metadata: file
+      ? {
+          filename: file.name,
+          filetype: file.type,
+        }
+      : undefined,
+  };
+};
 
 const App = () => (
   <TusClientProvider defaultOptions={defaultOptions}>

@@ -8,6 +8,7 @@ import { useTusClientDispatch, useTusClientState } from '../core/contexts';
 import { createConsoleErrorMock, insertEnvValue } from './utils/mock';
 import { TusClientState } from '../core/tusClientReducer';
 import * as useTusUtils from '../useTus/utils';
+import { DefaultOptions } from '../core/tusHandler';
 
 /* eslint-disable no-console */
 
@@ -221,10 +222,14 @@ it('Should be reflected onto the TusClientProvider', async () => {
 });
 
 it('Should setUpload without option args', async () => {
+  const defaultOptions: DefaultOptions = () => ({
+    endpoint: 'hoge',
+  });
+
   await act(async () => {
     const { result, waitForNextUpdate } = renderHook(() => useTus(), {
       wrapper: ({ children }) => (
-        <TusClientProvider defaultOptions={{ endpoint: 'hoge' }}>
+        <TusClientProvider defaultOptions={defaultOptions}>
           {children}
         </TusClientProvider>
       ),
@@ -280,6 +285,10 @@ describe('Should not throw even if the TusClientProvider has not found on produc
 });
 
 it('Should set tus config from context value', async () => {
+  const defaultOptions: DefaultOptions = () => ({
+    endpoint: 'hoge',
+  });
+
   await act(async () => {
     const { result, waitForNextUpdate } = renderHook(
       ({ cacheKey }: { cacheKey: string }) => {
@@ -293,7 +302,7 @@ it('Should set tus config from context value', async () => {
         wrapper: ({ children }) => (
           <TusClientProvider
             canStoreURLs={false}
-            defaultOptions={{ endpoint: 'hoge' }}
+            defaultOptions={defaultOptions}
           >
             {children}
           </TusClientProvider>
@@ -311,7 +320,9 @@ it('Should set tus config from context value', async () => {
       actualTus.Upload
     );
     expect(
-      result.current.tusClientState.tusHandler.getTus.defaultOptions.endpoint
+      result.current.tusClientState.tusHandler.getTus.defaultOptions(
+        getBlob('hello')
+      ).endpoint
     ).toBe('hoge');
 
     const file: Upload['file'] = getBlob('hello');

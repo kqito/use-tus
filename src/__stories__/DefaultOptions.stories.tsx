@@ -2,18 +2,33 @@ import { Meta } from '@storybook/react';
 import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { ProgressBar } from './components/ProgressBar';
 
-import { useTus, TusClientProvider } from '../index';
+import { useTus, TusClientProvider, DefaultOptions } from '../index';
 import { BasicButton } from './components/BasicButton';
-import { TUS_DEMO_ENDPOINT } from './constants';
 import { UploadIcon } from './components/UploadIcon';
 import { LoadingCircle } from './components/LoadingCircle';
+import { TUS_DEMO_ENDPOINT } from './constants';
 
 export default {
   title: 'useTus',
 } as Meta;
 
-export const Basic = () => (
-  <TusClientProvider>
+const defaultOptions: DefaultOptions = (contents) => {
+  const file = contents instanceof File ? contents : undefined;
+
+  return {
+    endpoint: TUS_DEMO_ENDPOINT,
+    chunkSize: file?.size ? file.size / 10 : undefined,
+    metadata: file
+      ? {
+          filename: file.name,
+          filetype: file.type,
+        }
+      : undefined,
+  };
+};
+
+export const WithDefaultOptions = () => (
+  <TusClientProvider defaultOptions={defaultOptions}>
     <Uploader />
   </TusClientProvider>
 );
@@ -46,12 +61,6 @@ const Uploader = () => {
       }
 
       setUpload(file, {
-        endpoint: TUS_DEMO_ENDPOINT,
-        chunkSize: file.size / 10,
-        metadata: {
-          filename: file.name,
-          filetype: file.type,
-        },
         onProgress: (bytesSent, bytesTotal) => {
           setProgress(Number(((bytesSent / bytesTotal) * 100).toFixed(2)));
         },
@@ -82,7 +91,12 @@ const Uploader = () => {
         <div className="mt-8">
           <UploadIcon />
         </div>
-        <div className="mt-8 flex justify-center items-center flex-col text-sm text-gray-700">
+        <div className="flex flex-col items-center justify-center mt-8 text-sm text-gray-700">
+          <p>
+            Here is a demo with defaultOptions specified for TusClientProvider.
+          </p>
+        </div>
+        <div className="flex flex-col items-center justify-center mt-8 text-sm text-gray-700">
           <p>
             In this demo, you can upload to the demo-only server provided by tus
             official.
