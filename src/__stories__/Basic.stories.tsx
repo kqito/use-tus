@@ -78,7 +78,7 @@ const Uploader = () => {
 
   return (
     <div className="flex items-center justify-center">
-      <div className="flex flex-col items-center w-full min-h-screen p-2 border shadow md:w-8/12 rounded-xl md:p-6">
+      <div className="flex flex-col items-center w-full min-h-screen p-2 border shadow md:shadow-none md:border-none md:w-8/12 rounded-xl md:p-6">
         <div className="mt-8">
           <UploadIcon />
         </div>
