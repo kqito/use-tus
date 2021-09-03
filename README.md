@@ -146,6 +146,23 @@ const { upload, setUpload, isSuccess, isAborted, error, remove } = useTus({ cach
 - `defaultOptions` (type: `(file: tus.Upload['file']) => tus.DefaltOptions | undefined`)
   - An object containing the default options used when creating a new upload. [detail](https://github.com/tus/tus-js-client/blob/master/docs/api.md#tusdefaultoptions)
 
+### `useTusClient`
+
+```tsx
+const { state, removeUpload, reset } = useTusClient();
+```
+`useTusClient` is a hooks that can be used to retrieve and reset the state of a `TusClientProvider`.
+
+### Returns
+- `state` (type: `{ [cacheKey: string]: UploadState | undefined }`)
+  - Upload information associated with cacheKey
+
+- `removeUpload` (type: `(cacheKey: string) => void`)
+  - Remove the upload instance associated with the specified cacheKey.
+
+- `reset` (type: `() => void`)
+  - Initialize the value of TusClientProvider
+
 ## Examples
 The following are some example of how to use `use-tus`.
 
