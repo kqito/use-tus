@@ -109,6 +109,13 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
       };
     }
 
+    case 'RESET_CLIENT': {
+      return {
+        tusHandler: new TusHandler(),
+        uploads: {},
+      };
+    }
+
     case 'UPDATE_TUS_HANDLER_OPTIONS': {
       const { canStoreURLs, defaultOptions } = actions.payload;
 

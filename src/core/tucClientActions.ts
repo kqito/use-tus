@@ -4,6 +4,7 @@ import { TusConfigs } from './tusHandler';
 export type TusClientActions = ReturnType<
   | typeof insertUploadInstance
   | typeof removeUploadInstance
+  | typeof resetClient
   | typeof updateSuccessUpload
   | typeof updateErrorUpload
   | typeof updateIsAbortedUpload
@@ -55,6 +56,11 @@ export const removeUploadInstance = (cacheKey: string) =>
     payload: {
       cacheKey,
     },
+  } as const);
+
+export const resetClient = () =>
+  ({
+    type: 'RESET_CLIENT',
   } as const);
 
 export const updateTusHandlerOptions = (payload: TusConfigs) =>
