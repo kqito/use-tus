@@ -1,48 +1,60 @@
 import resolve from '@rollup/plugin-node-resolve';
-import typescriptPlugin from 'rollup-plugin-typescript2';
+import typescript from '@rollup/plugin-typescript';
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import pkg from './package.json';
 
-const typescript = require('typescript');
-const { presets } = require('./babel.config');
+const extensions = ['.js', '.ts', '.tsx'];
+const babelConfig = {
+  // eslint-disable-next-line global-require
+  ...require('./babel.config'),
+  comments: false,
+  extensions,
+  babelHelpers: 'bundled',
+};
 
-const extensions = ['.js', '.jsx', '.es6', '.es', '.mjs', '.ts', '.tsx'];
-const globals = { react: 'React', 'react-dom': 'ReactDOM' };
-
-export default {
+const distDir = 'dist';
+const baseConfig = {
   input: 'src/index.ts',
-  output: [
-    {
-      file: pkg.main,
-      format: 'cjs',
-      globals,
-    },
-    {
-      file: pkg.module,
-      format: 'esm',
-    },
-  ],
+  external: ['react', 'react-dom', ...Object.keys(pkg.peerDependencies)],
+};
+
+const dtsConfig = {
+  ...baseConfig,
+  output: {
+    dir: distDir,
+  },
   plugins: [
-    commonjs(),
+    typescript({
+      declaration: true,
+      emitDeclarationOnly: true,
+      outDir: distDir,
+    }),
+  ],
+};
+
+const cjsConfig = {
+  ...baseConfig,
+  output: { file: pkg.main, format: 'cjs' },
+  plugins: [
     resolve({
       extensions,
     }),
-    typescriptPlugin({
-      typescript,
-      tsconfigOverride: {
-        exclude: ['**/__tests__', '**/__stories__'],
-      },
-    }),
-    babel({
-      extensions,
-      babelHelpers: 'bundled',
-      presets,
-    }),
-  ],
-  external: [
-    ...Object.keys(pkg.devDependencies || {}),
-    ...Object.keys(pkg.peerDependencies || {}),
-    ...Object.keys(pkg.dependencies || {}),
+    commonjs(),
+    babel(babelConfig),
   ],
 };
+
+const mjsConfig = {
+  ...baseConfig,
+  output: { file: pkg.module, format: 'esm' },
+  plugins: [
+    resolve({
+      extensions,
+    }),
+    commonjs(),
+    babel(babelConfig),
+  ],
+};
+
+export default [dtsConfig, cjsConfig, mjsConfig];
