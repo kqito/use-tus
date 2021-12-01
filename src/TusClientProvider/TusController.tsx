@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { createElement, FC, useEffect, Fragment } from 'react';
 import { ERROR_MESSAGES } from '../core/constants';
 import { updateTusHandlerOptions } from '../core/tucClientActions';
 import { useTusClientDispatch, useTusClientState } from '../core/contexts';
@@ -46,5 +46,5 @@ export const TusController: FC<TusControllerProps> = ({
     tus.defaultOptions,
   ]);
 
-  return <>{children}</>;
+  return createElement(Fragment, {}, children);
 };

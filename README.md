@@ -15,7 +15,6 @@
 ## Features
 - Resumable file uploads on react.
 - Managing the [Upload](https://github.com/tus/tus-js-client/blob/master/docs/api.md#tusuploadfile-options) by using context.
-- One dependency ([tus-js-client](https://github.com/tus/tus-js-client)).
 - TypeScript support.
 
 ## Demo
@@ -25,12 +24,12 @@ You can try the [use-tus demo](https://kqito.github.io/use-tus/?path=/story/uset
 ## Installation
 You can install the package from npm.
 ```sh
-npm install use-tus
+npm install use-tus tus-js-client
 ```
 
 or
 ```sh
-yarn add use-tus
+yarn add use-tus tus-js-client
 ```
 
 ## Usage

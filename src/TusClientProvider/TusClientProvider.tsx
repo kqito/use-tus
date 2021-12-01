@@ -1,5 +1,4 @@
-import type { FC } from 'react';
-import { useReducer } from 'react';
+import { useReducer, createElement, FC } from 'react';
 import {
   TusClientDispatchContext,
   TusClientStateContext,
@@ -27,16 +26,26 @@ export const TusClientProvider: FC<TusClientProviderProps> = ({
     }),
   });
 
-  return (
-    <TusClientStateContext.Provider value={tusClientState}>
-      <TusClientDispatchContext.Provider value={tusClientDispatch}>
-        <TusController
-          canStoreURLs={canStoreURLs}
-          defaultOptions={defaultOptions}
-        >
-          {children}
-        </TusController>
-      </TusClientDispatchContext.Provider>
-    </TusClientStateContext.Provider>
+  const tusControllerElement = createElement(
+    TusController,
+    {
+      canStoreURLs,
+      defaultOptions,
+    },
+    children
+  );
+
+  const tusClientDispatchContextProviderElement = createElement(
+    TusClientDispatchContext.Provider,
+    { value: tusClientDispatch },
+    tusControllerElement
+  );
+
+  return createElement(
+    TusClientStateContext.Provider,
+    {
+      value: tusClientState,
+    },
+    tusClientDispatchContextProviderElement
   );
 };
