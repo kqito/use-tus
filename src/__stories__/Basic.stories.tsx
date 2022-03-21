@@ -2,7 +2,7 @@ import { Meta } from '@storybook/react';
 import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { ProgressBar } from './components/ProgressBar';
 
-import { useTus, TusClientProvider } from '../index';
+import { useTus } from '../index';
 import { BasicButton } from './components/BasicButton';
 import { TUS_DEMO_ENDPOINT } from './constants';
 import { UploadIcon } from './components/UploadIcon';
@@ -12,11 +12,7 @@ export default {
   title: 'useTus',
 } as Meta;
 
-export const Basic = () => (
-  <TusClientProvider>
-    <Uploader />
-  </TusClientProvider>
-);
+export const Basic = () => <Uploader />;
 
 const Uploader = () => {
   const inputRef = useRef<HTMLInputElement>(null);

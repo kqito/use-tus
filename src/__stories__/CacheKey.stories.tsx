@@ -2,14 +2,14 @@ import { Meta } from '@storybook/react';
 import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { ProgressBar } from './components/ProgressBar';
 
-import { useTus, TusClientProvider } from '../index';
+import { TusClientProvider, useTusStore } from '../index';
 import { BasicButton } from './components/BasicButton';
 import { LoadingCircle } from './components/LoadingCircle';
 import { UploadIcon } from './components/UploadIcon';
 import { TUS_DEMO_ENDPOINT } from './constants';
 
 export default {
-  title: 'useTus',
+  title: 'useTusStore hooks',
 } as Meta;
 
 export const CacheKey = () => (
@@ -21,8 +21,7 @@ export const CacheKey = () => (
 const Uploader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [cacheKey, setCacheKey] = useState('example');
-  const { upload, setUpload, isSuccess, isAborted } = useTus({
-    cacheKey,
+  const { upload, setUpload, isSuccess, isAborted } = useTusStore(cacheKey, {
     autoAbort: true,
     autoStart: true,
   });

@@ -1,3 +1,5 @@
+import * as startOrResumeUploadObject from '../../useTus/utils/startOrResumeUpload';
+
 export const createConsoleErrorMock = () => {
   const consoleMock = jest.spyOn(console, 'error');
   consoleMock.mockImplementation(() => undefined);
@@ -13,3 +15,7 @@ export const insertEnvValue = (value: NodeJS.Process['env']) => {
     },
   };
 };
+
+export const startOrResumeUploadMock = jest
+  .spyOn(startOrResumeUploadObject, 'startOrResumeUpload')
+  .mockImplementationOnce(() => jest.fn());
