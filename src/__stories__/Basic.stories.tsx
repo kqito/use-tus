@@ -1,15 +1,15 @@
-import { Meta } from '@storybook/react';
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
-import { ProgressBar } from './components/ProgressBar';
+import { Meta } from "@storybook/react";
+import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
+import { ProgressBar } from "./components/ProgressBar";
 
-import { useTus } from '../index';
-import { BasicButton } from './components/BasicButton';
-import { TUS_DEMO_ENDPOINT } from './constants';
-import { UploadIcon } from './components/UploadIcon';
-import { LoadingCircle } from './components/LoadingCircle';
+import { useTus } from "../index";
+import { BasicButton } from "./components/BasicButton";
+import { TUS_DEMO_ENDPOINT } from "./constants";
+import { UploadIcon } from "./components/UploadIcon";
+import { LoadingCircle } from "./components/LoadingCircle";
 
 export default {
-  title: 'useTus',
+  title: "useTus",
 } as Meta;
 
 export const Basic = () => <Uploader />;

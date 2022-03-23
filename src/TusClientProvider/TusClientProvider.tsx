@@ -1,15 +1,15 @@
-import { useReducer, createElement, FC } from 'react';
+import { useReducer, createElement, FC } from "react";
 import {
   TusClientDispatchContext,
   TusClientStateContext,
-} from '../core/contexts';
+} from "../core/contexts";
 
 import {
   tusClientInitialState,
   tusClientReducer,
-} from '../core/tusClientReducer';
-import { TusConfigs, TusHandler } from '../core/tusHandler';
-import { TusController } from './TusController';
+} from "../core/tusClientReducer";
+import { TusConfigs, TusHandler } from "../core/tusHandler";
+import { TusController } from "./TusController";
 
 export type TusClientProviderProps = Readonly<TusConfigs>;
 

@@ -1,4 +1,4 @@
-import { VFC } from 'react';
+import { VFC } from "react";
 
 export const UploadIcon: VFC = () => (
   <div className="flex w-24 h-24 rounded-full items-center justify-center border border-blue-300">

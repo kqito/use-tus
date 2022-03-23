@@ -1,4 +1,4 @@
-import type { VFC } from 'react';
+import type { VFC } from "react";
 
 export const LoadingCircle: VFC = () => (
   <div className="relative block w-20 h-5 loader-dots">

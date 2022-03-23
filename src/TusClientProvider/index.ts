@@ -1,2 +1,2 @@
-export { TusClientProvider } from './TusClientProvider';
-export type { TusClientProviderProps } from './TusClientProvider';
+export { TusClientProvider } from "./TusClientProvider";
+export type { TusClientProviderProps } from "./TusClientProvider";

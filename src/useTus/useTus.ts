@@ -1,11 +1,11 @@
-import { useCallback, useMemo, useState } from 'react';
-import type { Upload } from 'tus-js-client';
-import { initialUseTusState } from './options';
-import { UseTusOptions, UseTusResult, UseTusState } from './types';
-import { createUpload, DispatchIsAborted } from './utils/createUpload';
-import { startOrResumeUpload } from './utils/startOrResumeUpload';
-import { useAutoAbort } from './utils/useAutoAbort';
-import { useMergeTusOptions } from './utils/useMergeTusOptions';
+import { useCallback, useMemo, useState } from "react";
+import type { Upload } from "tus-js-client";
+import { initialUseTusState } from "./options";
+import { UseTusOptions, UseTusResult, UseTusState } from "./types";
+import { createUpload, DispatchIsAborted } from "./utils/createUpload";
+import { startOrResumeUpload } from "./utils/startOrResumeUpload";
+import { useAutoAbort } from "./utils/useAutoAbort";
+import { useMergeTusOptions } from "./utils/useMergeTusOptions";
 
 export const useTus = (baseOption?: UseTusOptions): UseTusResult => {
   const { autoAbort, autoStart, uploadOptions } = useMergeTusOptions(
@@ -20,7 +20,7 @@ export const useTus = (baseOption?: UseTusOptions): UseTusResult => {
     }));
   }, []);
 
-  const setUpload: UseTusResult['setUpload'] = useCallback(
+  const setUpload: UseTusResult["setUpload"] = useCallback(
     (file, options = {}) => {
       const targetOptions = {
         ...uploadOptions,
@@ -37,7 +37,7 @@ export const useTus = (baseOption?: UseTusOptions): UseTusResult => {
         targetOptions?.onError?.(error);
       };
 
-      const mergedUploadOptions: Upload['options'] = {
+      const mergedUploadOptions: Upload["options"] = {
         ...targetOptions,
         onSuccess,
         onError,

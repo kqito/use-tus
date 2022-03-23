@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { Upload } from 'tus-js-client';
+import { useEffect } from "react";
+import { Upload } from "tus-js-client";
 
 export const useAutoAbort = (
   upload: Upload | undefined,

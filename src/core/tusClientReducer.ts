@@ -1,7 +1,7 @@
-import type { Reducer } from 'react';
-import type { Upload } from 'tus-js-client';
-import { TusClientActions } from './tucClientActions';
-import { TusHandler } from './tusHandler';
+import type { Reducer } from "react";
+import type { Upload } from "tus-js-client";
+import { TusClientActions } from "./tucClientActions";
+import { TusHandler } from "./tusHandler";
 
 export type UploadState = {
   upload: Upload | undefined;
@@ -22,7 +22,7 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
   actions
 ) => {
   switch (actions.type) {
-    case 'INSERT_UPLOAD_INSTANCE': {
+    case "INSERT_UPLOAD_INSTANCE": {
       const { cacheKey, uploadState } = actions.payload;
 
       return {
@@ -34,7 +34,7 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
       };
     }
 
-    case 'UPDATE_SUCCESS_UPLOAD': {
+    case "UPDATE_SUCCESS_UPLOAD": {
       const { cacheKey } = actions.payload;
 
       const target = state.uploads[cacheKey];
@@ -55,7 +55,7 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
       };
     }
 
-    case 'UPDATE_ERROR_UPLOAD': {
+    case "UPDATE_ERROR_UPLOAD": {
       const { cacheKey, error } = actions.payload;
 
       const target = state.uploads[cacheKey];
@@ -76,7 +76,7 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
       };
     }
 
-    case 'UPDATE_IS_ABORTED_UPLOAD': {
+    case "UPDATE_IS_ABORTED_UPLOAD": {
       const { cacheKey, isAborted } = actions.payload;
 
       const target = state.uploads[cacheKey];
@@ -97,7 +97,7 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
       };
     }
 
-    case 'REMOVE_UPLOAD_INSTANCE': {
+    case "REMOVE_UPLOAD_INSTANCE": {
       const { cacheKey } = actions.payload;
 
       const newUploads = state.uploads;
@@ -109,14 +109,14 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
       };
     }
 
-    case 'RESET_CLIENT': {
+    case "RESET_CLIENT": {
       return {
         tusHandler: new TusHandler(),
         uploads: {},
       };
     }
 
-    case 'UPDATE_TUS_HANDLER_OPTIONS': {
+    case "UPDATE_TUS_HANDLER_OPTIONS": {
       const { canStoreURLs, defaultOptions } = actions.payload;
 
       return {

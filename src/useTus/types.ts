@@ -1,4 +1,4 @@
-import type { Upload, UploadOptions } from 'tus-js-client';
+import type { Upload, UploadOptions } from "tus-js-client";
 
 export type UseTusOptions = {
   autoAbort?: boolean;
@@ -8,7 +8,7 @@ export type UseTusOptions = {
 
 export type UseTusResult = {
   upload?: Upload;
-  setUpload: (file: Upload['file'], options?: Upload['options']) => void;
+  setUpload: (file: Upload["file"], options?: Upload["options"]) => void;
   remove: () => void;
   isSuccess: boolean;
   isAborted: boolean;
@@ -16,5 +16,5 @@ export type UseTusResult = {
 };
 export type UseTusState = Pick<
   UseTusResult,
-  'upload' | 'isSuccess' | 'error' | 'isAborted'
+  "upload" | "isSuccess" | "error" | "isAborted"
 >;

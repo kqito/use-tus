@@ -1,14 +1,14 @@
-import * as tus from 'tus-js-client';
-import { Upload } from 'tus-js-client';
+import * as tus from "tus-js-client";
+import { Upload } from "tus-js-client";
 
-export type DefaultOptions = (file: Upload['file']) => tus.UploadOptions;
+export type DefaultOptions = (file: Upload["file"]) => tus.UploadOptions;
 export type TusConfigs = Partial<{
   canStoreURLs: boolean;
   defaultOptions: DefaultOptions;
 }>;
 
 export type Tus = Readonly<
-  Omit<typeof tus, 'defaultOptions'> & Required<TusConfigs>
+  Omit<typeof tus, "defaultOptions"> & Required<TusConfigs>
 >;
 
 export const initialDefaultOptions: DefaultOptions = () => tus.defaultOptions;

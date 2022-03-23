@@ -1,4 +1,4 @@
-import { UseTusOptions, UseTusState } from './types';
+import { UseTusOptions, UseTusState } from "./types";
 
 export const defaultUseTusOptionsValue: Readonly<UseTusOptions> = Object.freeze<UseTusOptions>(
   {

@@ -1,18 +1,18 @@
-import { useCallback, useMemo } from 'react';
-import type { Upload } from 'tus-js-client';
-import { useTusClientDispatch, useTusClientState } from '../core/contexts';
+import { useCallback, useMemo } from "react";
+import type { Upload } from "tus-js-client";
+import { useTusClientDispatch, useTusClientState } from "../core/contexts";
 import {
   insertUploadInstance,
   removeUploadInstance,
   updateErrorUpload,
   updateIsAbortedUpload,
   updateSuccessUpload,
-} from '../core/tucClientActions';
-import { UseTusOptions, UseTusResult } from './types';
-import { DispatchIsAborted, createUpload } from './utils/createUpload';
-import { startOrResumeUpload } from './utils/startOrResumeUpload';
-import { useAutoAbort } from './utils/useAutoAbort';
-import { useMergeTusOptions } from './utils/useMergeTusOptions';
+} from "../core/tucClientActions";
+import { UseTusOptions, UseTusResult } from "./types";
+import { DispatchIsAborted, createUpload } from "./utils/createUpload";
+import { startOrResumeUpload } from "./utils/startOrResumeUpload";
+import { useAutoAbort } from "./utils/useAutoAbort";
+import { useMergeTusOptions } from "./utils/useMergeTusOptions";
 
 export const useTusStore = (
   cacheKey: string,
@@ -25,7 +25,7 @@ export const useTusStore = (
   const tusClientDispatch = useTusClientDispatch();
   const tus = tusClientState.tusHandler.getTus;
 
-  const setUpload: UseTusResult['setUpload'] = useCallback(
+  const setUpload: UseTusResult["setUpload"] = useCallback(
     (file, options = {}) => {
       const targetOptions = {
         ...tus.defaultOptions(file),
@@ -43,7 +43,7 @@ export const useTusStore = (
         targetOptions?.onError?.(error);
       };
 
-      const mergedUploadOptions: Upload['options'] = {
+      const mergedUploadOptions: Upload["options"] = {
         ...targetOptions,
         onSuccess,
         onError,

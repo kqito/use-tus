@@ -1,8 +1,8 @@
-import { Upload } from 'tus-js-client';
+import { Upload } from "tus-js-client";
 
 export type BaseUseTusResult = {
   upload?: Upload;
-  setUpload: (file: Upload['file'], options?: Upload['options']) => void;
+  setUpload: (file: Upload["file"], options?: Upload["options"]) => void;
   isSuccess: boolean;
   error?: Error;
 };

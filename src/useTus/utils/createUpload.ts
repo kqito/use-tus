@@ -1,9 +1,9 @@
-import { Upload } from 'tus-js-client';
+import { Upload } from "tus-js-client";
 
 export type DispatchIsAborted = (isAborted: boolean) => void;
 export const createUpload = (
-  file: Upload['file'],
-  options: Upload['options'],
+  file: Upload["file"],
+  options: Upload["options"],
   dispatchIsAborted: DispatchIsAborted
 ): Upload => {
   const upload = new Upload(file, options);

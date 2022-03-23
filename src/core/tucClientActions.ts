@@ -1,5 +1,5 @@
-import type { Upload } from 'tus-js-client';
-import { TusConfigs } from './tusHandler';
+import type { Upload } from "tus-js-client";
+import { TusConfigs } from "./tusHandler";
 
 export type TusClientActions = ReturnType<
   | typeof insertUploadInstance
@@ -13,7 +13,7 @@ export type TusClientActions = ReturnType<
 
 export const insertUploadInstance = (cacheKey: string, upload: Upload) =>
   ({
-    type: 'INSERT_UPLOAD_INSTANCE',
+    type: "INSERT_UPLOAD_INSTANCE",
     payload: {
       cacheKey,
       uploadState: {
@@ -26,7 +26,7 @@ export const insertUploadInstance = (cacheKey: string, upload: Upload) =>
 
 export const updateSuccessUpload = (cacheKey: string) =>
   ({
-    type: 'UPDATE_SUCCESS_UPLOAD',
+    type: "UPDATE_SUCCESS_UPLOAD",
     payload: {
       cacheKey,
     },
@@ -34,7 +34,7 @@ export const updateSuccessUpload = (cacheKey: string) =>
 
 export const updateErrorUpload = (cacheKey: string, error?: Error) =>
   ({
-    type: 'UPDATE_ERROR_UPLOAD',
+    type: "UPDATE_ERROR_UPLOAD",
     payload: {
       cacheKey,
       error,
@@ -43,7 +43,7 @@ export const updateErrorUpload = (cacheKey: string, error?: Error) =>
 
 export const updateIsAbortedUpload = (cacheKey: string, isAborted: boolean) =>
   ({
-    type: 'UPDATE_IS_ABORTED_UPLOAD',
+    type: "UPDATE_IS_ABORTED_UPLOAD",
     payload: {
       cacheKey,
       isAborted,
@@ -52,7 +52,7 @@ export const updateIsAbortedUpload = (cacheKey: string, isAborted: boolean) =>
 
 export const removeUploadInstance = (cacheKey: string) =>
   ({
-    type: 'REMOVE_UPLOAD_INSTANCE',
+    type: "REMOVE_UPLOAD_INSTANCE",
     payload: {
       cacheKey,
     },
@@ -60,11 +60,11 @@ export const removeUploadInstance = (cacheKey: string) =>
 
 export const resetClient = () =>
   ({
-    type: 'RESET_CLIENT',
+    type: "RESET_CLIENT",
   } as const);
 
 export const updateTusHandlerOptions = (payload: TusConfigs) =>
   ({
-    type: 'UPDATE_TUS_HANDLER_OPTIONS',
+    type: "UPDATE_TUS_HANDLER_OPTIONS",
     payload,
   } as const);
