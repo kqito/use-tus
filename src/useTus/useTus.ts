@@ -1,11 +1,22 @@
 import { useCallback, useMemo, useState } from "react";
 import type { Upload } from "tus-js-client";
-import { initialUseTusState } from "./options";
-import { UseTusOptions, UseTusResult, UseTusState } from "./types";
+import { UseTusOptions, UseTusResult } from "./types";
 import { createUpload, DispatchIsAborted } from "./utils/createUpload";
 import { startOrResumeUpload } from "./utils/startOrResumeUpload";
 import { useAutoAbort } from "./utils/useAutoAbort";
 import { useMergeTusOptions } from "./utils/useMergeTusOptions";
+
+type UseTusState = Pick<
+  UseTusResult,
+  "upload" | "isSuccess" | "error" | "isAborted"
+>;
+
+const initialUseTusState: Readonly<UseTusState> = Object.freeze<UseTusState>({
+  upload: undefined,
+  isSuccess: false,
+  isAborted: false,
+  error: undefined,
+});
 
 export const useTus = (baseOption?: UseTusOptions): UseTusResult => {
   const { autoAbort, autoStart, uploadOptions } = useMergeTusOptions(
@@ -62,7 +73,7 @@ export const useTus = (baseOption?: UseTusOptions): UseTusResult => {
     setTusState(initialUseTusState);
   }, [tusState?.upload]);
 
-  const tusResult: UseTusResult = useMemo(
+  const tusResult = useMemo<UseTusResult>(
     () => ({
       upload: tusState?.upload,
       isSuccess: tusState?.isSuccess ?? false,

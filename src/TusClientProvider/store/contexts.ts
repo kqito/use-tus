@@ -1,6 +1,6 @@
 import type { Dispatch } from "react";
 import { createContext, useContext, useMemo } from "react";
-import { ERROR_MESSAGES } from "./constants";
+import { ERROR_MESSAGES } from "../constants";
 import { TusClientActions } from "./tucClientActions";
 import { TusClientState } from "./tusClientReducer";
 

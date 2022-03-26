@@ -6,16 +6,19 @@ import {
 } from "../TusClientProvider";
 import { useTusStore, UseTusOptions, UseTusResult } from "../useTus";
 import { getBlob } from "./utils/getBlob";
-import { ERROR_MESSAGES } from "../core/constants";
-import { useTusClientDispatch, useTusClientState } from "../core/contexts";
+import { getDefaultOptions } from "./utils/getDefaultOptions";
+import { DefaultOptions } from "..";
 import {
-  createConsoleErrorMock,
+  useTusClientState,
+  useTusClientDispatch,
+} from "../TusClientProvider/store/contexts";
+import { TusClientState } from "../TusClientProvider/store/tusClientReducer";
+import {
   insertEnvValue,
+  createConsoleErrorMock,
   startOrResumeUploadMock,
 } from "./utils/mock";
-import { TusClientState } from "../core/tusClientReducer";
-import { DefaultOptions } from "../core/tusHandler";
-import { getDefaultOptions } from "./utils/getDefaultOptions";
+import { ERROR_MESSAGES } from "../TusClientProvider/constants";
 
 /* eslint-disable no-console */
 
@@ -211,23 +214,11 @@ it("Should set tus config from context value", async () => {
 
   await act(async () => {
     const { result, waitForNextUpdate } = renderUseTusStore(undefined, {
-      canStoreURLs: false,
       defaultOptions,
     });
 
-    expect(result.current.tusClientState.tusHandler.getTus.canStoreURLs).toBe(
-      false
-    );
-    expect(result.current.tusClientState.tusHandler.getTus.isSupported).toBe(
-      actualTus.isSupported
-    );
-    expect(result.current.tusClientState.tusHandler.getTus.Upload).toBe(
-      actualTus.Upload
-    );
     expect(
-      result.current.tusClientState.tusHandler.getTus.defaultOptions(
-        getBlob("hello")
-      ).endpoint
+      result.current.tusClientState.defaultOptions?.(getBlob("hello")).endpoint
     ).toBe("hoge");
 
     const file: Upload["file"] = getBlob("hello");

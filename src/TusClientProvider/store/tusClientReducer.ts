@@ -1,7 +1,7 @@
 import type { Reducer } from "react";
 import type { Upload } from "tus-js-client";
+import { DefaultOptions } from "../types";
 import { TusClientActions } from "./tucClientActions";
-import { TusHandler } from "./tusHandler";
 
 export type UploadState = {
   upload: Upload | undefined;
@@ -14,7 +14,7 @@ export type TusClientState = {
   uploads: {
     [cacheKey: string]: UploadState | undefined;
   };
-  tusHandler: TusHandler;
+  defaultOptions: DefaultOptions | undefined;
 };
 
 export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
@@ -109,22 +109,12 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
       };
     }
 
-    case "RESET_CLIENT": {
-      return {
-        tusHandler: new TusHandler(),
-        uploads: {},
-      };
-    }
-
-    case "UPDATE_TUS_HANDLER_OPTIONS": {
-      const { canStoreURLs, defaultOptions } = actions.payload;
+    case "UPDATE_DEFAULT_OPTIONS": {
+      const { defaultOptions } = actions.payload;
 
       return {
         ...state,
-        tusHandler: new TusHandler({
-          canStoreURLs,
-          defaultOptions,
-        }),
+        defaultOptions,
       };
     }
 
@@ -135,5 +125,5 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
 
 export const tusClientInitialState: TusClientState = {
   uploads: {},
-  tusHandler: new TusHandler(),
+  defaultOptions: undefined,
 };

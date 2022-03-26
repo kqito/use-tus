@@ -1,14 +1,14 @@
 import type { Upload } from "tus-js-client";
-import { TusConfigs } from "./tusHandler";
+import { DefaultOptions } from "../types";
 
 export type TusClientActions = ReturnType<
   | typeof insertUploadInstance
   | typeof removeUploadInstance
-  | typeof resetClient
   | typeof updateSuccessUpload
   | typeof updateErrorUpload
   | typeof updateIsAbortedUpload
-  | typeof updateTusHandlerOptions
+  | typeof resetClient
+  | typeof updateDefaultOptions
 >;
 
 export const insertUploadInstance = (cacheKey: string, upload: Upload) =>
@@ -63,8 +63,12 @@ export const resetClient = () =>
     type: "RESET_CLIENT",
   } as const);
 
-export const updateTusHandlerOptions = (payload: TusConfigs) =>
+export const updateDefaultOptions = (
+  defaultOptions: DefaultOptions | undefined
+) =>
   ({
-    type: "UPDATE_TUS_HANDLER_OPTIONS",
-    payload,
+    type: "UPDATE_DEFAULT_OPTIONS",
+    payload: {
+      defaultOptions,
+    },
   } as const);
