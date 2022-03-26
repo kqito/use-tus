@@ -1,19 +1,16 @@
-import type { Upload } from 'tus-js-client';
+import type { Upload, UploadOptions } from "tus-js-client";
 
-export type UseTusOptions = {
-  cacheKey?: string;
+export interface UseTusOptions {
   autoAbort?: boolean;
   autoStart?: boolean;
-};
-export type UseTusResult = {
+  uploadOptions?: UploadOptions;
+}
+
+export interface UseTusResult {
   upload?: Upload;
-  setUpload: (file: Upload['file'], options?: Upload['options']) => void;
-  remove: () => void;
+  setUpload: (file: Upload["file"], options?: Upload["options"]) => void;
   isSuccess: boolean;
   isAborted: boolean;
   error?: Error;
-};
-export type UseTusState = Pick<
-  UseTusResult,
-  'upload' | 'isSuccess' | 'error' | 'isAborted'
->;
+  remove: () => void;
+}

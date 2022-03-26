@@ -1,22 +1,22 @@
-import resolve from '@rollup/plugin-node-resolve';
-import typescript from '@rollup/plugin-typescript';
-import babel from '@rollup/plugin-babel';
-import commonjs from '@rollup/plugin-commonjs';
-import pkg from './package.json';
+import resolve from "@rollup/plugin-node-resolve";
+import typescript from "@rollup/plugin-typescript";
+import babel from "@rollup/plugin-babel";
+import commonjs from "@rollup/plugin-commonjs";
+import pkg from "./package.json";
 
-const extensions = ['.js', '.ts', '.tsx'];
+const extensions = [".js", ".ts", ".tsx"];
 const babelConfig = {
   // eslint-disable-next-line global-require
-  ...require('./babel.config'),
+  ...require("./babel.config"),
   comments: false,
   extensions,
-  babelHelpers: 'bundled',
+  babelHelpers: "bundled",
 };
 
-const distDir = 'dist';
+const distDir = "dist";
 const baseConfig = {
-  input: 'src/index.ts',
-  external: ['react', 'react-dom', ...Object.keys(pkg.peerDependencies)],
+  input: "src/index.ts",
+  external: ["react", "react-dom", ...Object.keys(pkg.peerDependencies)],
 };
 
 const dtsConfig = {
@@ -35,7 +35,7 @@ const dtsConfig = {
 
 const cjsConfig = {
   ...baseConfig,
-  output: { file: pkg.main, format: 'cjs' },
+  output: { file: pkg.main, format: "cjs" },
   plugins: [
     resolve({
       extensions,
@@ -47,7 +47,7 @@ const cjsConfig = {
 
 const mjsConfig = {
   ...baseConfig,
-  output: { file: pkg.module, format: 'esm' },
+  output: { file: pkg.module, format: "esm" },
   plugins: [
     resolve({
       extensions,

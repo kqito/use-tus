@@ -1,44 +1,53 @@
-import { useReducer, createElement, FC } from 'react';
+import { isSupported } from "tus-js-client";
+import { useReducer, createElement, FC, useEffect } from "react";
+import { DefaultOptions } from "./types";
 import {
   TusClientDispatchContext,
   TusClientStateContext,
-} from '../core/contexts';
-
+} from "./store/contexts";
+import { updateDefaultOptions } from "./store/tucClientActions";
 import {
-  tusClientInitialState,
   tusClientReducer,
-} from '../core/tusClientReducer';
-import { TusConfigs, TusHandler } from '../core/tusHandler';
-import { TusController } from './TusController';
+  tusClientInitialState,
+} from "./store/tusClientReducer";
+import { ERROR_MESSAGES } from "./constants";
 
-export type TusClientProviderProps = Readonly<TusConfigs>;
+export type TusClientProviderProps = Readonly<{
+  defaultOptions?: DefaultOptions;
+}>;
 
 export const TusClientProvider: FC<TusClientProviderProps> = ({
-  canStoreURLs,
   defaultOptions,
   children,
 }) => {
   const [tusClientState, tusClientDispatch] = useReducer(tusClientReducer, {
     ...tusClientInitialState,
-    tusHandler: new TusHandler({
-      canStoreURLs,
-      defaultOptions,
-    }),
+    defaultOptions,
   });
 
-  const tusControllerElement = createElement(
-    TusController,
-    {
-      canStoreURLs,
-      defaultOptions,
-    },
-    children
-  );
+  // Output error if tus has not supported
+  useEffect(() => {
+    if (isSupported || process.env.NODE_ENV === "production") {
+      return;
+    }
+
+    // eslint-disable-next-line no-console
+    console.error(ERROR_MESSAGES.tusIsNotSupported);
+  }, []);
+
+  // Set defaultOptions to the context
+  useEffect(() => {
+    if (tusClientState.defaultOptions === defaultOptions) {
+      return;
+    }
+
+    tusClientDispatch(updateDefaultOptions(defaultOptions));
+  }, [defaultOptions, tusClientState.defaultOptions]);
 
   const tusClientDispatchContextProviderElement = createElement(
     TusClientDispatchContext.Provider,
     { value: tusClientDispatch },
-    tusControllerElement
+    children
   );
 
   return createElement(

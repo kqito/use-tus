@@ -1,6 +1,12 @@
-import { useCallback } from 'react';
-import { useTusClientDispatch, useTusClientState } from '../core/contexts';
-import { resetClient, removeUploadInstance } from '../core/tucClientActions';
+import { useCallback } from "react";
+import {
+  useTusClientState,
+  useTusClientDispatch,
+} from "../TusClientProvider/store/contexts";
+import {
+  removeUploadInstance,
+  resetClient,
+} from "../TusClientProvider/store/tucClientActions";
 
 export const useTusClient = () => {
   const tusClientState = useTusClientState();

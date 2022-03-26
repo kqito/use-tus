@@ -1,4 +1,4 @@
-import '../src/__stories__/global.css';
+import "../src/__stories__/global.css";
 
 const GithubLink = () => (
   <a
@@ -28,7 +28,7 @@ const Providers = (Story, context) => {
 
 export const decorators = [Providers];
 export const parameters = {
-  actions: { argTypesRegex: '^on[A-Z].*' },
+  actions: { argTypesRegex: "^on[A-Z].*" },
   controls: {
     matchers: {
       color: /(background|color)$/i,
