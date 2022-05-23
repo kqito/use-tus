@@ -13,6 +13,7 @@ import {
 import { ERROR_MESSAGES } from "./constants";
 
 export type TusClientProviderProps = Readonly<{
+  children?: React.ReactNode;
   defaultOptions?: DefaultOptions;
 }>;
 
