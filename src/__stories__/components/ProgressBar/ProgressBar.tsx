@@ -1,14 +1,14 @@
-import { VFC } from "react";
+import { FC } from "react";
 
 type ProgressBarProps = {
   title?: string;
   value?: number;
 };
 
-export const ProgressBar: VFC<ProgressBarProps> = ({ value = 0, title }) => (
+export const ProgressBar: FC<ProgressBarProps> = ({ value = 0, title }) => (
   <div className="relative w-full">
     {title && (
-      <div className="w-full h-6 absolute flex items-center justify-center">
+      <div className="absolute flex items-center justify-center w-full h-6">
         <span className="text-white">{title}</span>
       </div>
     )}

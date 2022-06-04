@@ -1,6 +1,6 @@
-import type { VFC } from "react";
+import type { FC } from "react";
 
-export const LoadingCircle: VFC = () => (
+export const LoadingCircle: FC = () => (
   <div className="relative block w-20 h-5 loader-dots">
     <i className="absolute top-0 w-3 h-3 mt-1 bg-blue-300 rounded-full left-2 animate-loader1 ease-loading" />
     <i className="absolute top-0 w-3 h-3 mt-1 bg-blue-300 rounded-full left-2 animate-loader2 ease-loading" />
