@@ -1,7 +1,7 @@
-import { VFC } from "react";
+import { FC } from "react";
 
-export const UploadIcon: VFC = () => (
-  <div className="flex w-24 h-24 rounded-full items-center justify-center border border-blue-300">
+export const UploadIcon: FC = () => (
+  <div className="flex items-center justify-center w-24 h-24 border border-blue-300 rounded-full">
     <svg
       className=""
       xmlns="http://www.w3.org/2000/svg"

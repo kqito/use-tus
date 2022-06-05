@@ -3,6 +3,7 @@ import * as startOrResumeUploadObject from "../../useTus/utils/startOrResumeUplo
 export const createConsoleErrorMock = () => {
   const consoleMock = jest.spyOn(console, "error");
   consoleMock.mockImplementation(() => undefined);
+
   return consoleMock;
 };
 

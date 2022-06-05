@@ -1,11 +1,5 @@
 import * as tus from "tus-js-client";
-import { render, act as renderAct } from "@testing-library/react";
-import {
-  renderHook,
-  act as hooksAct,
-  cleanup,
-} from "@testing-library/react-hooks";
-import type { ComponentProps } from "react";
+import { render, act, renderHook, cleanup } from "@testing-library/react";
 import { DefaultOptions, TusClientProvider } from "../TusClientProvider";
 import { createConsoleErrorMock } from "./utils/mock";
 import { getBlob } from "./utils/getBlob";
@@ -28,7 +22,7 @@ describe("TusClientProvider", () => {
 
     const consoleErrorMock = createConsoleErrorMock();
 
-    renderAct(() => {
+    act(() => {
       render(<TusClientProvider />);
     });
 
@@ -60,49 +54,22 @@ describe("TusClientProvider", () => {
             : undefined,
       });
 
-      hooksAct(() => {
-        const { result } = renderHook(() => useTusClientState(), {
-          wrapper: ({ children }) => (
-            <TusClientProvider defaultOptions={defaultOptions}>
-              {children}
-            </TusClientProvider>
-          ),
-        });
-
-        expect(
-          result.current.defaultOptions?.(
-            new File([], "name", { type: "type" })
-          )
-        ).toStrictEqual({
-          endpoint: "hoge",
-          metadata: {
-            filename: "name",
-            filetype: "type",
-          },
-        });
-      });
-    });
-
-    it("Rerender defaultOptions", async () => {
-      const { result, rerender } = renderHook(() => useTusClientState(), {
-        wrapper: ({
-          children,
-          defaultOptions,
-        }: ComponentProps<typeof TusClientProvider>) => (
+      const { result } = renderHook(() => useTusClientState(), {
+        wrapper: ({ children }) => (
           <TusClientProvider defaultOptions={defaultOptions}>
             {children}
           </TusClientProvider>
         ),
       });
 
-      expect(result.current.defaultOptions?.(getBlob(""))).toBe(undefined);
-
-      rerender({
-        defaultOptions: () => ({ endpoint: "hoge" }),
-      });
-
-      expect(result.current.defaultOptions?.(getBlob("hello"))).toStrictEqual({
+      expect(
+        result.current.defaultOptions?.(new File([], "name", { type: "type" }))
+      ).toStrictEqual({
         endpoint: "hoge",
+        metadata: {
+          filename: "name",
+          filetype: "type",
+        },
       });
     });
   });

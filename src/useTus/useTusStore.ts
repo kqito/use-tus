@@ -54,7 +54,11 @@ export const useTusStore = (
       const dispatchIsAborted: DispatchIsAborted = (isAborted) => {
         tusClientDispatch(updateIsAbortedUpload(cacheKey, isAborted));
       };
-      const upload = createUpload(file, mergedUploadOptions, dispatchIsAborted);
+      const { upload } = createUpload(
+        file,
+        mergedUploadOptions,
+        dispatchIsAborted
+      );
 
       if (autoStart) {
         startOrResumeUpload(upload);
@@ -85,7 +89,7 @@ export const useTusStore = (
     [targetTusState, setUpload, remove]
   );
 
-  useAutoAbort(tusResult.upload, autoAbort ?? false);
+  useAutoAbort(tusResult.upload, tusResult.upload?.abort, autoAbort ?? false);
 
   return tusResult;
 };

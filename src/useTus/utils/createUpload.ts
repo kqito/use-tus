@@ -5,7 +5,7 @@ export const createUpload = (
   file: Upload["file"],
   options: Upload["options"],
   dispatchIsAborted: DispatchIsAborted
-): Upload => {
+) => {
   const upload = new Upload(file, options);
   const originalStart = upload.start.bind(upload);
   const originalAbort = upload.abort.bind(upload);
@@ -23,5 +23,5 @@ export const createUpload = (
   upload.start = start;
   upload.abort = abort;
 
-  return upload;
+  return { upload, originalStart, originalAbort };
 };

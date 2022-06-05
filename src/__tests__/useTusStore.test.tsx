@@ -1,5 +1,5 @@
 import { Upload } from "tus-js-client";
-import { renderHook, act } from "@testing-library/react-hooks";
+import { renderHook, act, waitFor } from "@testing-library/react";
 import {
   TusClientProvider,
   TusClientProviderProps,
@@ -35,13 +35,7 @@ const renderUseTusStore = (
   initialProps: InitialProps = {},
   providerProps?: TusClientProviderProps
 ) => {
-  const result = renderHook<
-    InitialProps,
-    {
-      tus: UseTusResult;
-      tusClientState: TusClientState;
-    }
-  >(
+  const result = renderHook(
     ({ cacheKey, options }) => {
       const tus = useTusStore(cacheKey ?? "test", options);
       const tusClientState = useTusClientState();
@@ -122,24 +116,29 @@ describe("useTusStore", () => {
 });
 
 it("Should be reflected onto the TusClientProvider", async () => {
-  await act(async () => {
-    const { result, waitForNextUpdate } = renderUseTusStore();
-
-    const file: Upload["file"] = getBlob("hello");
-    const options: Upload["options"] = {
-      ...getDefaultOptions(),
-    };
-
-    result.current.tus.setUpload(file, options);
-    await waitForNextUpdate();
-    expect(result.current.tus.upload).toBeInstanceOf(Upload);
-
-    await result.current.tus.upload?.abort(true);
-
-    const pastTusClientState = result.all.find((_, i) => i === 0);
-    expect(pastTusClientState).not.toBeUndefined();
-    expect(pastTusClientState).not.toEqual(result.current.tusClientState);
+  const { result } = renderUseTusStore({
+    cacheKey: "test",
   });
+
+  const file: Upload["file"] = getBlob("hello");
+  const options: Upload["options"] = {
+    ...getDefaultOptions(),
+  };
+
+  expect(result.current.tus.upload).toBeUndefined();
+  expect(result.current.tusClientState.defaultOptions).toBeUndefined();
+  expect(result.current.tusClientState.uploads).toEqual({});
+
+  act(() => {
+    result.current.tus.setUpload(file, options);
+  });
+
+  await waitFor(() => result.current.tus.upload);
+
+  const currentTus = result.current.tus;
+  expect(currentTus.upload).toBeInstanceOf(Upload);
+  expect(result.current.tusClientState.defaultOptions).toBeUndefined();
+  expect(result.current.tusClientState.uploads.test).toBeInstanceOf(Object);
 });
 
 it("Should setUpload without option args", async () => {
@@ -148,41 +147,43 @@ it("Should setUpload without option args", async () => {
     chunkSize: 100,
   });
 
-  await act(async () => {
-    const { result, waitForNextUpdate } = renderUseTusStore(undefined, {
-      defaultOptions,
-    });
+  const { result } = renderUseTusStore(undefined, {
+    defaultOptions,
+  });
 
+  act(() => {
     result.current.tus.setUpload(getBlob("hello"), {
       endpoint: "hogehoge",
       uploadSize: 1000,
     });
-    await waitForNextUpdate();
-
-    expect(result.current.tus.upload?.options.endpoint).toBe("hogehoge");
-    expect(result.current.tus.upload?.options.chunkSize).toBe(100);
-    expect(result.current.tus.upload?.options.uploadSize).toBe(1000);
   });
+
+  await waitFor(() => result.current.tus.upload?.options);
+
+  expect(result.current.tus.upload?.options.endpoint).toBe("hogehoge");
+  expect(result.current.tus.upload?.options.chunkSize).toBe(100);
+  expect(result.current.tus.upload?.options.uploadSize).toBe(1000);
 });
 
 describe("Should throw if the TusClientProvider has not found on development env", () => {
   beforeEach(() => {
+    createConsoleErrorMock();
     insertEnvValue({ NODE_ENV: "development" });
   });
 
   it("useTus", async () => {
-    const { result } = renderHook(() => useTusStore(""));
-    expect(result.error).toEqual(Error(ERROR_MESSAGES.tusClientHasNotFounded));
+    const targetFn = () => renderHook(() => useTusStore(""));
+    expect(targetFn).toThrow(Error(ERROR_MESSAGES.tusClientHasNotFounded));
   });
 
   it("useTusClientState", async () => {
-    const { result } = renderHook(() => useTusClientState());
-    expect(result.error).toEqual(Error(ERROR_MESSAGES.tusClientHasNotFounded));
+    const targetFn = () => renderHook(() => useTusClientState());
+    expect(targetFn).toThrow(Error(ERROR_MESSAGES.tusClientHasNotFounded));
   });
 
   it("useTusClientDispatch", async () => {
-    const { result } = renderHook(() => useTusClientDispatch());
-    expect(result.error).toEqual(Error(ERROR_MESSAGES.tusClientHasNotFounded));
+    const targetFn = () => renderHook(() => useTusClientDispatch());
+    expect(targetFn).toThrow(Error(ERROR_MESSAGES.tusClientHasNotFounded));
   });
 });
 
@@ -192,18 +193,18 @@ describe("Should not throw even if the TusClientProvider has not found on produc
   });
 
   it("useTus", async () => {
-    const { result } = renderHook(() => useTusStore(""));
-    expect(result.error).toBeInstanceOf(TypeError);
+    const targetFn = () => renderHook(() => useTusStore(""));
+    expect(targetFn).toThrow(TypeError);
   });
 
   it("useTusClientState", async () => {
-    const { result } = renderHook(() => useTusClientState());
-    expect(result.error).toEqual(undefined);
+    const targetFn = () => renderHook(() => useTusClientState());
+    expect(targetFn).not.toThrow();
   });
 
   it("useTusClientDispatch", async () => {
-    const { result } = renderHook(() => useTusClientDispatch());
-    expect(result.error).toEqual(undefined);
+    const targetFn = () => renderHook(() => useTusClientDispatch());
+    expect(targetFn).not.toThrow();
   });
 });
 
@@ -212,213 +213,251 @@ it("Should set tus config from context value", async () => {
     endpoint: "hoge",
   });
 
-  await act(async () => {
-    const { result, waitForNextUpdate } = renderUseTusStore(undefined, {
-      defaultOptions,
-    });
-
-    expect(
-      result.current.tusClientState.defaultOptions?.(getBlob("hello")).endpoint
-    ).toBe("hoge");
-
-    const file: Upload["file"] = getBlob("hello");
-
-    act(() => {
-      result.current.tus.setUpload(file, {});
-    });
-
-    await waitForNextUpdate();
-
-    expect(result.current.tus.upload).toBeInstanceOf(actualTus.Upload);
-    expect(result.current.tus.upload?.options.endpoint).toBe("hoge");
+  const { result } = renderUseTusStore(undefined, {
+    defaultOptions,
   });
+
+  expect(
+    result.current.tusClientState.defaultOptions?.(getBlob("hello")).endpoint
+  ).toBe("hoge");
+
+  const file: Upload["file"] = getBlob("hello");
+
+  act(() => {
+    result.current.tus.setUpload(file, {});
+  });
+
+  await waitFor(() => result.current.tus.upload);
+
+  expect(result.current.tus.upload).toBeInstanceOf(actualTus.Upload);
+  expect(result.current.tus.upload?.options.endpoint).toBe("hoge");
 });
 
 it("Should change isSuccess state on success", async () => {
-  await act(async () => {
-    const { result, waitForNextUpdate } = renderUseTusStore();
+  const { result } = renderUseTusStore();
 
-    expect(result.current.tus.upload).toBeUndefined();
-    expect(result.current.tus.isSuccess).toBeFalsy();
-    expect(result.current.tus.error).toBeUndefined();
-    expect(result.current.tus.isAborted).toBeFalsy();
-    expect(typeof result.current.tus.setUpload).toBe("function");
-    expect(typeof result.current.tus.remove).toBe("function");
+  expect(result.current.tus.upload).toBeUndefined();
+  expect(result.current.tus.isSuccess).toBeFalsy();
+  expect(result.current.tus.error).toBeUndefined();
+  expect(result.current.tus.isAborted).toBeFalsy();
+  expect(typeof result.current.tus.setUpload).toBe("function");
+  expect(typeof result.current.tus.remove).toBe("function");
 
-    const consoleErrorMock = createConsoleErrorMock();
+  const consoleErrorMock = createConsoleErrorMock();
+  act(() => {
     result.current.tus.setUpload(getBlob("hello"), {
       ...getDefaultOptions(),
       onSuccess: () => {
         console.error();
       },
     });
-    await waitForNextUpdate();
-
-    expect(result.current.tus.upload).toBeInstanceOf(Upload);
-    expect(result.current.tus.isSuccess).toBeFalsy();
-    expect(result.current.tus.error).toBeUndefined();
-    expect(result.current.tus.isAborted).toBeFalsy();
-    expect(typeof result.current.tus.setUpload).toBe("function");
-    expect(typeof result.current.tus.remove).toBe("function");
-
-    const onSuccess = result.current.tus.upload?.options?.onSuccess;
-    if (!onSuccess) {
-      throw new Error("onSuccess is falsly.");
-    }
-
-    onSuccess();
-
-    expect(result.current.tus.upload).toBeInstanceOf(Upload);
-    expect(result.current.tus.isSuccess).toBeTruthy();
-    expect(result.current.tus.error).toBeUndefined();
-    expect(result.current.tus.isAborted).toBeFalsy();
-    expect(typeof result.current.tus.setUpload).toBe("function");
-    expect(typeof result.current.tus.remove).toBe("function");
-    expect(consoleErrorMock).toHaveBeenCalledWith();
   });
+
+  await waitFor(() => result.current.tus.upload);
+
+  expect(result.current.tus.upload).toBeInstanceOf(Upload);
+  expect(result.current.tus.isSuccess).toBeFalsy();
+  expect(result.current.tus.error).toBeUndefined();
+  expect(result.current.tus.isAborted).toBeFalsy();
+  expect(typeof result.current.tus.setUpload).toBe("function");
+  expect(typeof result.current.tus.remove).toBe("function");
+
+  const onSuccess = result.current.tus.upload?.options?.onSuccess;
+  if (!onSuccess) {
+    throw new Error("onSuccess is falsly.");
+  }
+
+  act(() => {
+    onSuccess();
+  });
+
+  expect(result.current.tus.upload).toBeInstanceOf(Upload);
+  expect(result.current.tus.isSuccess).toBeTruthy();
+  expect(result.current.tus.error).toBeUndefined();
+  expect(result.current.tus.isAborted).toBeFalsy();
+  expect(typeof result.current.tus.setUpload).toBe("function");
+  expect(typeof result.current.tus.remove).toBe("function");
+  expect(consoleErrorMock).toHaveBeenCalledWith();
 });
 
 it("Should change error state on error", async () => {
-  await act(async () => {
-    const { result, waitForNextUpdate } = renderUseTusStore();
-    expect(result.current.tus.upload).toBeUndefined();
-    expect(result.current.tus.isSuccess).toBeFalsy();
-    expect(result.current.tus.error).toBeUndefined();
-    expect(result.current.tus.isAborted).toBeFalsy();
-    expect(typeof result.current.tus.setUpload).toBe("function");
-    expect(typeof result.current.tus.remove).toBe("function");
+  const { result } = renderUseTusStore();
+  expect(result.current.tus.upload).toBeUndefined();
+  expect(result.current.tus.isSuccess).toBeFalsy();
+  expect(result.current.tus.error).toBeUndefined();
+  expect(result.current.tus.isAborted).toBeFalsy();
+  expect(typeof result.current.tus.setUpload).toBe("function");
+  expect(typeof result.current.tus.remove).toBe("function");
 
-    const consoleErrorMock = createConsoleErrorMock();
+  const consoleErrorMock = createConsoleErrorMock();
+  act(() => {
     result.current.tus.setUpload(getBlob("hello"), {
       ...getDefaultOptions(),
       onError: () => {
         console.error();
       },
     });
-    await waitForNextUpdate();
-
-    expect(result.current.tus.upload).toBeInstanceOf(Upload);
-    expect(result.current.tus.isSuccess).toBeFalsy();
-    expect(result.current.tus.error).toBeUndefined();
-    expect(result.current.tus.isAborted).toBeFalsy();
-    expect(typeof result.current.tus.setUpload).toBe("function");
-    expect(typeof result.current.tus.remove).toBe("function");
-
-    const onError = result.current.tus.upload?.options?.onError;
-    if (!onError) {
-      throw new Error("onError is falsly.");
-    }
-
-    onError(new Error());
-
-    expect(result.current.tus.upload).toBeInstanceOf(Upload);
-    expect(result.current.tus.isSuccess).toBeFalsy();
-    expect(result.current.tus.error).toEqual(new Error());
-    expect(typeof result.current.tus.setUpload).toBe("function");
-    expect(typeof result.current.tus.remove).toBe("function");
-    expect(consoleErrorMock).toHaveBeenCalledWith();
   });
+
+  await waitFor(() => result.current.tus.upload);
+
+  expect(result.current.tus.upload).toBeInstanceOf(Upload);
+  expect(result.current.tus.isSuccess).toBeFalsy();
+  expect(result.current.tus.error).toBeUndefined();
+  expect(result.current.tus.isAborted).toBeFalsy();
+  expect(typeof result.current.tus.setUpload).toBe("function");
+  expect(typeof result.current.tus.remove).toBe("function");
+
+  const onError = result.current.tus.upload?.options?.onError;
+  if (!onError) {
+    throw new Error("onError is falsly.");
+  }
+
+  act(() => {
+    onError(new Error());
+  });
+
+  expect(result.current.tus.upload).toBeInstanceOf(Upload);
+  expect(result.current.tus.isSuccess).toBeFalsy();
+  expect(result.current.tus.error).toEqual(new Error());
+  expect(typeof result.current.tus.setUpload).toBe("function");
+  expect(typeof result.current.tus.remove).toBe("function");
+  expect(consoleErrorMock).toHaveBeenCalledWith();
 });
 
 describe("Options", () => {
   describe("autoAbort", () => {
     /* eslint-disable @typescript-eslint/no-explicit-any */
     it("Should abort on unmount", async () => {
-      await act(async () => {
-        const {
-          result,
-          waitForNextUpdate,
-          unmount,
-          waitForValueToChange,
-        } = renderUseTusStore({ options: { autoAbort: true } });
-
-        const file: Upload["file"] = getBlob("hello");
-        const options: Upload["options"] = getDefaultOptions();
-
-        expect(result.current.tus.upload?.abort).toBeUndefined();
-
-        result.current.tus.setUpload(file, options);
-        await waitForNextUpdate();
-
-        expect(
-          (result.current.tusClientState.uploads?.test?.upload as any)._aborted
-        ).toBeFalsy();
-
-        unmount();
-        await waitForValueToChange(
-          () =>
-            (result.current.tusClientState.uploads?.test?.upload as any)
-              ._aborted
-        );
-
-        expect(
-          (result.current.tusClientState.uploads?.test?.upload as any)._aborted
-        ).toBeTruthy();
+      const { result, rerender, unmount } = renderUseTusStore({
+        cacheKey: "test1",
+        options: { autoAbort: true },
       });
+
+      const file: Upload["file"] = getBlob("hello");
+      const options: Upload["options"] = getDefaultOptions();
+
+      expect(result.current.tus.upload?.abort).toBeUndefined();
+
+      act(() => {
+        result.current.tus.setUpload(file, options);
+      });
+      await waitFor(() => result.current.tus.upload);
+
+      expect(
+        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+      ).toBe(false);
+
+      rerender({ cacheKey: "test2", options: { autoAbort: true } });
+      expect(
+        (result.current.tusClientState.uploads?.test2?.upload as any)._aborted
+      ).toBe(undefined);
+
+      rerender({ cacheKey: "test1", options: { autoAbort: true } });
+      expect(
+        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+      ).toBe(true);
+
+      act(() => {
+        result.current.tus.remove();
+      });
+      await waitFor(() => result.current.tus.upload);
+      expect(
+        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+      ).toBe(undefined);
+
+      act(() => {
+        result.current.tus.setUpload(file, options);
+      });
+      unmount();
+      expect(
+        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+      ).toBe(true);
     });
 
     it("Should not abort on unmount", async () => {
-      await act(async () => {
-        const { result, waitForNextUpdate, unmount } = renderUseTusStore({
-          options: { autoAbort: false },
-        });
-
-        const file: Upload["file"] = getBlob("hello");
-        const options: Upload["options"] = getDefaultOptions();
-
-        expect(result.current.tus.upload?.abort).toBeUndefined();
-
-        result.current.tus.setUpload(file, options);
-        await waitForNextUpdate();
-
-        expect(
-          (result.current.tusClientState.uploads?.test?.upload as any)._aborted
-        ).toBeFalsy();
-
-        unmount();
-
-        expect(
-          (result.current.tusClientState.uploads?.test?.upload as any)._aborted
-        ).toBeFalsy();
+      const { result, rerender, unmount } = renderUseTusStore({
+        cacheKey: "test1",
+        options: { autoAbort: false },
       });
+
+      const file: Upload["file"] = getBlob("hello");
+      const options: Upload["options"] = getDefaultOptions();
+
+      expect(result.current.tus.upload?.abort).toBeUndefined();
+
+      act(() => {
+        result.current.tus.setUpload(file, options);
+      });
+      await waitFor(() => result.current.tus.upload);
+
+      expect(
+        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+      ).toBe(false);
+
+      rerender({ cacheKey: "test2", options: { autoAbort: false } });
+      expect(
+        (result.current.tusClientState.uploads?.test2?.upload as any)._aborted
+      ).toBe(undefined);
+
+      rerender({ cacheKey: "test1", options: { autoAbort: false } });
+      expect(
+        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+      ).toBe(false);
+
+      act(() => {
+        result.current.tus.remove();
+      });
+      await waitFor(() => result.current.tus.upload);
+      expect(
+        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+      ).toBe(undefined);
+
+      act(() => {
+        result.current.tus.setUpload(file, options);
+      });
+      unmount();
+      expect(
+        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+      ).toBe(false);
     });
   });
 
   describe("autoStart", () => {
     it("Should not call startOrResumeUpload function when autoStart is false", async () => {
-      await act(async () => {
-        const { result, waitForNextUpdate } = renderUseTusStore({
-          options: { autoAbort: true, autoStart: false },
-        });
-
-        const file: Upload["file"] = getBlob("hello");
-        const options: Upload["options"] = getDefaultOptions();
-
-        expect(result.current.tus.upload?.abort).toBeUndefined();
-
-        result.current.tus.setUpload(file, options);
-        await waitForNextUpdate();
-
-        expect(startOrResumeUploadMock).toBeCalledTimes(0);
+      const { result } = renderUseTusStore({
+        options: { autoAbort: true, autoStart: false },
       });
+
+      const file: Upload["file"] = getBlob("hello");
+      const options: Upload["options"] = getDefaultOptions();
+
+      expect(result.current.tus.upload?.abort).toBeUndefined();
+
+      act(() => {
+        result.current.tus.setUpload(file, options);
+      });
+      await waitFor(() => result.current.tus.upload);
+
+      expect(startOrResumeUploadMock).toBeCalledTimes(0);
     });
 
     it("Should call startOrResumeUpload function when autoStart is true", async () => {
-      await act(async () => {
-        const { result, waitForNextUpdate } = renderUseTusStore({
-          options: { autoAbort: true, autoStart: true },
-        });
-
-        const file: Upload["file"] = getBlob("hello");
-        const options: Upload["options"] = getDefaultOptions();
-
-        expect(result.current.tus.upload?.abort).toBeUndefined();
-
-        result.current.tus.setUpload(file, options);
-        await waitForNextUpdate();
-
-        expect(startOrResumeUploadMock).toBeCalledTimes(1);
+      const { result } = renderUseTusStore({
+        options: { autoAbort: true, autoStart: true },
       });
+
+      const file: Upload["file"] = getBlob("hello");
+      const options: Upload["options"] = getDefaultOptions();
+
+      act(() => {
+        expect(result.current.tus.upload?.abort).toBeUndefined();
+      });
+
+      result.current.tus.setUpload(file, options);
+      await waitFor(() => result.current.tus.upload);
+
+      expect(startOrResumeUploadMock).toBeCalledTimes(1);
     });
   });
 });
