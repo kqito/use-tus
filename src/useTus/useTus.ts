@@ -6,16 +6,21 @@ import { startOrResumeUpload } from "./utils/startOrResumeUpload";
 import { useAutoAbort } from "./utils/useAutoAbort";
 import { useMergeTusOptions } from "./utils/useMergeTusOptions";
 
-type UseTusState = Pick<
+type PickedUseTusResult = Pick<
   UseTusResult,
   "upload" | "isSuccess" | "error" | "isAborted"
 >;
+
+type UseTusState = PickedUseTusResult & {
+  originalAbort: Upload["abort"] | undefined;
+};
 
 const initialUseTusState: Readonly<UseTusState> = Object.freeze<UseTusState>({
   upload: undefined,
   isSuccess: false,
   isAborted: false,
   error: undefined,
+  originalAbort: undefined,
 });
 
 export const useTus = (baseOption?: UseTusOptions): UseTusResult => {
@@ -55,27 +60,29 @@ export const useTus = (baseOption?: UseTusOptions): UseTusResult => {
       };
 
       const dispatchIsAborted: DispatchIsAborted = (isAborted) => {
-        if (tusState.upload === undefined) {
-          return;
-        }
-
         updateTusState({ isAborted });
       };
-      const upload = createUpload(file, mergedUploadOptions, dispatchIsAborted);
+      const { upload, originalAbort } = createUpload(
+        file,
+        mergedUploadOptions,
+        dispatchIsAborted
+      );
 
       if (autoStart) {
         startOrResumeUpload(upload);
       }
 
-      updateTusState({ upload });
+      updateTusState({ ...initialUseTusState, upload, originalAbort });
     },
-    [autoStart, tusState.upload, updateTusState, uploadOptions]
+    [autoStart, updateTusState, uploadOptions]
   );
 
   const remove = useCallback(() => {
-    tusState?.upload?.abort();
+    // `upload.abort` function will set `isAborted` state.
+    // So call the original function for restore state.
+    tusState?.originalAbort?.();
     setTusState(initialUseTusState);
-  }, [tusState?.upload]);
+  }, [tusState]);
 
   const tusResult = useMemo<UseTusResult>(
     () => ({
@@ -89,7 +96,7 @@ export const useTus = (baseOption?: UseTusOptions): UseTusResult => {
     [tusState, setUpload, remove]
   );
 
-  useAutoAbort(tusResult.upload, autoAbort ?? false);
+  useAutoAbort(tusResult.upload, tusState.originalAbort, autoAbort ?? false);
 
   return tusResult;
 };
