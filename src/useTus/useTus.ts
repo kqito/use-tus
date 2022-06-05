@@ -55,6 +55,10 @@ export const useTus = (baseOption?: UseTusOptions): UseTusResult => {
       };
 
       const dispatchIsAborted: DispatchIsAborted = (isAborted) => {
+        if (tusState.upload === undefined) {
+          return;
+        }
+
         updateTusState({ isAborted });
       };
       const upload = createUpload(file, mergedUploadOptions, dispatchIsAborted);
@@ -65,7 +69,7 @@ export const useTus = (baseOption?: UseTusOptions): UseTusResult => {
 
       updateTusState({ upload });
     },
-    [autoStart, updateTusState, uploadOptions]
+    [autoStart, tusState.upload, updateTusState, uploadOptions]
   );
 
   const remove = useCallback(() => {
