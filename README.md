@@ -352,7 +352,7 @@ const App = () => (
 );
 
 const Uploader = () => {
-  const { setUpload } = useTusStore('cacheKey', { autoAtart: true });
+  const { setUpload } = useTusStore('cacheKey', { autoStart: true });
 
   const handleSetUpload = useCallback((event: ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files.item(0);
