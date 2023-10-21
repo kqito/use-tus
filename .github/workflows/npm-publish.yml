@@ -14,7 +14,16 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 14
-      - run: yarn add can-npm-publish
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        id: pnpm-install
+        with:
+          version: 8.8.0
+          run_install: false
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install --frozen-lockfile
+      - run: pnpm add can-npm-publish
       - run: npx can-npm-publish --verbose
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
@@ -25,8 +34,17 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 14
-      - run: yarn install --frozen-lockfile
-      - run: yarn test
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        id: pnpm-install
+        with:
+          version: 8.8.0
+          run_install: false
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
 
   publish-npm:
     needs: [ test, check-version ]
@@ -37,7 +55,16 @@ jobs:
         with:
           node-version: 14
           registry-url: https://registry.npmjs.org/
-      - run: yarn install --frozen-lockfile
-      - run: yarn publish
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        id: pnpm-install
+        with:
+          version: 8.8.0
+          run_install: false
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}

@@ -13,14 +13,20 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [16.x, 18.x, 20.x]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-    - run: yarn --frozen-lockfile
-    - run: yarn build
-    - run: yarn test
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      id: pnpm-install
+      with:
+        version: 8.8.0
+        run_install: false
+    - run: pnpm install --frozen-lockfile
+    - run: pnpm build
+    - run: pnpm test

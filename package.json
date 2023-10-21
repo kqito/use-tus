@@ -96,5 +96,6 @@
   "peerDependencies": {
     "react": ">=16.8",
     "tus-js-client": "^2.2.0"
-  }
+  },
+  "packageManager": "pnpm@8.8.0"
 }
