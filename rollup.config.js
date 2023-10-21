@@ -1,17 +1,10 @@
 import resolve from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
-import babel from "@rollup/plugin-babel";
-import commonjs from "@rollup/plugin-commonjs";
+import esbuild from "rollup-plugin-esbuild";
+import path from "path";
 import pkg from "./package.json";
 
 const extensions = [".js", ".ts", ".tsx"];
-const babelConfig = {
-  // eslint-disable-next-line global-require
-  ...require("./babel.config"),
-  comments: false,
-  extensions,
-  babelHelpers: "bundled",
-};
 
 const distDir = "dist";
 const baseConfig = {
@@ -40,8 +33,10 @@ const cjsConfig = {
     resolve({
       extensions,
     }),
-    commonjs(),
-    babel(babelConfig),
+    esbuild({
+      minify: true,
+      tsconfig: path.resolve("./tsconfig.json"),
+    }),
   ],
 };
 
@@ -52,8 +47,11 @@ const mjsConfig = {
     resolve({
       extensions,
     }),
-    commonjs(),
-    babel(babelConfig),
+    esbuild({
+      minify: true,
+      target: "node12",
+      tsconfig: path.resolve("./tsconfig.json"),
+    }),
   ],
 };
 
