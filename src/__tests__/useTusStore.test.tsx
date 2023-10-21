@@ -4,7 +4,7 @@ import {
   TusClientProvider,
   TusClientProviderProps,
 } from "../TusClientProvider";
-import { useTusStore, UseTusOptions, UseTusResult } from "../useTus";
+import { useTusStore, UseTusOptions } from "../useTus";
 import { getBlob } from "./utils/getBlob";
 import { getDefaultOptions } from "./utils/getDefaultOptions";
 import { DefaultOptions } from "..";
@@ -12,7 +12,6 @@ import {
   useTusClientState,
   useTusClientDispatch,
 } from "../TusClientProvider/store/contexts";
-import { TusClientState } from "../TusClientProvider/store/tusClientReducer";
 import {
   insertEnvValue,
   createConsoleErrorMock,
@@ -23,15 +22,15 @@ import { ERROR_MESSAGES } from "../TusClientProvider/constants";
 /* eslint-disable no-console */
 
 const originProcess = process;
-const actualTus = jest.requireActual<typeof import("tus-js-client")>(
-  "tus-js-client"
-);
+const actualTus =
+  jest.requireActual<typeof import("tus-js-client")>("tus-js-client");
 
 type InitialProps = {
   cacheKey?: string;
   options?: UseTusOptions;
 };
 const renderUseTusStore = (
+  // eslint-disable-next-line default-param-last
   initialProps: InitialProps = {},
   providerProps?: TusClientProviderProps
 ) => {
@@ -344,18 +343,20 @@ describe("Options", () => {
       });
       await waitFor(() => result.current.tus.upload);
 
+      console.log(result.current.tusClientState.uploads?.test1?.upload as any);
+
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(false);
 
       rerender({ cacheKey: "test2", options: { autoAbort: true } });
       expect(
-        (result.current.tusClientState.uploads?.test2?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test2?.upload as any)?._aborted
       ).toBe(undefined);
 
       rerender({ cacheKey: "test1", options: { autoAbort: true } });
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(true);
 
       act(() => {
@@ -363,7 +364,7 @@ describe("Options", () => {
       });
       await waitFor(() => result.current.tus.upload);
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(undefined);
 
       act(() => {
@@ -371,7 +372,7 @@ describe("Options", () => {
       });
       unmount();
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(true);
     });
 
@@ -392,17 +393,17 @@ describe("Options", () => {
       await waitFor(() => result.current.tus.upload);
 
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(false);
 
       rerender({ cacheKey: "test2", options: { autoAbort: false } });
       expect(
-        (result.current.tusClientState.uploads?.test2?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test2?.upload as any)?._aborted
       ).toBe(undefined);
 
       rerender({ cacheKey: "test1", options: { autoAbort: false } });
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(false);
 
       act(() => {
@@ -410,7 +411,7 @@ describe("Options", () => {
       });
       await waitFor(() => result.current.tus.upload);
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(undefined);
 
       act(() => {
@@ -418,7 +419,7 @@ describe("Options", () => {
       });
       unmount();
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(false);
     });
   });

@@ -24,9 +24,8 @@ const initialUseTusState: Readonly<UseTusState> = Object.freeze<UseTusState>({
 });
 
 export const useTus = (baseOption?: UseTusOptions): UseTusResult => {
-  const { autoAbort, autoStart, uploadOptions } = useMergeTusOptions(
-    baseOption
-  );
+  const { autoAbort, autoStart, uploadOptions } =
+    useMergeTusOptions(baseOption);
   const [tusState, setTusState] = useState<UseTusState>(initialUseTusState);
 
   const updateTusState = useCallback((newOptions: Partial<UseTusState>) => {

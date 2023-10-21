@@ -40,10 +40,10 @@ const Uploader = () => {
     autoStart: true,
   });
   const [progress, setProgress] = useState(0);
-  const uploadedUrl = useMemo(() => isSuccess && upload?.url, [
-    upload,
-    isSuccess,
-  ]);
+  const uploadedUrl = useMemo(
+    () => isSuccess && upload?.url,
+    [upload, isSuccess]
+  );
 
   const handleOnSelectFile = () => {
     if (!inputRef.current) {

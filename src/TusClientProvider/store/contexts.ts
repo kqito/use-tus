@@ -28,7 +28,8 @@ export const useTusClientDispatch = () => {
     throw new Error(ERROR_MESSAGES.tusClientHasNotFounded);
   }
 
-  return useMemo(() => tusClientDispatch as Dispatch<TusClientActions>, [
-    tusClientDispatch,
-  ]);
+  return useMemo(
+    () => tusClientDispatch as Dispatch<TusClientActions>,
+    [tusClientDispatch]
+  );
 };

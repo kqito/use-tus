@@ -19,9 +19,10 @@ export const useTusClient = () => {
     },
     [tusClientDispatch]
   );
-  const reset = useCallback(() => tusClientDispatch(resetClient()), [
-    tusClientDispatch,
-  ]);
+  const reset = useCallback(
+    () => tusClientDispatch(resetClient()),
+    [tusClientDispatch]
+  );
 
   return {
     state,

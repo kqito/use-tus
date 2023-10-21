@@ -8,10 +8,6 @@ import { TUS_DEMO_ENDPOINT } from "./constants";
 import { UploadIcon } from "./components/UploadIcon";
 import { LoadingCircle } from "./components/LoadingCircle";
 
-export default {
-  title: "useTus",
-} as Meta;
-
 export const Basic = () => <Uploader />;
 
 const Uploader = () => {
@@ -20,10 +16,10 @@ const Uploader = () => {
     autoStart: true,
   });
   const [progress, setProgress] = useState(0);
-  const uploadedUrl = useMemo(() => isSuccess && upload?.url, [
-    upload,
-    isSuccess,
-  ]);
+  const uploadedUrl = useMemo(
+    () => isSuccess && upload?.url,
+    [upload, isSuccess]
+  );
 
   const handleOnSelectFile = () => {
     if (!inputRef.current) {
@@ -122,3 +118,8 @@ const Uploader = () => {
     </div>
   );
 };
+
+export default {
+  title: "useTus",
+  component: Uploader,
+} satisfies Meta;
