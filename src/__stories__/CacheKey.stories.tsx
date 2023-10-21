@@ -10,7 +10,7 @@ import { TUS_DEMO_ENDPOINT } from "./constants";
 
 export default {
   title: "useTusStore hooks",
-} as Meta;
+} satisfies Meta;
 
 export const CacheKey = () => (
   <TusClientProvider>

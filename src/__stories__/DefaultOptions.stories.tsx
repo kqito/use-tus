@@ -11,7 +11,7 @@ import { useTusStore } from "../useTus";
 
 export default {
   title: "useTusStore hooks",
-} as Meta;
+} satisfies Meta;
 
 const defaultOptions: DefaultOptions = (contents) => {
   const file = contents instanceof File ? contents : undefined;

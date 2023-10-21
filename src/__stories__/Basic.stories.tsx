@@ -8,6 +8,10 @@ import { TUS_DEMO_ENDPOINT } from "./constants";
 import { UploadIcon } from "./components/UploadIcon";
 import { LoadingCircle } from "./components/LoadingCircle";
 
+export default {
+  title: "useTus",
+} satisfies Meta;
+
 export const Basic = () => <Uploader />;
 
 const Uploader = () => {
@@ -118,8 +122,3 @@ const Uploader = () => {
     </div>
   );
 };
-
-export default {
-  title: "useTus",
-  component: Uploader,
-} satisfies Meta;
