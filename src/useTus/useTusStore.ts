@@ -21,9 +21,8 @@ export const useTusStore = (
   cacheKey: string,
   baseOption?: UseTusOptions
 ): UseTusResult => {
-  const { autoAbort, autoStart, uploadOptions } = useMergeTusOptions(
-    baseOption
-  );
+  const { autoAbort, autoStart, uploadOptions } =
+    useMergeTusOptions(baseOption);
   const { defaultOptions, uploads } = useTusClientState();
   const tusClientDispatch = useTusClientDispatch();
 
