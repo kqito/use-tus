@@ -343,18 +343,20 @@ describe("Options", () => {
       });
       await waitFor(() => result.current.tus.upload);
 
+      console.log(result.current.tusClientState.uploads?.test1?.upload as any);
+
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(false);
 
       rerender({ cacheKey: "test2", options: { autoAbort: true } });
       expect(
-        (result.current.tusClientState.uploads?.test2?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test2?.upload as any)?._aborted
       ).toBe(undefined);
 
       rerender({ cacheKey: "test1", options: { autoAbort: true } });
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(true);
 
       act(() => {
@@ -362,7 +364,7 @@ describe("Options", () => {
       });
       await waitFor(() => result.current.tus.upload);
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(undefined);
 
       act(() => {
@@ -370,7 +372,7 @@ describe("Options", () => {
       });
       unmount();
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(true);
     });
 
@@ -391,17 +393,17 @@ describe("Options", () => {
       await waitFor(() => result.current.tus.upload);
 
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(false);
 
       rerender({ cacheKey: "test2", options: { autoAbort: false } });
       expect(
-        (result.current.tusClientState.uploads?.test2?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test2?.upload as any)?._aborted
       ).toBe(undefined);
 
       rerender({ cacheKey: "test1", options: { autoAbort: false } });
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(false);
 
       act(() => {
@@ -409,7 +411,7 @@ describe("Options", () => {
       });
       await waitFor(() => result.current.tus.upload);
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(undefined);
 
       act(() => {
@@ -417,7 +419,7 @@ describe("Options", () => {
       });
       unmount();
       expect(
-        (result.current.tusClientState.uploads?.test1?.upload as any)._aborted
+        (result.current.tusClientState.uploads?.test1?.upload as any)?._aborted
       ).toBe(false);
     });
   });
