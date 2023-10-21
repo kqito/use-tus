@@ -39,7 +39,11 @@ module.exports = {
     "react/display-name": "off",
     "react/function-component-definition": "off",
     "react/require-default-props": "off",
-    "import/extensions": ["error", "always", { ts: "never", tsx: "never" }],
+    "import/extensions": [
+      "error",
+      "always",
+      { ts: "never", tsx: "never", js: "never" },
+    ],
     "import/prefer-default-export": "off",
     "import/no-extraneous-dependencies": [
       "error",
