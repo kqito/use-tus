@@ -3,7 +3,7 @@ import { Upload } from "tus-js-client";
 
 type UseAutoAbortParams = {
   upload: Upload | undefined;
-  abort: Upload["abort"] | undefined;
+  abort: (() => Promise<void>) | undefined;
   autoAbort: boolean;
 };
 

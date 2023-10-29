@@ -1,28 +1,27 @@
 import { useCallback, useMemo } from "react";
-import type { Upload } from "tus-js-client";
+import { UploadOptions } from "tus-js-client";
 import {
   useTusClientState,
   useTusClientDispatch,
 } from "../TusClientProvider/store/contexts";
 import {
-  updateSuccessUpload,
-  updateErrorUpload,
-  updateIsAbortedUpload,
   insertUploadInstance,
   removeUploadInstance,
-  updateIsUploadingUpload,
+  updateUploadContext,
 } from "../TusClientProvider/store/tucClientActions";
-import { TusHooksOptions, TusHooksResult } from "./types";
-import { createUpload } from "./utils/createUpload";
-import { startOrResumeUpload } from "./utils/startOrResumeUpload";
-import { useAutoAbort } from "./hooks/useAutoAbort";
-import { mergeUseTusOptions } from "./utils";
+import { TusHooksOptions, TusHooksResult } from "../types";
+import {
+  mergeUseTusOptions,
+  createUpload,
+  startOrResumeUpload,
+  useAutoAbort,
+} from "../utils";
 
 export const useTusStore = (
   cacheKey: string,
   baseOption: TusHooksOptions = {}
 ): TusHooksResult => {
-  const { autoAbort, autoStart, uploadOptions } =
+  const { autoAbort, autoStart, uploadOptions, Upload } =
     mergeUseTusOptions(baseOption);
   const { defaultOptions, uploads } = useTusClientState();
   const tusClientDispatch = useTusClientDispatch();
@@ -36,32 +35,45 @@ export const useTusStore = (
       };
 
       const onSuccess = () => {
-        tusClientDispatch(updateSuccessUpload(cacheKey));
+        tusClientDispatch(
+          updateUploadContext(cacheKey, { isSuccess: true, isUploading: false })
+        );
         targetOptions?.onSuccess?.();
       };
 
       const onError = (error: Error) => {
-        tusClientDispatch(updateErrorUpload(cacheKey, error));
+        tusClientDispatch(
+          updateUploadContext(cacheKey, { error, isUploading: false })
+        );
         targetOptions?.onError?.(error);
       };
 
-      const mergedUploadOptions: Upload["options"] = {
+      const mergedUploadOptions: UploadOptions = {
         ...targetOptions,
         onSuccess,
         onError,
       };
 
       const onStart = () => {
-        tusClientDispatch(updateIsAbortedUpload(cacheKey, false));
-        tusClientDispatch(updateIsUploadingUpload(cacheKey, true));
+        tusClientDispatch(
+          updateUploadContext(cacheKey, {
+            isAborted: false,
+            isUploading: true,
+          })
+        );
       };
 
       const onAbort = () => {
-        tusClientDispatch(updateIsAbortedUpload(cacheKey, true));
-        tusClientDispatch(updateIsUploadingUpload(cacheKey, false));
+        tusClientDispatch(
+          updateUploadContext(cacheKey, {
+            isAborted: true,
+            isUploading: false,
+          })
+        );
       };
 
       const { upload } = createUpload({
+        Upload,
         file,
         options: mergedUploadOptions,
         onStart,
@@ -72,9 +84,24 @@ export const useTusStore = (
         startOrResumeUpload(upload);
       }
 
-      tusClientDispatch(insertUploadInstance(cacheKey, upload));
+      tusClientDispatch(
+        insertUploadInstance(cacheKey, {
+          upload,
+          error: undefined,
+          isSuccess: false,
+          isAborted: false,
+          isUploading: false,
+        })
+      );
     },
-    [autoStart, cacheKey, defaultOptions, tusClientDispatch, uploadOptions]
+    [
+      Upload,
+      autoStart,
+      cacheKey,
+      defaultOptions,
+      tusClientDispatch,
+      uploadOptions,
+    ]
   );
 
   const targetTusState = useMemo(() => uploads[cacheKey], [cacheKey, uploads]);
@@ -87,7 +114,7 @@ export const useTusStore = (
 
   const tusResult: TusHooksResult = targetTusState
     ? {
-        ...(targetTusState as any),
+        ...targetTusState,
         setUpload,
         remove,
       }

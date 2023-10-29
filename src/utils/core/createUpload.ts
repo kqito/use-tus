@@ -1,13 +1,16 @@
-import { Upload } from "tus-js-client";
+import { type UploadOptions, type Upload as UploadType } from "tus-js-client";
+import { UploadFile } from "../../types";
 
 export type CreateUploadParams = {
-  file: Upload["file"];
-  options: Upload["options"];
+  Upload: typeof UploadType;
+  file: UploadFile;
+  options: UploadOptions;
   onStart: () => void;
   onAbort: () => void;
 };
 
 export const createUpload = ({
+  Upload,
   file,
   options,
   onStart,

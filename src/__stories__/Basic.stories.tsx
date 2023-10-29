@@ -16,7 +16,7 @@ export const Basic = () => <Uploader />;
 
 const Uploader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { upload, setUpload, isSuccess, isAborted } = useTus({
+  const { upload, setUpload, isSuccess, isAborted, isUploading } = useTus({
     autoStart: true,
   });
   const [progress, setProgress] = useState(0);
@@ -108,7 +108,7 @@ const Uploader = () => {
             disabled={isSuccess || !upload || isAborted}
           />
         </div>
-        {upload && !isAborted && !isSuccess && (
+        {isUploading && (
           <div className="mt-8">
             <LoadingCircle />
           </div>

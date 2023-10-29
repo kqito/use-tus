@@ -4,16 +4,21 @@ export interface TusHooksOptions {
   autoAbort?: boolean;
   autoStart?: boolean;
   uploadOptions?: UploadOptions;
+  Upload?: typeof Upload;
 }
 
-type SetUpload = (file: Upload["file"], options?: Upload["options"]) => void;
+export type UploadFile = Upload["file"];
+export type SetUpload = (
+  file: Upload["file"],
+  options?: Upload["options"]
+) => void;
 
 export type TusHooksResultFn = {
   setUpload: SetUpload;
   remove: () => void;
 };
 
-export type TusHooksInternalStateFalsely = {
+export type TusFalselyContext = {
   upload: undefined;
   error: undefined;
   isSuccess: false;
@@ -21,7 +26,7 @@ export type TusHooksInternalStateFalsely = {
   isUploading: false;
 };
 
-export type TusHooksInternalStateTruthly = {
+export type TusTruthlyContext = {
   upload: Upload;
   error?: Error;
   isSuccess: boolean;
@@ -29,8 +34,5 @@ export type TusHooksInternalStateTruthly = {
   isUploading: boolean;
 };
 
-export type TusHooksInternalState =
-  | TusHooksInternalStateFalsely
-  | TusHooksInternalStateTruthly;
-
-export type TusHooksResult = TusHooksInternalState & TusHooksResultFn;
+export type TusContext = TusFalselyContext | TusTruthlyContext;
+export type TusHooksResult = TusContext & TusHooksResultFn;
