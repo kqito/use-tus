@@ -1,11 +1,17 @@
 import { useEffect } from "react";
 import { Upload } from "tus-js-client";
 
-export const useAutoAbort = (
-  upload: Upload | undefined,
-  abort: Upload["abort"] | undefined,
-  autoAbort: boolean
-) => {
+type UseAutoAbortParams = {
+  upload: Upload | undefined;
+  abort: Upload["abort"] | undefined;
+  autoAbort: boolean;
+};
+
+export const useAutoAbort = ({
+  upload,
+  abort,
+  autoAbort,
+}: UseAutoAbortParams) => {
   useEffect(() => {
     const abortUploading = async () => {
       if (!upload || !abort) {

@@ -7,6 +7,7 @@ export type TusClientActions = ReturnType<
   | typeof updateSuccessUpload
   | typeof updateErrorUpload
   | typeof updateIsAbortedUpload
+  | typeof updateIsUploadingUpload
   | typeof resetClient
   | typeof updateDefaultOptions
 >;
@@ -20,6 +21,7 @@ export const insertUploadInstance = (cacheKey: string, upload: Upload) =>
         upload,
         isSuccess: false,
         isAborted: false,
+        isUploading: false,
       },
     },
   } as const);
@@ -47,6 +49,18 @@ export const updateIsAbortedUpload = (cacheKey: string, isAborted: boolean) =>
     payload: {
       cacheKey,
       isAborted,
+    },
+  } as const);
+
+export const updateIsUploadingUpload = (
+  cacheKey: string,
+  isUploading: boolean
+) =>
+  ({
+    type: "UPDATE_IS_UPLOADING_UPLOAD",
+    payload: {
+      cacheKey,
+      isUploading,
     },
   } as const);
 

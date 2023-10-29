@@ -10,23 +10,24 @@ import {
   updateIsAbortedUpload,
   insertUploadInstance,
   removeUploadInstance,
+  updateIsUploadingUpload,
 } from "../TusClientProvider/store/tucClientActions";
-import { UseTusOptions, UseTusResult } from "./types";
-import { DispatchIsAborted, createUpload } from "./utils/createUpload";
+import { TusHooksOptions, TusHooksResult } from "./types";
+import { createUpload } from "./utils/createUpload";
 import { startOrResumeUpload } from "./utils/startOrResumeUpload";
-import { useAutoAbort } from "./utils/useAutoAbort";
-import { useMergeTusOptions } from "./utils/useMergeTusOptions";
+import { useAutoAbort } from "./hooks/useAutoAbort";
+import { mergeUseTusOptions } from "./utils";
 
 export const useTusStore = (
   cacheKey: string,
-  baseOption?: UseTusOptions
-): UseTusResult => {
+  baseOption: TusHooksOptions = {}
+): TusHooksResult => {
   const { autoAbort, autoStart, uploadOptions } =
-    useMergeTusOptions(baseOption);
+    mergeUseTusOptions(baseOption);
   const { defaultOptions, uploads } = useTusClientState();
   const tusClientDispatch = useTusClientDispatch();
 
-  const setUpload: UseTusResult["setUpload"] = useCallback(
+  const setUpload: TusHooksResult["setUpload"] = useCallback(
     (file, options = {}) => {
       const targetOptions = {
         ...defaultOptions?.(file),
@@ -50,14 +51,22 @@ export const useTusStore = (
         onError,
       };
 
-      const dispatchIsAborted: DispatchIsAborted = (isAborted) => {
-        tusClientDispatch(updateIsAbortedUpload(cacheKey, isAborted));
+      const onStart = () => {
+        tusClientDispatch(updateIsAbortedUpload(cacheKey, false));
+        tusClientDispatch(updateIsUploadingUpload(cacheKey, true));
       };
-      const { upload } = createUpload(
+
+      const onAbort = () => {
+        tusClientDispatch(updateIsAbortedUpload(cacheKey, true));
+        tusClientDispatch(updateIsUploadingUpload(cacheKey, false));
+      };
+
+      const { upload } = createUpload({
         file,
-        mergedUploadOptions,
-        dispatchIsAborted
-      );
+        options: mergedUploadOptions,
+        onStart,
+        onAbort,
+      });
 
       if (autoStart) {
         startOrResumeUpload(upload);
@@ -76,19 +85,27 @@ export const useTusStore = (
     tusClientDispatch(removeUploadInstance(cacheKey));
   }, [targetTusState, tusClientDispatch, cacheKey]);
 
-  const tusResult = useMemo<UseTusResult>(
-    () => ({
-      upload: targetTusState?.upload,
-      isSuccess: targetTusState?.isSuccess ?? false,
-      error: targetTusState?.error,
-      isAborted: targetTusState?.isAborted ?? false,
-      setUpload,
-      remove,
-    }),
-    [targetTusState, setUpload, remove]
-  );
+  const tusResult: TusHooksResult = targetTusState
+    ? {
+        ...(targetTusState as any),
+        setUpload,
+        remove,
+      }
+    : {
+        upload: undefined,
+        error: undefined,
+        isSuccess: false,
+        isAborted: false,
+        isUploading: false,
+        setUpload,
+        remove,
+      };
 
-  useAutoAbort(tusResult.upload, tusResult.upload?.abort, autoAbort ?? false);
+  useAutoAbort({
+    upload: tusResult.upload,
+    abort: tusResult.upload?.abort,
+    autoAbort: autoAbort ?? false,
+  });
 
   return tusResult;
 };

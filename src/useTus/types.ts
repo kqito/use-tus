@@ -1,16 +1,36 @@
 import type { Upload, UploadOptions } from "tus-js-client";
 
-export interface UseTusOptions {
+export interface TusHooksOptions {
   autoAbort?: boolean;
   autoStart?: boolean;
   uploadOptions?: UploadOptions;
 }
 
-export interface UseTusResult {
-  upload?: Upload;
-  setUpload: (file: Upload["file"], options?: Upload["options"]) => void;
+type SetUpload = (file: Upload["file"], options?: Upload["options"]) => void;
+
+export type TusHooksResultFn = {
+  setUpload: SetUpload;
+  remove: () => void;
+};
+
+export type TusHooksInternalStateFalsely = {
+  upload: undefined;
+  error: undefined;
+  isSuccess: false;
+  isAborted: false;
+  isUploading: false;
+};
+
+export type TusHooksInternalStateTruthly = {
+  upload: Upload;
+  error?: Error;
   isSuccess: boolean;
   isAborted: boolean;
-  error?: Error;
-  remove: () => void;
-}
+  isUploading: boolean;
+};
+
+export type TusHooksInternalState =
+  | TusHooksInternalStateFalsely
+  | TusHooksInternalStateTruthly;
+
+export type TusHooksResult = TusHooksInternalState & TusHooksResultFn;

@@ -1,23 +1,30 @@
 import { Upload } from "tus-js-client";
 
-export type DispatchIsAborted = (isAborted: boolean) => void;
-export const createUpload = (
-  file: Upload["file"],
-  options: Upload["options"],
-  dispatchIsAborted: DispatchIsAborted
-) => {
+export type CreateUploadParams = {
+  file: Upload["file"];
+  options: Upload["options"];
+  onStart: () => void;
+  onAbort: () => void;
+};
+
+export const createUpload = ({
+  file,
+  options,
+  onStart,
+  onAbort,
+}: CreateUploadParams) => {
   const upload = new Upload(file, options);
   const originalStart = upload.start.bind(upload);
   const originalAbort = upload.abort.bind(upload);
 
   const start = () => {
     originalStart();
-    dispatchIsAborted(false);
+    onStart();
   };
 
   const abort = async () => {
     originalAbort();
-    dispatchIsAborted(true);
+    onAbort();
   };
 
   upload.start = start;

@@ -7,6 +7,7 @@ export type UploadState = {
   upload: Upload | undefined;
   isSuccess: boolean;
   isAborted: boolean;
+  isUploading: boolean;
   error?: Error;
 };
 
@@ -97,6 +98,27 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
       };
     }
 
+    case "UPDATE_IS_UPLOADING_UPLOAD": {
+      const { cacheKey, isUploading } = actions.payload;
+
+      const target = state.uploads[cacheKey];
+
+      if (!target) {
+        return state;
+      }
+
+      return {
+        ...state,
+        uploads: {
+          ...state.uploads,
+          [cacheKey]: {
+            ...target,
+            isUploading,
+          },
+        },
+      };
+    }
+
     case "REMOVE_UPLOAD_INSTANCE": {
       const { cacheKey } = actions.payload;
 
@@ -118,8 +140,17 @@ export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
       };
     }
 
-    default:
+    case "RESET_CLIENT": {
+      return {
+        ...state,
+        uploads: {},
+      };
+    }
+
+    default: {
+      actions satisfies never;
       return state;
+    }
   }
 };
 
