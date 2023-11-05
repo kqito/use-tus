@@ -1,5 +1,6 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { TusHooksOptions, UploadOptions, useTus } from "../index";
+import { UploadOptions } from "tus-js-client";
+import { TusHooksOptions, useTus } from "../index";
 import { getBlob } from "./utils/getBlob";
 import {
   createConsoleErrorMock,
