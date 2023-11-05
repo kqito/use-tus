@@ -1,16 +1,12 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
+import { UploadOptions } from "tus-js-client";
 import {
   TusClientProvider,
   TusClientProviderProps,
 } from "../TusClientProvider";
 import { getBlob } from "./utils/getBlob";
 import { getDefaultOptions } from "./utils/getDefaultOptions";
-import {
-  DefaultOptions,
-  TusHooksOptions,
-  UploadOptions,
-  useTusStore,
-} from "..";
+import { DefaultOptions, TusHooksOptions, useTusStore } from "..";
 import {
   useTusClientState,
   useTusClientDispatch,
