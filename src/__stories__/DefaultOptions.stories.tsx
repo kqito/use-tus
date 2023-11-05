@@ -2,12 +2,11 @@ import { Meta } from "@storybook/react";
 import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
 import { ProgressBar } from "./components/ProgressBar";
 
-import { TusClientProvider, DefaultOptions } from "../index";
+import { TusClientProvider, DefaultOptions, useTusStore } from "../index";
 import { BasicButton } from "./components/BasicButton";
 import { UploadIcon } from "./components/UploadIcon";
 import { LoadingCircle } from "./components/LoadingCircle";
 import { TUS_DEMO_ENDPOINT } from "./constants";
-import { useTusStore } from "../useTus";
 
 export default {
   title: "useTusStore hooks",

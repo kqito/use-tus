@@ -1,41 +1,53 @@
-import { useCallback, useMemo, useState } from "react";
-import type { Upload } from "tus-js-client";
-import { UseTusOptions, UseTusResult } from "./types";
-import { createUpload, DispatchIsAborted } from "./utils/createUpload";
-import { startOrResumeUpload } from "./utils/startOrResumeUpload";
-import { useAutoAbort } from "./utils/useAutoAbort";
-import { useMergeTusOptions } from "./utils/useMergeTusOptions";
+import { useCallback, useState } from "react";
+import { UploadOptions } from "tus-js-client";
+import {
+  TusHooksOptions,
+  TusHooksResult,
+  TusTruthlyContext,
+  TusContext,
+} from "../types";
+import {
+  mergeUseTusOptions,
+  createUpload,
+  startOrResumeUpload,
+  useAutoAbort,
+} from "../utils";
 
-type PickedUseTusResult = Pick<
-  UseTusResult,
-  "upload" | "isSuccess" | "error" | "isAborted"
->;
-
-type UseTusState = PickedUseTusResult & {
-  originalAbort: Upload["abort"] | undefined;
+type UseTusInternalState = {
+  originalAbort: (() => Promise<void>) | undefined;
 };
 
-const initialUseTusState: Readonly<UseTusState> = Object.freeze<UseTusState>({
+const initialTusContext = Object.freeze({
   upload: undefined,
   isSuccess: false,
   isAborted: false,
+  isUploading: false,
   error: undefined,
-  originalAbort: undefined,
-});
+} as const satisfies TusContext);
 
-export const useTus = (baseOption?: UseTusOptions): UseTusResult => {
-  const { autoAbort, autoStart, uploadOptions } =
-    useMergeTusOptions(baseOption);
-  const [tusState, setTusState] = useState<UseTusState>(initialUseTusState);
+export const useTus = (baseOption: TusHooksOptions = {}): TusHooksResult => {
+  const { autoAbort, autoStart, uploadOptions, Upload } =
+    mergeUseTusOptions(baseOption);
 
-  const updateTusState = useCallback((newOptions: Partial<UseTusState>) => {
-    setTusState((tus) => ({
-      ...tus,
-      ...newOptions,
-    }));
-  }, []);
+  const [tusContext, setTusContext] = useState<TusContext>(initialTusContext);
+  const [tusInternalState, setTusInternalState] = useState<UseTusInternalState>(
+    {
+      originalAbort: undefined,
+    }
+  );
 
-  const setUpload: UseTusResult["setUpload"] = useCallback(
+  const updateTusTruthlyContext = (
+    context: Omit<Partial<TusTruthlyContext>, "upload">
+  ) => {
+    setTusContext((prev) => {
+      if (prev.upload === undefined) {
+        return prev; // TODO: Add appriopriate error handling
+      }
+      return { ...prev, ...context };
+    });
+  };
+
+  const setUpload: TusHooksResult["setUpload"] = useCallback(
     (file, options = {}) => {
       const targetOptions = {
         ...uploadOptions,
@@ -43,59 +55,76 @@ export const useTus = (baseOption?: UseTusOptions): UseTusResult => {
       };
 
       const onSuccess = () => {
-        updateTusState({ isSuccess: true });
+        updateTusTruthlyContext({ isSuccess: true, isUploading: false });
+
         targetOptions?.onSuccess?.();
       };
 
       const onError = (error: Error) => {
-        updateTusState({ error });
+        updateTusTruthlyContext({
+          error,
+          isUploading: false,
+        });
         targetOptions?.onError?.(error);
       };
 
-      const mergedUploadOptions: Upload["options"] = {
+      const mergedUploadOptions: UploadOptions = {
         ...targetOptions,
         onSuccess,
         onError,
       };
 
-      const dispatchIsAborted: DispatchIsAborted = (isAborted) => {
-        updateTusState({ isAborted });
+      const onStart = () => {
+        updateTusTruthlyContext({ isUploading: true, isAborted: false });
       };
-      const { upload, originalAbort } = createUpload(
+
+      const onAbort = () => {
+        updateTusTruthlyContext({ isUploading: false, isAborted: true });
+      };
+
+      const { upload, originalAbort } = createUpload({
+        Upload,
         file,
-        mergedUploadOptions,
-        dispatchIsAborted
-      );
+        options: mergedUploadOptions,
+        onStart,
+        onAbort,
+      });
 
       if (autoStart) {
         startOrResumeUpload(upload);
       }
 
-      updateTusState({ ...initialUseTusState, upload, originalAbort });
+      setTusContext({
+        upload,
+        error: undefined,
+        isSuccess: false,
+        isAborted: false,
+        isUploading: false,
+      });
+      setTusInternalState({ originalAbort });
     },
-    [autoStart, updateTusState, uploadOptions]
+    [Upload, autoStart, uploadOptions]
   );
 
   const remove = useCallback(() => {
     // `upload.abort` function will set `isAborted` state.
     // So call the original function for restore state.
-    tusState?.originalAbort?.();
-    setTusState(initialUseTusState);
-  }, [tusState]);
+    tusInternalState?.originalAbort?.();
+    setTusContext(initialTusContext);
+    setTusInternalState({ originalAbort: undefined });
+  }, [tusInternalState]);
 
-  const tusResult = useMemo<UseTusResult>(
-    () => ({
-      upload: tusState?.upload,
-      isSuccess: tusState?.isSuccess ?? false,
-      error: tusState?.error,
-      isAborted: tusState?.isAborted ?? false,
-      setUpload,
-      remove,
-    }),
-    [tusState, setUpload, remove]
-  );
+  const tusResult: TusHooksResult = {
+    ...tusContext,
+    setUpload,
+    remove,
+  };
 
-  useAutoAbort(tusResult.upload, tusState.originalAbort, autoAbort ?? false);
+  useAutoAbort({
+    upload: tusResult.upload,
+    abort: tusInternalState.originalAbort,
+    autoAbort: autoAbort ?? false,
+  });
 
   return tusResult;
 };

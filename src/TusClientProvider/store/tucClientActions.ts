@@ -1,52 +1,35 @@
-import type { Upload } from "tus-js-client";
 import { DefaultOptions } from "../types";
+import { TusTruthlyContext } from "../../types";
 
 export type TusClientActions = ReturnType<
   | typeof insertUploadInstance
   | typeof removeUploadInstance
-  | typeof updateSuccessUpload
-  | typeof updateErrorUpload
-  | typeof updateIsAbortedUpload
+  | typeof updateUploadContext
   | typeof resetClient
   | typeof updateDefaultOptions
 >;
 
-export const insertUploadInstance = (cacheKey: string, upload: Upload) =>
+export const insertUploadInstance = (
+  cacheKey: string,
+  state: TusTruthlyContext
+) =>
   ({
     type: "INSERT_UPLOAD_INSTANCE",
     payload: {
       cacheKey,
-      uploadState: {
-        upload,
-        isSuccess: false,
-        isAborted: false,
-      },
+      uploadState: state,
     },
   } as const);
 
-export const updateSuccessUpload = (cacheKey: string) =>
+export const updateUploadContext = (
+  cacheKey: string,
+  context: Partial<Omit<TusTruthlyContext, "upload">>
+) =>
   ({
-    type: "UPDATE_SUCCESS_UPLOAD",
+    type: "UPDATE_UPLOAD_CONTEXT",
     payload: {
       cacheKey,
-    },
-  } as const);
-
-export const updateErrorUpload = (cacheKey: string, error?: Error) =>
-  ({
-    type: "UPDATE_ERROR_UPLOAD",
-    payload: {
-      cacheKey,
-      error,
-    },
-  } as const);
-
-export const updateIsAbortedUpload = (cacheKey: string, isAborted: boolean) =>
-  ({
-    type: "UPDATE_IS_ABORTED_UPLOAD",
-    payload: {
-      cacheKey,
-      isAborted,
+      context,
     },
   } as const);
 
