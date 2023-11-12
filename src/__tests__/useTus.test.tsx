@@ -1,5 +1,4 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { UploadOptions } from "tus-js-client";
 import { TusHooksOptions, useTus } from "../index";
 import { getBlob } from "./utils/getBlob";
 import {
@@ -9,6 +8,7 @@ import {
 } from "./utils/mock";
 import { getDefaultOptions } from "./utils/getDefaultOptions";
 import { UploadFile } from "../types";
+import { useRef, useState } from "react";
 
 /* eslint-disable no-console */
 
@@ -37,7 +37,7 @@ describe("useTus", () => {
       const { result } = renderUseTus();
 
       const file: UploadFile = getBlob("hello");
-      const options: UploadOptions = getDefaultOptions();
+      const options = getDefaultOptions();
 
       expect(result.current).toEqual({
         upload: undefined,
@@ -240,7 +240,7 @@ describe("useTus", () => {
         });
 
         const file: UploadFile = getBlob("hello");
-        const options: UploadOptions = getDefaultOptions();
+        const options = getDefaultOptions();
 
         expect(result.current.upload?.abort).toBeUndefined();
 
@@ -261,7 +261,7 @@ describe("useTus", () => {
         const { result, unmount } = renderUseTus({ autoAbort: false });
 
         const file: UploadFile = getBlob("hello");
-        const options: UploadOptions = getDefaultOptions();
+        const options = getDefaultOptions();
 
         expect(result.current.upload?.abort).toBeUndefined();
 
@@ -285,7 +285,7 @@ describe("useTus", () => {
         });
 
         const file: UploadFile = getBlob("hello");
-        const options: UploadOptions = getDefaultOptions();
+        const options = getDefaultOptions();
 
         expect(result.current.upload?.abort).toBeUndefined();
 
@@ -304,7 +304,7 @@ describe("useTus", () => {
         });
 
         const file: UploadFile = getBlob("hello");
-        const options: UploadOptions = getDefaultOptions();
+        const options = getDefaultOptions();
 
         expect(result.current.upload?.abort).toBeUndefined();
 
@@ -314,6 +314,39 @@ describe("useTus", () => {
         await waitFor(() => result.current.upload);
 
         expect(startOrResumeUploadMock).toBeCalledTimes(1);
+      });
+    });
+
+    describe("Rerender", () => {
+      it("Should rerender when url changed", async () => {
+        const { result } = renderHook(
+          (props) => {
+            const tus = useTus(props);
+            const renderCountRef = useRef(0);
+            renderCountRef.current += 1;
+            return { tus, renderCountRef };
+          },
+          { initialProps: { Upload } }
+        );
+
+        const file: UploadFile = getBlob("hello");
+        const options = getDefaultOptions();
+        expect(result.current.renderCountRef.current).toBe(1);
+
+        act(() => {
+          result.current.tus.setUpload(file, options);
+        });
+        await waitFor(() => result.current.tus.upload);
+        expect(result.current.tus.upload?.url).toBe(null);
+        expect(result.current.renderCountRef.current).toBe(2);
+
+        act(() => {
+          if (!result.current.tus.upload) return;
+          result.current.tus.upload.url = "test";
+        });
+        await waitFor(() => result.current.tus.upload);
+        expect(result.current.tus.upload?.url).toBe("test");
+        expect(result.current.renderCountRef.current).toBe(3);
       });
     });
   });

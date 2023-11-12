@@ -1,5 +1,4 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { UploadOptions } from "tus-js-client";
 import {
   TusClientProvider,
   TusClientProviderProps,
@@ -72,7 +71,7 @@ describe("useTusStore", () => {
       });
 
       const file: UploadFile = getBlob("hello");
-      const options: UploadOptions = getDefaultOptions();
+      const options = getDefaultOptions();
 
       expect(result.current.tus).toEqual({
         upload: undefined,
@@ -142,7 +141,7 @@ describe("useTusStore", () => {
     });
 
     const file: UploadFile = getBlob("hello");
-    const options: UploadOptions = {
+    const options = {
       ...getDefaultOptions(),
     };
 
@@ -375,7 +374,7 @@ describe("useTusStore", () => {
         });
 
         const file: UploadFile = getBlob("hello");
-        const options: UploadOptions = getDefaultOptions();
+        const options = getDefaultOptions();
 
         expect(result.current.tus.upload?.abort).toBeUndefined();
 
@@ -403,7 +402,7 @@ describe("useTusStore", () => {
         });
 
         const file: UploadFile = getBlob("hello");
-        const options: UploadOptions = getDefaultOptions();
+        const options = getDefaultOptions();
 
         expect(result.current.tus.upload?.abort).toBeUndefined();
 
@@ -431,7 +430,7 @@ describe("useTusStore", () => {
         });
 
         const file: UploadFile = getBlob("hello");
-        const options: UploadOptions = getDefaultOptions();
+        const options = getDefaultOptions();
 
         expect(result.current.tus.upload?.abort).toBeUndefined();
 
@@ -449,7 +448,7 @@ describe("useTusStore", () => {
         });
 
         const file: UploadFile = getBlob("hello");
-        const options: UploadOptions = getDefaultOptions();
+        const options = getDefaultOptions();
 
         act(() => {
           expect(result.current.tus.upload?.abort).toBeUndefined();

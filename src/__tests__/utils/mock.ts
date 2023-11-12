@@ -1,17 +1,20 @@
 import type { Upload, UploadOptions } from "tus-js-client";
 import * as startOrResumeUploadObject from "../../utils/core/startOrResumeUpload";
 import { UploadFile } from "../../types";
+import { createMock } from "./createMock";
 
-export const createMock = <T>(value: unknown) => value as T;
 export const createUploadMock = (start: jest.Mock, abort: jest.Mock) => {
   class UploadMock {
     file: UploadFile;
 
     options: UploadOptions;
 
+    url: string | null;
+
     constructor(file: UploadFile, options: UploadOptions) {
       this.file = file;
       this.options = options;
+      this.url = null;
     }
 
     start = start;
