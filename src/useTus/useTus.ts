@@ -1,10 +1,11 @@
 import { useCallback, useState } from "react";
-import { UploadOptions } from "tus-js-client";
+import { type Upload as UploadType } from "tus-js-client";
 import {
   TusHooksOptions,
   TusHooksResult,
   TusTruthlyContext,
   TusContext,
+  TusHooksUploadOptions,
 } from "../types";
 import {
   mergeUseTusOptions,
@@ -12,6 +13,7 @@ import {
   startOrResumeUpload,
   useAutoAbort,
 } from "../utils";
+import { splitTusHooksUploadOptions } from "../utils/core/splitTusHooksUploadOptions";
 
 type UseTusInternalState = {
   originalAbort: (() => Promise<void>) | undefined;
@@ -26,8 +28,12 @@ const initialTusContext = Object.freeze({
 } as const satisfies TusContext);
 
 export const useTus = (baseOption: TusHooksOptions = {}): TusHooksResult => {
-  const { autoAbort, autoStart, uploadOptions, Upload } =
-    mergeUseTusOptions(baseOption);
+  const {
+    autoAbort,
+    autoStart,
+    uploadOptions: baseUploadOptions,
+    Upload,
+  } = mergeUseTusOptions(baseOption);
 
   const [tusContext, setTusContext] = useState<TusContext>(initialTusContext);
   const [tusInternalState, setTusInternalState] = useState<UseTusInternalState>(
@@ -50,28 +56,33 @@ export const useTus = (baseOption: TusHooksOptions = {}): TusHooksResult => {
   const setUpload: TusHooksResult["setUpload"] = useCallback(
     (file, options = {}) => {
       const targetOptions = {
-        ...uploadOptions,
+        ...baseUploadOptions,
         ...options,
       };
 
-      const onSuccess = () => {
+      function onSuccess() {
         updateTusTruthlyContext({ isSuccess: true, isUploading: false });
 
-        targetOptions?.onSuccess?.();
-      };
+        targetOptions?.onSuccess?.(upload);
+      }
 
       const onError = (error: Error) => {
         updateTusTruthlyContext({
           error,
           isUploading: false,
         });
-        targetOptions?.onError?.(error);
+        targetOptions?.onError?.(error, upload);
       };
 
-      const mergedUploadOptions: UploadOptions = {
+      const mergedUploadOptions: TusHooksUploadOptions = {
         ...targetOptions,
         onSuccess,
         onError,
+      };
+
+      const onChange = (newUpload: UploadType) => {
+        // For re-rendering when `upload` object is changed.
+        setTusContext((prev) => ({ ...prev, upload: newUpload }));
       };
 
       const onStart = () => {
@@ -82,10 +93,15 @@ export const useTus = (baseOption: TusHooksOptions = {}): TusHooksResult => {
         updateTusTruthlyContext({ isUploading: false, isAborted: true });
       };
 
+      const { uploadOptions, uploadFnOptions } =
+        splitTusHooksUploadOptions(mergedUploadOptions);
+
       const { upload, originalAbort } = createUpload({
         Upload,
         file,
-        options: mergedUploadOptions,
+        uploadOptions,
+        uploadFnOptions,
+        onChange,
         onStart,
         onAbort,
       });
@@ -103,7 +119,7 @@ export const useTus = (baseOption: TusHooksOptions = {}): TusHooksResult => {
       });
       setTusInternalState({ originalAbort });
     },
-    [Upload, autoStart, uploadOptions]
+    [Upload, autoStart, baseUploadOptions]
   );
 
   const remove = useCallback(() => {

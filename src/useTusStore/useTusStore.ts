@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { UploadOptions } from "tus-js-client";
+import { type Upload as UploadType } from "tus-js-client";
 import {
   useTusClientState,
   useTusClientDispatch,
@@ -9,20 +9,29 @@ import {
   removeUploadInstance,
   updateUploadContext,
 } from "../TusClientProvider/store/tucClientActions";
-import { TusHooksOptions, TusHooksResult } from "../types";
+import {
+  TusHooksOptions,
+  TusHooksResult,
+  TusHooksUploadOptions,
+} from "../types";
 import {
   mergeUseTusOptions,
   createUpload,
   startOrResumeUpload,
   useAutoAbort,
+  splitTusHooksUploadOptions,
 } from "../utils";
 
 export const useTusStore = (
   cacheKey: string,
   baseOption: TusHooksOptions = {}
 ): TusHooksResult => {
-  const { autoAbort, autoStart, uploadOptions, Upload } =
-    mergeUseTusOptions(baseOption);
+  const {
+    autoAbort,
+    autoStart,
+    uploadOptions: defaultUploadOptions,
+    Upload,
+  } = mergeUseTusOptions(baseOption);
   const { defaultOptions, uploads } = useTusClientState();
   const tusClientDispatch = useTusClientDispatch();
 
@@ -30,7 +39,7 @@ export const useTusStore = (
     (file, options = {}) => {
       const targetOptions = {
         ...defaultOptions?.(file),
-        ...uploadOptions,
+        ...defaultUploadOptions,
         ...options,
       };
 
@@ -38,20 +47,25 @@ export const useTusStore = (
         tusClientDispatch(
           updateUploadContext(cacheKey, { isSuccess: true, isUploading: false })
         );
-        targetOptions?.onSuccess?.();
+        targetOptions?.onSuccess?.(upload);
       };
 
       const onError = (error: Error) => {
         tusClientDispatch(
           updateUploadContext(cacheKey, { error, isUploading: false })
         );
-        targetOptions?.onError?.(error);
+        targetOptions?.onError?.(error, upload);
       };
 
-      const mergedUploadOptions: UploadOptions = {
+      const mergedUploadOptions: TusHooksUploadOptions = {
         ...targetOptions,
         onSuccess,
         onError,
+      };
+
+      const onChange = (newUpload: UploadType) => {
+        // For re-rendering when `upload` object is changed.
+        tusClientDispatch(updateUploadContext(cacheKey, { upload: newUpload }));
       };
 
       const onStart = () => {
@@ -72,10 +86,15 @@ export const useTusStore = (
         );
       };
 
+      const { uploadOptions, uploadFnOptions } =
+        splitTusHooksUploadOptions(mergedUploadOptions);
+
       const { upload } = createUpload({
         Upload,
         file,
-        options: mergedUploadOptions,
+        uploadOptions,
+        uploadFnOptions,
+        onChange,
         onStart,
         onAbort,
       });
@@ -99,8 +118,8 @@ export const useTusStore = (
       autoStart,
       cacheKey,
       defaultOptions,
+      defaultUploadOptions,
       tusClientDispatch,
-      uploadOptions,
     ]
   );
 

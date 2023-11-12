@@ -1,3 +1,4 @@
-import { Upload, UploadOptions } from "tus-js-client";
+import { Upload } from "tus-js-client";
+import { TusHooksUploadOptions } from "../types";
 
-export type DefaultOptions = (file: Upload["file"]) => UploadOptions;
+export type DefaultOptions = (file: Upload["file"]) => TusHooksUploadOptions;
