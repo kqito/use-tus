@@ -29,6 +29,7 @@ module.exports = {
   },
   rules: {
     "no-use-before-define": 0,
+    "no-shadow": 0,
     "no-underscore-dangle": "off",
     "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/explicit-module-boundary-types": 0,
