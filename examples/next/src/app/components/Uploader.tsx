@@ -11,7 +11,7 @@ export const TUS_DEMO_ENDPOINT = "https://tusd.tusdemo.net/files/";
 
 export const Uploader = () => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { upload, setUpload, isSuccess, isAborted } = useTus({
+  const { upload, setUpload, isSuccess, isAborted, isUploading } = useTus({
     autoStart: true,
   });
   const [progress, setProgress] = useState(0);
@@ -45,6 +45,10 @@ export const Uploader = () => {
         },
         onProgress: (bytesSent, bytesTotal) => {
           setProgress(Number(((bytesSent / bytesTotal) * 100).toFixed(2)));
+        },
+        onSuccess: (upload) => {
+          // eslint-disable-next-line no-console
+          console.info("upload success", upload.url);
         },
       });
     },
@@ -99,10 +103,10 @@ export const Uploader = () => {
           title="Abort"
           styleColor="error"
           onClick={handleOnAbort}
-          disabled={isSuccess || !upload || isAborted}
+          disabled={!isUploading}
         />
       </div>
-      {upload && !isAborted && !isSuccess && (
+      {isUploading && (
         <div className="mt-8">
           <Loading />
         </div>
