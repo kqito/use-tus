@@ -23,7 +23,7 @@ export const insertUploadInstance = (
 
 export const updateUploadContext = (
   cacheKey: string,
-  context: Partial<Omit<TusTruthlyContext, "upload">>
+  context: Partial<TusTruthlyContext>
 ) =>
   ({
     type: "UPDATE_UPLOAD_CONTEXT",

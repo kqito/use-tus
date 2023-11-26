@@ -1,5 +1,13 @@
+/* eslint-disable no-console */
 import { Meta } from "@storybook/react";
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { ProgressBar } from "./components/ProgressBar";
 
 import { useTus } from "../index";
@@ -19,6 +27,7 @@ const Uploader = () => {
   const { upload, setUpload, isSuccess, isAborted, isUploading } = useTus({
     autoStart: true,
   });
+
   const [progress, setProgress] = useState(0);
   const uploadedUrl = useMemo(
     () => isSuccess && upload?.url,
@@ -48,13 +57,40 @@ const Uploader = () => {
           filename: file.name,
           filetype: file.type,
         },
-        onProgress: (bytesSent, bytesTotal) => {
+        onProgress: (bytesSent, bytesTotal, u) => {
+          console.log("onProgress", u);
           setProgress(Number(((bytesSent / bytesTotal) * 100).toFixed(2)));
+        },
+        onSuccess: (u) => {
+          console.log("onSuccess", u);
+        },
+        onError: (_, u) => {
+          console.log("onError", u);
+        },
+        onShouldRetry: (error, u) => {
+          console.log("onShouldRetry", error, u);
+          return true;
+        },
+        onChunkComplete: (chunkSize, bytesAccepted, bytesTotal, u) => {
+          console.log(
+            "onChunkComplete",
+            chunkSize,
+            bytesAccepted,
+            bytesTotal,
+            u
+          );
+        },
+        onBeforeRequest: (request, u) => {
+          console.log("onBeforeRequest", request, u);
         },
       });
     },
     [setUpload]
   );
+
+  useEffect(() => {
+    console.log("useEffect", upload?.url);
+  }, [upload?.url]);
 
   const handleOnStart = useCallback(() => {
     if (!upload) {

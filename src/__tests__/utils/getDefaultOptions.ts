@@ -1,6 +1,6 @@
-import { Upload } from "tus-js-client";
+import { TusHooksUploadOptions } from "../../types";
 
-export const getDefaultOptions: () => Upload["options"] = () => ({
+export const getDefaultOptions: () => TusHooksUploadOptions = () => ({
   endpoint: "",
   uploadUrl: "",
   metadata: {
