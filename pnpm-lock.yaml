@@ -141,8 +141,8 @@ devDependencies:
     specifier: ^29.1.1
     version: 29.1.1(@babel/core@7.23.2)(esbuild@0.19.5)(jest@29.7.0)(typescript@5.2.2)
   tus-js-client:
-    specifier: ^2.2.0
-    version: 2.3.2
+    specifier: ^4.0.0
+    version: 4.0.0
   typescript:
     specifier: ^5.2.2
     version: 5.2.2
@@ -8206,8 +8206,8 @@ packages:
       - ts-node
     dev: true
 
-  /js-base64@2.6.4:
-    resolution: {integrity: sha512-pZe//GGmwJndub7ZghVHz7vjb2LgC1m8B07Au3eYqeqv9emhESByMXxaEgkUkEqJe87oBbSniGYoQNIBklc7IQ==}
+  /js-base64@3.7.5:
+    resolution: {integrity: sha512-3MEt5DTINKqfScXKfJFrRbxkrnk2AxPWGBL/ycjz4dK8iqiSJ06UxD8jh8xuh6p10TX4t2+7FsBYVxxQbMg+qA==}
     dev: true
 
   /js-tokens@4.0.0:
@@ -9528,12 +9528,12 @@ packages:
       react-is: 16.13.1
     dev: true
 
-  /proper-lockfile@2.0.1:
-    resolution: {integrity: sha512-rjaeGbsmhNDcDInmwi4MuI6mRwJu6zq8GjYCLuSuE7GF+4UjgzkL69sVKKJ2T2xH61kK7rXvGYpvaTu909oXaQ==}
-    engines: {node: '>=4.0.0'}
+  /proper-lockfile@4.1.2:
+    resolution: {integrity: sha512-TjNPblN4BwAWMXU8s9AEz4JmQxnD1NNL7bNOY/AKUzyamc379FWASUhc/K1pL2noVb+XmZKLL68cjzLsiOAMaA==}
     dependencies:
       graceful-fs: 4.2.11
-      retry: 0.10.1
+      retry: 0.12.0
+      signal-exit: 3.0.7
     dev: true
 
   /proxy-addr@2.0.7:
@@ -10043,8 +10043,9 @@ packages:
       signal-exit: 3.0.7
     dev: true
 
-  /retry@0.10.1:
-    resolution: {integrity: sha512-ZXUSQYTHdl3uS7IuCehYfMzKyIDBNoAuUblvy5oGO5UJSUTmStUUVPXbA9Qxd173Bgre53yCQczQuHgRWAdvJQ==}
+  /retry@0.12.0:
+    resolution: {integrity: sha512-9LkiTwjUh6rT555DtE9rTX+BKByPfrMzEAtnlEtdEwr3Nkffwiihqe2bWADg+OQRjt9gl6ICdmB/ZFDCGAtSow==}
+    engines: {node: '>= 4'}
     dev: true
 
   /reusify@1.0.4:
@@ -10880,15 +10881,16 @@ packages:
       typescript: 5.2.2
     dev: true
 
-  /tus-js-client@2.3.2:
-    resolution: {integrity: sha512-5a2rm7gp+G7Z+ZB0AO4PzD/dwczB3n1fZeWO5W8AWLJ12RRk1rY4Aeb2VAYX9oKGE+/rGPrdxoFPA/vDSVKnpg==}
+  /tus-js-client@4.0.0:
+    resolution: {integrity: sha512-ZGyu/QCx6RXgWBywk1+c6VONPmEQ9GNrkn8j/+lntdaqZu6p4JCfjKxXWYJFx0CZRhKvhOyk6qT4/WVvb/bBmw==}
+    engines: {node: '>=18'}
     dependencies:
       buffer-from: 1.1.2
       combine-errors: 3.0.3
       is-stream: 2.0.1
-      js-base64: 2.6.4
+      js-base64: 3.7.5
       lodash.throttle: 4.1.1
-      proper-lockfile: 2.0.1
+      proper-lockfile: 4.1.2
       url-parse: 1.5.10
     dev: true
 
