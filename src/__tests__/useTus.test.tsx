@@ -1,4 +1,5 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
+import { useRef } from "react";
 import { TusHooksOptions, useTus } from "../index";
 import { getBlob } from "./utils/getBlob";
 import {
@@ -8,7 +9,6 @@ import {
 } from "./utils/mock";
 import { getDefaultOptions } from "./utils/getDefaultOptions";
 import { UploadFile } from "../types";
-import { useRef, useState } from "react";
 
 /* eslint-disable no-console */
 
