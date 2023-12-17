@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HttpRequest, HttpResponse, Upload } from "tus-js-client";
+import {
+  DetailedError,
+  HttpRequest,
+  HttpResponse,
+  Upload,
+} from "tus-js-client";
 import { getBlob } from "./utils/getBlob";
 import { createUpload } from "../utils";
 import { TusHooksUploadFnOptions } from "../types";
@@ -8,7 +13,7 @@ import { createMock } from "./utils/createMock";
 const blog = getBlob("test");
 
 describe("createUpload", () => {
-  const error = new Error();
+  const detailedError = createMock<DetailedError>(new Error());
   const onChange = jest.fn();
   const onStart = jest.fn();
   const onAbort = jest.fn();
@@ -72,15 +77,15 @@ describe("createUpload", () => {
     upload.options?.onSuccess?.();
     expect(uploadFnOptions.onSuccess).toBeCalledWith(upload);
 
-    upload.options?.onError?.(error);
-    expect(uploadFnOptions.onError).toBeCalledWith(error, upload);
+    upload.options?.onError?.(detailedError);
+    expect(uploadFnOptions.onError).toBeCalledWith(detailedError, upload);
 
     upload.options?.onProgress?.(1, 2);
     expect(uploadFnOptions.onProgress).toBeCalledWith(1, 2, upload);
 
-    upload.options?.onShouldRetry?.(error, 1, uploadOptions);
+    upload.options?.onShouldRetry?.(detailedError, 1, uploadOptions);
     expect(uploadFnOptions.onShouldRetry).toBeCalledWith(
-      error,
+      detailedError,
       1,
       uploadOptions,
       upload
