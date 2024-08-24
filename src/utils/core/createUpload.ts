@@ -48,13 +48,13 @@ export const createUpload = ({
   const originalStart = upload.start.bind(upload);
   const originalAbort = upload.abort.bind(upload);
 
-  const start = () => {
-    originalStart();
+  const start: UploadType["start"] = (...args) => {
+    originalStart(...args);
     onStart();
   };
 
-  const abort = async () => {
-    originalAbort();
+  const abort: UploadType["abort"] = async (...args) => {
+    originalAbort(...args);
     onAbort();
   };
 
