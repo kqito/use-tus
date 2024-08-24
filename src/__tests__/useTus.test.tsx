@@ -232,6 +232,19 @@ describe("useTus", () => {
     expect(consoleErrorMock).toHaveBeenCalledWith();
   });
 
+  it("Should pass `shouldTerminate`", () => {
+    const { result } = renderUseTus();
+    act(() => {
+      result.current.setUpload(getBlob("hello"), getDefaultOptions());
+    });
+
+    result.current.upload?.abort(true);
+    expect(abort).toHaveBeenCalledWith(true);
+
+    result.current.upload?.abort(false);
+    expect(abort).toHaveBeenCalledWith(false);
+  });
+
   describe("Options", () => {
     describe("autoAbort", () => {
       it("Should abort on unmount", async () => {
