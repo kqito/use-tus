@@ -365,6 +365,20 @@ describe("useTusStore", () => {
     expect(consoleErrorMock).toHaveBeenCalledWith();
   });
 
+  it("Should pass `shouldTerminate`", () => {
+    const { result } = renderUseTusStore({ options: { Upload } });
+
+    act(() => {
+      result.current.tus.setUpload(getBlob("hello"), getDefaultOptions());
+    });
+
+    result.current.tus.upload?.abort(true);
+    expect(abort).toHaveBeenCalledWith(true);
+
+    result.current.tus.upload?.abort(false);
+    expect(abort).toHaveBeenCalledWith(false);
+  });
+
   describe("Options", () => {
     describe("autoAbort", () => {
       it("Should abort on unmount", async () => {
