@@ -13,29 +13,25 @@
 </p>
 
 ## Features
-- Resumable file uploads on react.
+- Resumable file uploads in React.
+- Improved file upload management within the React component lifecycle.
 - Lightweight and simple interface hooks.
-- Managing the [Upload](https://github.com/tus/tus-js-client/blob/master/docs/api.md#tusuploadfile-options) by using context.
+- Manage [Upload](https://github.com/tus/tus-js-client/blob/master/docs/api.md#tusuploadfile-options) instances via context.
 - TypeScript support.
 
 ## Demo
-You can try the [use-tus demo](https://kqito.github.io/use-tus/?path=/story/usetus--basic).
+Try out the [use-tus demo](https://kqito.github.io/use-tus/?path=/story/usetus--basic).
 
 
 ## Installation
-You can install the package from npm.
+Install the package using your package manager of choice.
+
 ```sh
 npm install use-tus tus-js-client
 ```
 
-or
-
-```sh
-yarn add use-tus tus-js-client
-```
-
 ## Usage
-We can use `useTus` as following.
+Below is an example of how to use `useTus`.
 
 ```tsx
 import { useTus } from 'use-tus'
@@ -44,38 +40,26 @@ const Uploader = () => {
   const { upload, setUpload, isSuccess, error, remove } = useTus();
 
   const handleSetUpload = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files.item(0);
+    const file = event.target.files.item(0);
+    if (!file) return;
 
-      if (!file) {
-        return;
-      }
-
-      setUpload(file, {
-        endpoint: 'https://tusd.tusdemo.net/files/',
-        metadata: {
-          filename: file.name,
-          filetype: file.type,
-        },
-      });
-    },
-    [setUpload]
-  );
+    setUpload(file, {
+      endpoint: 'https://tusd.tusdemo.net/files/',
+      metadata: {
+        filename: file.name,
+        filetype: file.type,
+      },
+    });
+  }, [setUpload]);
 
   const handleStart = useCallback(() => {
-    if (!upload) {
-      return;
-    }
-
-    // Start to upload the file.
-    upload.start();
+    if (upload) upload.start();
   }, [upload]);
 
   return (
     <div>
       <input type="file" onChange={handleSetUpload} />
-      <button type="button" onClick={handleStart}>
-        Upload
-      </button>
+      <button type="button" onClick={handleStart}>Upload</button>
     </div>
   );
 };
@@ -104,49 +88,45 @@ const { upload, setUpload, isSuccess, isAborted, isUploading, error, remove } = 
 - `Upload` (type: `Upload | undefined`) (default: undefined)
   - Option to specify customized own Upload class with this hooks.
 
-#### About `uploadOptions`
-This option extends the UploadOptions provided by `tus-js-client`, but it has been extended so that every callback can receive the upload instance as the final argument.
+#### `uploadOptions`
+This option extends the `UploadOptions` provided by `tus-js-client`, allowing every callback to receive the upload instance as the final argument. For detailed type information on `UploadOptions`, see [here](https://github.com/tus/tus-js-client/blob/master/lib/index.d.ts#L22).
 
-For detail type information of `UploadOptions`, please see [here](https://github.com/tus/tus-js-client/blob/master/lib/index.d.ts#L22).
-
-e.g.
+Example:
 
 ```ts
-setUplaod(file, {
+setUpload(file, {
   onSuccess: (upload) => {
     console.log(upload.url)
   },
   onError: (error, upload) => {
     console.log(error)
-
     setTimeout(() => {
       upload.start()
     }, 1000)
   }
-})
+});
 ```
 
-### Returns
+
+#### Returns
 - `upload` (type: `tus.Upload | undefined`)
-  - Object to be used when performing Resumable file upload.
-  - This value is undefined unless the `setUpload` function called.
-  - For detail usage, please see [here](https://github.com/tus/tus-js-client#example)
+  - Used for resumable file uploads. Undefined unless `setUpload` is called.
+  - For detailed usage, see [here](https://github.com/tus/tus-js-client#example).
 
 - `setUpload` (type: `(file: tus.Upload['file'], options?: TusHooksUploadFnOptions) => void`)
-  - Function to create an `Upload`.
-  - The property specified in `uploadOptions` will be overwritten if property of `options` are speicified.
+  - Function to create an `Upload`. `uploadOptions` properties are overwritten if `options` is specified.
 
 - `isSuccess` (type: `boolean`)
-  - Whether the upload was successful or not.
+  - Indicates if the upload was successful.
 
 - `isAborted` (type: `boolean`)
-  - Whether the upload was aborted or not.
+  - Indicates if the upload was aborted.
 
 - `isUploading` (type: `boolean`)
-  - Indicates if an uploading is in progress or not.
+  - Indicates if an upload is in progress.
 
 - `error` (type: `Error | undefined`)
-  - Error when upload fails.
+  - Error when the upload fails.
 
 - `remove` (type: `() => void`)
   - Function to reset states.
@@ -154,61 +134,52 @@ setUplaod(file, {
 ### `useTusStore` hooks
 
 ```tsx
-const { upload, setUpload, isSuccess, isAborted, isUploading, error, remove } = useTusStore(cacheKey, { autoAbort, autoStart, uploadOptions, Upload  });
+const { upload, setUpload, isSuccess, isAborted, isUploading, error, remove } = useTusStore(cacheKey, { autoAbort, autoStart, uploadOptions, Upload });
 ```
 
-`useTusStore` is a hooks that creates an object for resumable file upload and stores it in a context.
+`useTusStore` creates an object for resumable file uploads and stores it in a context. This is useful for handling uploads across components or pages.
 
-This hooks is useful when you want to handle uploads across pages or components.
+> [!NOTE]
+> `useTusStore` requires `TusClientProvider` as a parent or higher element.
 
-**Note that using `useTusStore` hooks, the `TusClientProvider` must be specified as the parent or higher element.**
-
-### Arguments
+#### Arguments
 - `cacheKey` (type: `string`)
-  - Specify the key associated with the `Upload` object is created by `setUpload` function.
+  - Key associated with the `Upload` object created by `setUpload`.
 
-- `autoAbort` (type: `boolean | undefined`) (default: true)
-  - Whether or not to automatically abort uploads when useTusStore hooks is unmounted.
+- `autoAbort` (type: `boolean | undefined`, default: `true`)
+  - Automatically abort uploads when `useTusStore` is unmounted.
 
-- `autoStart` (type: `boolean | undefined`) (default: false)
-  - Whether or not to start upload the file after `setUpload` function.
+- `autoStart` (type: `boolean | undefined`, default: `false`)
+  - Automatically start the upload after calling the `setUpload` function.
 
-- `uploadOptions` (type: `TusHooksUploadFnOptions | undefined`) (default: undefined)
-  - Option to used by upload object that generated by that hooks.
-  - For detail type information of `TusHooksUploadFnOptions`, please see [here](https://github.com/tus/tus-js-client/blob/master/lib/index.d.ts#L22).
+- `uploadOptions` (type: `TusHooksUploadFnOptions | undefined`, default: `undefined`)
+  - Set options to be used by the upload object generated by this hook.
 
-- `Upload` (type: `Upload | undefined`) (default: undefined)
-  - Option to specify customized own Upload class with this hooks.
+- `Upload` (type: `Upload | undefined`, default: `undefined`)
+  - Specify a customized `Upload` class with this hook.
 
-### Returns
+#### Returns
 - `upload` (type: `tus.Upload | undefined`)
-  - Object to be used when performing Resumable file upload.
-  - This value is undefined unless the `setUpload` function called.
+  - Used for resumable file uploads. Undefined unless `setUpload` is called.
+  - Corresponds to the `Upload` associated with `cacheKey` in `TusClientProvider`.
 
-### Returns
-- `upload` (type: `tus.Upload | undefined`)
-  - Object to be used when performing Resumable file upload.
-  - This value of the `Upload` associated with the cacheKey in the TusClientProvider. If not present, undefined.
-  - For detail usage, please see [here](https://github.com/tus/tus-js-client#example)
-
-- `setUpload` (type: `(file: tus.Upload['file'], options?: tus.Upload['options']) => void`)
-  - Function to create an `Upload`.
-  - The property specified in `uploadOptions` will be overwritten if property of `options` are speicified.
+- `setUpload` (type: `(file: tus.Upload['file'], options?: TusHooksUploadFnOptions) => void`)
+  - Function to create an `Upload`. `uploadOptions` properties are overwritten if `options` is specified.
 
 - `isSuccess` (type: `boolean`)
-  - Whether the upload was successful or not.
+  - Indicates if the upload was successful.
 
 - `isAborted` (type: `boolean`)
-  - Whether the upload was aborted or not.
+  - Indicates if the upload was aborted.
 
 - `isUploading` (type: `boolean`)
-  - Indicates if an uploading is in progress or not.
+  - Indicates if an upload is in progress.
 
 - `error` (type: `Error | undefined`)
-  - Error when upload fails.
+  - Error when the upload fails.
 
 - `remove` (type: `() => void`)
-  - Function to delete the `Upload` associated with cacheKey.
+  - Function to delete the `Upload` associated with `cacheKey`.
 
 ### `TusClientProvider`
 
@@ -220,34 +191,35 @@ This hooks is useful when you want to handle uploads across pages or components.
 )
 ```
 
-`TusClientProvider` is the provider that stores the `Upload` with `useTusStore` hooks.
+`TusClientProvider` stores `Upload` objects created with `useTusStore`.
 
-### Props
+#### Props
 - `defaultOptions` (type: `(file: tus.Upload['file']) => TusHooksUploadFnOptions | undefined`)
-  - An object containing the default options used when creating a new upload. [detail](https://github.com/tus/tus-js-client/blob/master/docs/api.md#tusdefaultoptions)
+  - Default options object used when creating new uploads. For more details, see [here](https://github.com/tus/tus-js-client/blob/master/docs/api.md#tusdefaultoptions).
 
 ### `useTusClient`
 
 ```tsx
 const { state, removeUpload, reset } = useTusClient();
 ```
-`useTusClient` is a hooks that can be used to retrieve and reset the state of a `TusClientProvider`.
 
-### Returns
+`useTusClient` retrieves and resets the state of `TusClientProvider`.
+
+#### Returns
 - `state` (type: `{ [cacheKey: string]: UploadState | undefined }`)
-  - Upload information associated with cacheKey
+  - Upload information associated with `cacheKey`.
 
 - `removeUpload` (type: `(cacheKey: string) => void`)
-  - Remove the upload instance associated with the specified cacheKey.
+  - Remove the upload instance associated with `cacheKey`.
 
 - `reset` (type: `() => void`)
-  - Initialize the value of TusClientProvider
+  - Initialize the value of `TusClientProvider`.
 
 ## Examples
-The following are some example of how to use `use-tus`.
+Here are some examples of how to use `use-tus`.
 
 ### Uploading a file
-The setUpload and `upload.start` functions can be used to perform resumable file uploads.
+Use `setUpload` and `upload.start` functions to perform resumable file uploads.
 
 ```tsx
 import { useTus } from 'use-tus'
@@ -256,44 +228,33 @@ const Uploader = () => {
   const { upload, setUpload } = useTus();
 
   const handleSetUpload = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files.item(0);
+    const file = event.target.files.item(0);
+    if (!file) return;
 
-      if (!file) {
-        return;
-      }
-
-      setUpload(file, {
-        endpoint: 'https://tusd.tusdemo.net/files/',
-        metadata: {
-          filename: file.name,
-          filetype: file.type,
-        },
-      });
-    },
-    [setUpload]
-  );
+    setUpload(file, {
+      endpoint: 'https://tusd.tusdemo.net/files/',
+      metadata: {
+        filename: file.name,
+        filetype: file.type,
+      },
+    });
+  }, [setUpload]);
 
   const handleStart = useCallback(() => {
-    if (!upload) {
-      return;
-    }
-
-    // Start upload the file.
-    upload.start();
+    if (upload) upload.start();
   }, [upload]);
 
   return (
     <div>
       <input type="file" onChange={handleSetUpload} />
-      <button type="button" onClick={handleStart}>
-        Upload
-      </button>
+      <button type="button" onClick={handleStart}>Upload</button>
     </div>
   );
 };
 ```
 
-It is also possible to automatically upload files after setUpload by specifying the `autoStart` option.
+> [!TIP]
+> You can also set `autoStart` to automatically start uploading files after `setUpload` is called.
 
 ```tsx
 import { useTus } from 'use-tus'
@@ -302,30 +263,26 @@ const Uploader = () => {
   const { upload, setUpload } = useTus({ autoStart: true });
 
   const handleSetUpload = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files.item(0);
+    const file = event.target.files.item(0);
+    if (!file) return;
 
-      if (!file) {
-        return;
-      }
+    setUpload(file, {
+      endpoint: 'https://tusd.tusdemo.net/files/',
+      metadata: {
+        filename: file.name,
+        filetype: file.type,
+      },
+    });
+  }, [setUpload]);
 
-      setUpload(file, {
-        endpoint: 'https://tusd.tusdemo.net/files/',
-        metadata: {
-          filename: file.name,
-          filetype: file.type,
-        },
-      });
-    },
-    [setUpload]
-  );
   return (
     <input type="file" onChange={handleSetUpload} />
   );
 };
 ```
 
-### Aborting a file upload
-You can abort the upload by using the `upload.abort` function.
+### Aborting a File Upload
+Use the `upload.abort` function to abort an upload.
 
 ```tsx
 import { useTus } from 'use-tus'
@@ -334,54 +291,33 @@ const Aborter = () => {
   const { upload } = useTus();
 
   const handleAbort = useCallback(() => {
-    if (!upload) {
-      return;
-    }
-
-    upload.abort();
+    if (upload) upload.abort();
   }, [upload]);
 
   return (
     <div>
-      <button type="button" onClick={handleAbort}>
-        Abort
-      </button>
+      <button type="button" onClick={handleAbort}>Abort</button>
     </div>
   );
 };
 ```
 
-You can also specify the `autoAbort` option to automatically stop uploads when unmounting hooks.
-
-```tsx
-import { useTus } from 'use-tus'
-
-const Uploader = () => {
-  const { upload, setUpload } = useTus({ autoAbort: true });
-
-  // omitted...
-};
-```
-
-## Default options of upload
-You can specify default options in the `defaultOptions` props of the `TusClientProvider`.
+### Default Options for Upload
+Specify default options in `defaultOptions` props of the `TusClientProvider`.
 
 ```tsx
 import { useTusStore, DefaultOptions, TusClientProvider } from 'use-tus'
 
-const defaultOptions: DefaultOptions = (contents) => {
-  const file = contents instanceof File ? contents : undefined;
-
-  return {
-    endpoint: 'https://tusd.tusdemo.net/files/',
-    metadata: file
+const defaultOptions: DefaultOptions = (file) => ({
+  endpoint: 'https://tusd.tusdemo.net/files/',
+  metadata:
+    file instanceof File
       ? {
           filename: file.name,
           filetype: file.type,
         }
       : undefined,
-  };
-};
+});
 
 const App = () => (
   <TusClientProvider defaultOptions={defaultOptions}>
@@ -393,45 +329,34 @@ const Uploader = () => {
   const { setUpload } = useTusStore('cacheKey', { autoStart: true });
 
   const handleSetUpload = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files.item(0);
+    const file = event.target.files.item(0);
+    if (!file) return;
 
-      if (!file) {
-        return;
-      }
+    // Uploads the selected file using default options.
+    // Overrides if options are provided to setUpload.
+    setUpload(file);
+  }, [setUpload]);
 
-      // You no longer need to specify the options associated with upload.
-      // If specified, it will override defaultOptions.
-      setUpload(file);
-    },
-    [setUpload]
-  );
-
-  return (
-    <div>
-      <input type="file" onChange={handleSetUpload} />
-    </div>
-  );
+  return <input type="file" onChange={handleSetUpload} />;
 };
 ```
 
-### Specify upload key
-If you specify `cacheKey` as an argument to useTusStore, you can get the `upload` associated with it. This is useful for cross-page file uploads.
+### Specify Upload Key
+Specify `cacheKey` to associate uploads across components/pages.
 
 ```tsx
-const SelectFileComponent = (file: File) => {
-  // Create upload accosiated with 'upload-thumbnail' key
-  const { setUpload } = useTusStore('upload-thumbnail')
+import { useTusStore } from 'use-tus'
 
-  setUpload(file)
-}
+const SelectFileComponent = (file: File) => {
+  const { setUpload } = useTusStore('upload-thumbnail');
+  setUpload(file);
+};
 
 const UploadFileComponent = () => {
-  const { upload } = useTusStore('upload-thumbnail')
-
-  upload.start()
-}
+  const { upload } = useTusStore('upload-thumbnail');
+  if (upload) upload.start();
+};
 ```
-
 
 ## License
 [MIT © kqito](./LICENSE)
