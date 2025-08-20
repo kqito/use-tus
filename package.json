@@ -89,7 +89,7 @@
     "storybook": "^7.5.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "ts-jest": "^29.1.1",
-    "tus-js-client": "^4.0.0",
+    "tus-js-client": "4.0.0",
     "typescript": "^5.2.2",
     "vite": "^4.5.0"
   },
