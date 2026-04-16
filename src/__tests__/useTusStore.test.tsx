@@ -1,4 +1,5 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
+import { HttpResponse } from "tus-js-client";
 import {
   TusClientProvider,
   TusClientProviderProps,
@@ -16,6 +17,7 @@ import {
   startOrResumeUploadMock,
   createUploadMock,
 } from "./utils/mock";
+import { createMock } from "./utils/createMock";
 import { ERROR_MESSAGES } from "../TusClientProvider/constants";
 import { UploadFile } from "../types";
 
@@ -295,7 +297,7 @@ describe("useTusStore", () => {
     }
 
     act(() => {
-      onSuccess();
+      onSuccess({ lastResponse: createMock<HttpResponse>() });
     });
 
     expect(result.current.tus).toEqual({
@@ -308,6 +310,35 @@ describe("useTusStore", () => {
       remove: expect.any(Function),
     });
     expect(consoleErrorMock).toHaveBeenCalledWith();
+  });
+
+  it("Should pass payload and upload to the onSuccess callback", async () => {
+    const { result } = renderUseTusStore({ options: { Upload } });
+
+    const onSuccessMock = jest.fn();
+    act(() => {
+      result.current.tus.setUpload(getBlob("hello"), {
+        ...getDefaultOptions(),
+        onSuccess: onSuccessMock,
+      });
+    });
+
+    await waitFor(() => result.current.tus.upload);
+    const upload = result.current.tus.upload;
+
+    const onSuccess = upload?.options?.onSuccess;
+    if (!onSuccess) {
+      throw new Error("onSuccess is falsly.");
+    }
+
+    const mockResponse = createMock<HttpResponse>();
+    const payload = { lastResponse: mockResponse };
+
+    act(() => {
+      onSuccess(payload);
+    });
+
+    expect(onSuccessMock).toHaveBeenCalledWith(payload, upload);
   });
 
   it("Should change error state on error", async () => {

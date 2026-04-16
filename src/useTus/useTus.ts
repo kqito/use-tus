@@ -5,6 +5,7 @@ import {
   TusHooksResult,
   TusTruthlyContext,
   TusContext,
+  TusHooksUploadFnOptions,
   TusHooksUploadOptions,
 } from "../types";
 import {
@@ -60,11 +61,11 @@ export const useTus = (baseOption: TusHooksOptions = {}): TusHooksResult => {
         ...options,
       };
 
-      function onSuccess() {
+      const onSuccess: TusHooksUploadFnOptions["onSuccess"] = (...args) => {
         updateTusTruthlyContext({ isSuccess: true, isUploading: false });
 
-        targetOptions?.onSuccess?.(upload);
-      }
+        targetOptions?.onSuccess?.(...args);
+      };
 
       const onError = (error: Error) => {
         updateTusTruthlyContext({

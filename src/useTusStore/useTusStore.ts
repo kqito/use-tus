@@ -12,6 +12,7 @@ import {
 import {
   TusHooksOptions,
   TusHooksResult,
+  TusHooksUploadFnOptions,
   TusHooksUploadOptions,
 } from "../types";
 import {
@@ -43,11 +44,11 @@ export const useTusStore = (
         ...options,
       };
 
-      const onSuccess = () => {
+      const onSuccess: TusHooksUploadFnOptions["onSuccess"] = (...args) => {
         tusClientDispatch(
           updateUploadContext(cacheKey, { isSuccess: true, isUploading: false })
         );
-        targetOptions?.onSuccess?.(upload);
+        targetOptions?.onSuccess?.(...args);
       };
 
       const onError = (error: Error) => {
