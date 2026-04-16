@@ -12,7 +12,7 @@
     "declarationMap": false,
     "sourceMap": false,
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "esModuleInterop": true
   },
   "include": ["src/**/*"]
