@@ -312,6 +312,35 @@ describe("useTusStore", () => {
     expect(consoleErrorMock).toHaveBeenCalledWith();
   });
 
+  it("Should pass payload and upload to the onSuccess callback", async () => {
+    const { result } = renderUseTusStore({ options: { Upload } });
+
+    const onSuccessMock = jest.fn();
+    act(() => {
+      result.current.tus.setUpload(getBlob("hello"), {
+        ...getDefaultOptions(),
+        onSuccess: onSuccessMock,
+      });
+    });
+
+    await waitFor(() => result.current.tus.upload);
+    const upload = result.current.tus.upload;
+
+    const onSuccess = upload?.options?.onSuccess;
+    if (!onSuccess) {
+      throw new Error("onSuccess is falsly.");
+    }
+
+    const mockResponse = createMock<HttpResponse>();
+    const payload = { lastResponse: mockResponse };
+
+    act(() => {
+      onSuccess(payload);
+    });
+
+    expect(onSuccessMock).toHaveBeenCalledWith(payload, upload);
+  });
+
   it("Should change error state on error", async () => {
     const { result } = renderUseTusStore({ options: { Upload } });
     expect(result.current.tus).toEqual({
