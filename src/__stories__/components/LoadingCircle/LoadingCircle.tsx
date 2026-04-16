@@ -1,10 +1,8 @@
 import type { FC } from "react";
 
 export const LoadingCircle: FC = () => (
-  <div className="relative block w-20 h-5 loader-dots">
-    <i className="absolute top-0 w-3 h-3 mt-1 bg-blue-300 rounded-full left-2 animate-loader1 ease-loading" />
-    <i className="absolute top-0 w-3 h-3 mt-1 bg-blue-300 rounded-full left-2 animate-loader2 ease-loading" />
-    <i className="absolute top-0 w-3 h-3 mt-1 bg-blue-300 rounded-full left-8 animate-loader2 ease-loading" />
-    <i className="absolute top-0 w-3 h-3 mt-1 bg-blue-300 rounded-full left-14 animate-loader3 ease-loading" />
+  <div className="flex items-center gap-3">
+    <div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+    <span className="text-sm font-medium text-gray-500">Uploading...</span>
   </div>
 );
