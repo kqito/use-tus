@@ -1,4 +1,5 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
+import { HttpResponse } from "tus-js-client";
 import {
   TusClientProvider,
   TusClientProviderProps,
@@ -16,6 +17,7 @@ import {
   startOrResumeUploadMock,
   createUploadMock,
 } from "./utils/mock";
+import { createMock } from "./utils/createMock";
 import { ERROR_MESSAGES } from "../TusClientProvider/constants";
 import { UploadFile } from "../types";
 
@@ -295,7 +297,7 @@ describe("useTusStore", () => {
     }
 
     act(() => {
-      onSuccess();
+      onSuccess({ lastResponse: createMock<HttpResponse>() });
     });
 
     expect(result.current.tus).toEqual({

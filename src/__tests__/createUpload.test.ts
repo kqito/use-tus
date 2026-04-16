@@ -74,8 +74,9 @@ describe("createUpload", () => {
     expect(uploadFnOptions.onBeforeRequest).not.toBeCalled();
     expect(uploadFnOptions.onChunkComplete).not.toBeCalled();
 
-    upload.options?.onSuccess?.();
-    expect(uploadFnOptions.onSuccess).toBeCalledWith(upload);
+    const payload = { lastResponse: createMock<HttpResponse>() };
+    upload.options?.onSuccess?.(payload);
+    expect(uploadFnOptions.onSuccess).toBeCalledWith(payload, upload);
 
     upload.options?.onError?.(detailedError);
     expect(uploadFnOptions.onError).toBeCalledWith(detailedError, upload);
