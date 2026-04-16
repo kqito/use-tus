@@ -1,6 +1,6 @@
 {
   "name": "use-tus",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "React hooks for resumable file uploads using tus-js-client",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -95,7 +95,7 @@
   },
   "peerDependencies": {
     "react": ">=16.8",
-    "tus-js-client": ">=2.2.0"
+    "tus-js-client": ">=2.2.0 <4.2.0"
   },
-  "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b"
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
 }
