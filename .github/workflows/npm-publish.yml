@@ -5,6 +5,7 @@ on:
       - main
     tags:
       - "!*"
+  workflow_dispatch:
 
 jobs:
   check-version:
@@ -24,8 +25,6 @@ jobs:
         run: pnpm install --frozen-lockfile
       - run: pnpm add can-npm-publish
       - run: npx can-npm-publish --verbose
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
   test:
     runs-on: ubuntu-latest
     steps:
@@ -68,5 +67,3 @@ jobs:
         run: pnpm install --frozen-lockfile
       - run: pnpm install --frozen-lockfile
       - run: pnpm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
