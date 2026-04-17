@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-// eslint-disable-next-line import/extensions
 import { Inter } from "next/font/google";
 import "./globals.css";
 

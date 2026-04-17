@@ -47,7 +47,6 @@ export const Uploader = () => {
           setProgress(Number(((bytesSent / bytesTotal) * 100).toFixed(2)));
         },
         onSuccess: (upload) => {
-          // eslint-disable-next-line no-console
           console.info("upload success", upload.url);
         },
       });
