@@ -1,9 +1,10 @@
+import { type Mock, vi } from "vitest";
 import type { Upload, UploadOptions } from "tus-js-client";
 import * as startOrResumeUploadObject from "../../utils/core/startOrResumeUpload";
 import { UploadFile } from "../../types";
 import { createMock } from "./createMock";
 
-export const createUploadMock = (start: jest.Mock, abort: jest.Mock) => {
+export const createUploadMock = (start: Mock, abort: Mock) => {
   class UploadMock {
     file: UploadFile;
 
@@ -26,7 +27,7 @@ export const createUploadMock = (start: jest.Mock, abort: jest.Mock) => {
 };
 
 export const createConsoleErrorMock = () => {
-  const consoleMock = jest.spyOn(console, "error");
+  const consoleMock = vi.spyOn(console, "error");
   consoleMock.mockImplementation(() => undefined);
 
   return consoleMock;
@@ -42,6 +43,6 @@ export const insertEnvValue = (value: NodeJS.Process["env"]) => {
   };
 };
 
-export const startOrResumeUploadMock = jest
+export const startOrResumeUploadMock = vi
   .spyOn(startOrResumeUploadObject, "startOrResumeUpload")
-  .mockImplementationOnce(() => jest.fn());
+  .mockImplementationOnce(() => vi.fn());

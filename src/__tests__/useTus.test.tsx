@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useRef } from "react";
 import { HttpResponse } from "tus-js-client";
@@ -16,8 +17,8 @@ import { UploadFile } from "../types";
 
 const originProcess = process;
 
-const start = jest.fn();
-const abort = jest.fn();
+const start = vi.fn();
+const abort = vi.fn();
 const Upload = createUploadMock(start, abort);
 
 const renderUseTus = (initialProps: TusHooksOptions = {}) =>
@@ -31,7 +32,7 @@ const renderUseTus = (initialProps: TusHooksOptions = {}) =>
 describe("useTus", () => {
   beforeEach(() => {
     window.process = originProcess;
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe("uploading", () => {
@@ -177,7 +178,7 @@ describe("useTus", () => {
     it("Should pass payload and upload to the onSuccess callback", async () => {
       const { result } = renderUseTus({ autoStart: false });
 
-      const onSuccessMock = jest.fn();
+      const onSuccessMock = vi.fn();
       act(() => {
         result.current.setUpload(getBlob("hello"), {
           ...getDefaultOptions(),

@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as tus from "tus-js-client";
 import { render, act, renderHook, cleanup } from "@testing-library/react";
 import { DefaultOptions, TusClientProvider } from "../TusClientProvider";
@@ -10,15 +11,15 @@ describe("TusClientProvider", () => {
   beforeEach(() => {
     // HACK: mock for isSupported property
     Object.defineProperty(tus, "isSupported", {
-      get: jest.fn(() => true),
-      set: jest.fn(),
+      get: vi.fn(() => true),
+      set: vi.fn(),
     });
 
     cleanup();
   });
 
   it("Should output error message if the browser is not supoprted", () => {
-    jest.spyOn(tus, "isSupported", "get").mockReturnValue(false);
+    vi.spyOn(tus, "isSupported", "get").mockReturnValue(false);
 
     const consoleErrorMock = createConsoleErrorMock();
 
