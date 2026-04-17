@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import {
   DetailedError,
   HttpRequest,
@@ -14,21 +15,21 @@ const blog = getBlob("test");
 
 describe("createUpload", () => {
   const detailedError = createMock<DetailedError>(new Error());
-  const onChange = jest.fn();
-  const onStart = jest.fn();
-  const onAbort = jest.fn();
+  const onChange = vi.fn();
+  const onStart = vi.fn();
+  const onAbort = vi.fn();
   const uploadFnOptions: TusHooksUploadFnOptions = {
-    onAfterResponse: jest.fn(),
-    onBeforeRequest: jest.fn(),
-    onChunkComplete: jest.fn(),
-    onError: jest.fn(),
-    onProgress: jest.fn(),
-    onShouldRetry: jest.fn(),
-    onSuccess: jest.fn(),
+    onAfterResponse: vi.fn(),
+    onBeforeRequest: vi.fn(),
+    onChunkComplete: vi.fn(),
+    onError: vi.fn(),
+    onProgress: vi.fn(),
+    onShouldRetry: vi.fn(),
+    onSuccess: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("Should invoke onChange when some properies changed", async () => {

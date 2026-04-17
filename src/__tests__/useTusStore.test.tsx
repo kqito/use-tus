@@ -1,5 +1,6 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { HttpResponse } from "tus-js-client";
+import { HttpResponse, Upload as TusUpload } from "tus-js-client";
 import {
   TusClientProvider,
   TusClientProviderProps,
@@ -24,12 +25,9 @@ import { UploadFile } from "../types";
 /* eslint-disable no-console */
 
 const originProcess = process;
-const start = jest.fn();
-const abort = jest.fn();
+const start = vi.fn();
+const abort = vi.fn();
 const Upload = createUploadMock(start, abort);
-
-const actualTus =
-  jest.requireActual<typeof import("tus-js-client")>("tus-js-client");
 
 type InitialProps = {
   cacheKey?: string;
@@ -62,7 +60,7 @@ const renderUseTusStore = (
 describe("useTusStore", () => {
   beforeEach(() => {
     window.process = originProcess;
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe("Uploading", () => {
@@ -252,7 +250,7 @@ describe("useTusStore", () => {
 
     await waitFor(() => result.current.tus.upload);
 
-    expect(result.current.tus.upload).toBeInstanceOf(actualTus.Upload);
+    expect(result.current.tus.upload).toBeInstanceOf(TusUpload);
     expect(result.current.tus.upload?.options.endpoint).toBe("hoge");
   });
 
@@ -315,7 +313,7 @@ describe("useTusStore", () => {
   it("Should pass payload and upload to the onSuccess callback", async () => {
     const { result } = renderUseTusStore({ options: { Upload } });
 
-    const onSuccessMock = jest.fn();
+    const onSuccessMock = vi.fn();
     act(() => {
       result.current.tus.setUpload(getBlob("hello"), {
         ...getDefaultOptions(),
