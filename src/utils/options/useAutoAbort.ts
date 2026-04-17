@@ -24,5 +24,6 @@ export const useAutoAbort = ({ upload, abort, autoAbort }: UseAutoAbortParams) =
 
       abortUploading();
     };
+    // oxlint-disable-next-line exhaustive-deps
   }, [autoAbort, upload]);
 };

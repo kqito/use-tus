@@ -10,6 +10,7 @@ import { useTusClientState } from "../TusClientProvider/store/contexts";
 describe("TusClientProvider", () => {
   beforeEach(() => {
     // HACK: mock for isSupported property
+    // oxlint-disable-next-line no-import-assign
     Object.defineProperty(tus, "isSupported", {
       get: vi.fn(() => true),
       set: vi.fn(),
