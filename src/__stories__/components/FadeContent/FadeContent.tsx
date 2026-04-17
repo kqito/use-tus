@@ -98,6 +98,7 @@ const FadeContent: React.FC<FadeContentProps> = ({
       tl.kill();
       gsap.killTweensOf(el);
     };
+    // oxlint-disable-next-line exhaustive-deps
   }, []);
 
   return (

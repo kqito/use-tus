@@ -8,10 +8,7 @@ type BasicButtonProps = {
   styleColor?: "primary" | "basic" | "error";
 };
 
-const colorVariants: Record<
-  NonNullable<BasicButtonProps["styleColor"]>,
-  string
-> = {
+const colorVariants: Record<NonNullable<BasicButtonProps["styleColor"]>, string> = {
   primary:
     "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm disabled:bg-indigo-200 disabled:text-indigo-400 disabled:shadow-none",
   basic:

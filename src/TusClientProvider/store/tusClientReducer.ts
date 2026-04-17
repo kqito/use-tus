@@ -10,10 +10,7 @@ export type TusClientState = {
   defaultOptions: DefaultOptions | undefined;
 };
 
-export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (
-  state,
-  actions
-) => {
+export const tusClientReducer: Reducer<TusClientState, TusClientActions> = (state, actions) => {
   switch (actions.type) {
     case "INSERT_UPLOAD_INSTANCE": {
       const { cacheKey, uploadState } = actions.payload;

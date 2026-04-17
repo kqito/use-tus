@@ -1,9 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { type Upload as UploadType } from "tus-js-client";
-import {
-  useTusClientState,
-  useTusClientDispatch,
-} from "../TusClientProvider/store/contexts";
+import { useTusClientState, useTusClientDispatch } from "../TusClientProvider/store/contexts";
 import {
   insertUploadInstance,
   removeUploadInstance,
@@ -23,10 +20,7 @@ import {
   splitTusHooksUploadOptions,
 } from "../utils";
 
-export const useTusStore = (
-  cacheKey: string,
-  baseOption: TusHooksOptions = {}
-): TusHooksResult => {
+export const useTusStore = (cacheKey: string, baseOption: TusHooksOptions = {}): TusHooksResult => {
   const {
     autoAbort,
     autoStart,
@@ -45,16 +39,12 @@ export const useTusStore = (
       };
 
       const onSuccess: TusHooksUploadFnOptions["onSuccess"] = (...args) => {
-        tusClientDispatch(
-          updateUploadContext(cacheKey, { isSuccess: true, isUploading: false })
-        );
+        tusClientDispatch(updateUploadContext(cacheKey, { isSuccess: true, isUploading: false }));
         targetOptions?.onSuccess?.(...args);
       };
 
       const onError = (error: Error) => {
-        tusClientDispatch(
-          updateUploadContext(cacheKey, { error, isUploading: false })
-        );
+        tusClientDispatch(updateUploadContext(cacheKey, { error, isUploading: false }));
         targetOptions?.onError?.(error, upload);
       };
 
@@ -87,8 +77,7 @@ export const useTusStore = (
         );
       };
 
-      const { uploadOptions, uploadFnOptions } =
-        splitTusHooksUploadOptions(mergedUploadOptions);
+      const { uploadOptions, uploadFnOptions } = splitTusHooksUploadOptions(mergedUploadOptions);
 
       const { upload } = createUpload({
         Upload,
@@ -114,14 +103,7 @@ export const useTusStore = (
         })
       );
     },
-    [
-      Upload,
-      autoStart,
-      cacheKey,
-      defaultOptions,
-      defaultUploadOptions,
-      tusClientDispatch,
-    ]
+    [Upload, autoStart, cacheKey, defaultOptions, defaultUploadOptions, tusClientDispatch]
   );
 
   const targetTusState = useMemo(() => uploads[cacheKey], [cacheKey, uploads]);

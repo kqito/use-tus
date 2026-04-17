@@ -7,11 +7,7 @@ type UseAutoAbortParams = {
   autoAbort: boolean;
 };
 
-export const useAutoAbort = ({
-  upload,
-  abort,
-  autoAbort,
-}: UseAutoAbortParams) => {
+export const useAutoAbort = ({ upload, abort, autoAbort }: UseAutoAbortParams) => {
   useEffect(() => {
     const abortUploading = async () => {
       if (!upload || !abort) {
@@ -28,7 +24,6 @@ export const useAutoAbort = ({
 
       abortUploading();
     };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line exhaustive-deps
   }, [autoAbort, upload]);
 };

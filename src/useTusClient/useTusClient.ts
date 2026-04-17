@@ -1,12 +1,6 @@
 import { useCallback } from "react";
-import {
-  useTusClientState,
-  useTusClientDispatch,
-} from "../TusClientProvider/store/contexts";
-import {
-  removeUploadInstance,
-  resetClient,
-} from "../TusClientProvider/store/tucClientActions";
+import { useTusClientState, useTusClientDispatch } from "../TusClientProvider/store/contexts";
+import { removeUploadInstance, resetClient } from "../TusClientProvider/store/tucClientActions";
 
 export const useTusClient = () => {
   const tusClientState = useTusClientState();
@@ -19,10 +13,7 @@ export const useTusClient = () => {
     },
     [tusClientDispatch]
   );
-  const reset = useCallback(
-    () => tusClientDispatch(resetClient()),
-    [tusClientDispatch]
-  );
+  const reset = useCallback(() => tusClientDispatch(resetClient()), [tusClientDispatch]);
 
   return {
     state,

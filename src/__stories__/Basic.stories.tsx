@@ -1,13 +1,5 @@
-/* eslint-disable no-console */
 import { Meta } from "@storybook/react";
-import {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ProgressBar } from "./components/ProgressBar";
 
 import { useTus } from "../index";
@@ -31,10 +23,7 @@ const Uploader = () => {
   });
 
   const [progress, setProgress] = useState(0);
-  const uploadedUrl = useMemo(
-    () => isSuccess && upload?.url,
-    [upload, isSuccess]
-  );
+  const uploadedUrl = useMemo(() => isSuccess && upload?.url, [upload, isSuccess]);
 
   const handleOnSelectFile = () => {
     if (!inputRef.current) {
@@ -74,13 +63,7 @@ const Uploader = () => {
           return true;
         },
         onChunkComplete: (chunkSize, bytesAccepted, bytesTotal, u) => {
-          console.log(
-            "onChunkComplete",
-            chunkSize,
-            bytesAccepted,
-            bytesTotal,
-            u
-          );
+          console.log("onChunkComplete", chunkSize, bytesAccepted, bytesTotal, u);
         },
         onBeforeRequest: (request, u) => {
           console.log("onBeforeRequest", request, u);
@@ -119,37 +102,21 @@ const Uploader = () => {
               <UploadIcon />
               <div>
                 <h1 className="text-base font-semibold text-gray-900">
-                  <ShinyText
-                    text="File Upload"
-                    color="#111827"
-                    shineColor="#6366F1"
-                    speed={4}
-                  />
+                  <ShinyText text="File Upload" color="#111827" shineColor="#6366F1" speed={4} />
                 </h1>
-                <p className="text-sm text-gray-400 mt-0.5">
-                  Resumable uploads via tus protocol
-                </p>
+                <p className="text-sm text-gray-400 mt-0.5">Resumable uploads via tus protocol</p>
               </div>
             </div>
           </div>
           <div className="px-8 py-6 space-y-6">
             <p className="text-sm text-gray-500 leading-relaxed">
-              Upload to the official tus demo server. Please be mindful of the
-              files you choose to upload.
+              Upload to the official tus demo server. Please be mindful of the files you choose to
+              upload.
             </p>
             <ProgressBar value={progress} />
-            <input
-              hidden
-              type="file"
-              onChange={handleOnSetUpload}
-              ref={inputRef}
-            />
+            <input hidden type="file" onChange={handleOnSetUpload} ref={inputRef} />
             <div className="flex flex-col sm:flex-row gap-3">
-              <BasicButton
-                title="Select file"
-                styleColor="basic"
-                onClick={handleOnSelectFile}
-              />
+              <BasicButton title="Select file" styleColor="basic" onClick={handleOnSelectFile} />
               <BasicButton
                 title="Resume"
                 styleColor="primary"

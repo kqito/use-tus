@@ -8,9 +8,7 @@ type ProgressBarProps = {
 export const ProgressBar: FC<ProgressBarProps> = ({ value = 0 }) => (
   <div className="w-full space-y-1.5">
     <div className="flex items-center justify-between">
-      <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-        Progress
-      </span>
+      <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Progress</span>
       <span className="flex items-baseline gap-0.5 text-xs font-semibold text-indigo-600">
         <Counter
           value={Math.round(value)}
