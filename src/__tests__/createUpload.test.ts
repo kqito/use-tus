@@ -1,11 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import {
-  DetailedError,
-  HttpRequest,
-  HttpResponse,
-  Upload,
-} from "tus-js-client";
+import { DetailedError, HttpRequest, HttpResponse, Upload } from "tus-js-client";
 import { getBlob } from "./utils/getBlob";
 import { createUpload } from "../utils";
 import { TusHooksUploadFnOptions } from "../types";
@@ -86,12 +80,7 @@ describe("createUpload", () => {
     expect(uploadFnOptions.onProgress).toBeCalledWith(1, 2, upload);
 
     upload.options?.onShouldRetry?.(detailedError, 1, uploadOptions);
-    expect(uploadFnOptions.onShouldRetry).toBeCalledWith(
-      detailedError,
-      1,
-      uploadOptions,
-      upload
-    );
+    expect(uploadFnOptions.onShouldRetry).toBeCalledWith(detailedError, 1, uploadOptions, upload);
 
     const req = createMock<HttpRequest>();
     const res = createMock<HttpResponse>();

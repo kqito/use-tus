@@ -41,10 +41,7 @@ const Uploader = () => {
     autoStart: true,
   });
   const [progress, setProgress] = useState(0);
-  const uploadedUrl = useMemo(
-    () => isSuccess && upload?.url,
-    [upload, isSuccess]
-  );
+  const uploadedUrl = useMemo(() => isSuccess && upload?.url, [upload, isSuccess]);
 
   const handleOnSelectFile = () => {
     if (!inputRef.current) {
@@ -103,9 +100,7 @@ const Uploader = () => {
                     speed={4}
                   />
                 </h1>
-                <p className="text-sm text-gray-400 mt-0.5">
-                  Shared config via TusClientProvider
-                </p>
+                <p className="text-sm text-gray-400 mt-0.5">Shared config via TusClientProvider</p>
               </div>
             </div>
           </div>
@@ -125,18 +120,9 @@ const Uploader = () => {
               <p>Upload to the official tus demo server.</p>
             </div>
             <ProgressBar value={progress} />
-            <input
-              hidden
-              type="file"
-              onChange={handleOnSetUpload}
-              ref={inputRef}
-            />
+            <input hidden type="file" onChange={handleOnSetUpload} ref={inputRef} />
             <div className="flex flex-col sm:flex-row gap-3">
-              <BasicButton
-                title="Select file"
-                styleColor="basic"
-                onClick={handleOnSelectFile}
-              />
+              <BasicButton title="Select file" styleColor="basic" onClick={handleOnSelectFile} />
               <BasicButton
                 title="Resume"
                 styleColor="primary"

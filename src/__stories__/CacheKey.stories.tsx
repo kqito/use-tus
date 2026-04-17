@@ -28,10 +28,7 @@ const Uploader = () => {
     autoStart: true,
   });
   const [progress, setProgress] = useState(0);
-  const uploadedUrl = useMemo(
-    () => isSuccess && upload?.url,
-    [upload, isSuccess]
-  );
+  const uploadedUrl = useMemo(() => isSuccess && upload?.url, [upload, isSuccess]);
 
   const handleOnSelectFile = () => {
     if (!inputRef.current) {
@@ -41,12 +38,9 @@ const Uploader = () => {
     inputRef.current.click();
   };
 
-  const handleOnChangeText = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setCacheKey(event.target.value);
-    },
-    []
-  );
+  const handleOnChangeText = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setCacheKey(event.target.value);
+  }, []);
 
   const handleOnSetUpload = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -96,23 +90,16 @@ const Uploader = () => {
               <UploadIcon />
               <div>
                 <h1 className="text-base font-semibold text-gray-900">
-                  <ShinyText
-                    text="Cache Key Demo"
-                    color="#111827"
-                    shineColor="#6366F1"
-                    speed={4}
-                  />
+                  <ShinyText text="Cache Key Demo" color="#111827" shineColor="#6366F1" speed={4} />
                 </h1>
-                <p className="text-sm text-gray-400 mt-0.5">
-                  Dynamic cache key with useTusStore
-                </p>
+                <p className="text-sm text-gray-400 mt-0.5">Dynamic cache key with useTusStore</p>
               </div>
             </div>
           </div>
           <div className="px-8 py-6 space-y-6">
             <p className="text-sm text-gray-500 leading-relaxed">
-              Upload to the official tus demo server. Please be mindful of the
-              files you choose to upload.
+              Upload to the official tus demo server. Please be mindful of the files you choose to
+              upload.
             </p>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-gray-400 uppercase tracking-wide">
@@ -126,18 +113,9 @@ const Uploader = () => {
               />
             </div>
             <ProgressBar value={progress} />
-            <input
-              hidden
-              type="file"
-              onChange={handleOnSetUpload}
-              ref={inputRef}
-            />
+            <input hidden type="file" onChange={handleOnSetUpload} ref={inputRef} />
             <div className="flex flex-col sm:flex-row gap-3">
-              <BasicButton
-                title="Select file"
-                styleColor="basic"
-                onClick={handleOnSelectFile}
-              />
+              <BasicButton title="Select file" styleColor="basic" onClick={handleOnSelectFile} />
               <BasicButton
                 title="Resume"
                 styleColor="primary"

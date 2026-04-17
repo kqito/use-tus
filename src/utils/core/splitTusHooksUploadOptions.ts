@@ -10,9 +10,7 @@ export function splitTusHooksUploadOptions(options: TusHooksUploadOptions) {
     {}
   );
 
-  const uploadFnOptions = Object.entries(
-    options
-  ).reduce<TusHooksUploadFnOptions>(
+  const uploadFnOptions = Object.entries(options).reduce<TusHooksUploadFnOptions>(
     (acc, [key, value]) => ({
       ...acc,
       [key]: typeof value === "function" ? value : undefined,

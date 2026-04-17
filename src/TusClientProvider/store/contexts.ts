@@ -4,12 +4,10 @@ import { ERROR_MESSAGES } from "../constants";
 import { TusClientActions } from "./tucClientActions";
 import { TusClientState } from "./tusClientReducer";
 
-export const TusClientStateContext = createContext<TusClientState | undefined>(
+export const TusClientStateContext = createContext<TusClientState | undefined>(undefined);
+export const TusClientDispatchContext = createContext<Dispatch<TusClientActions> | undefined>(
   undefined
 );
-export const TusClientDispatchContext = createContext<
-  Dispatch<TusClientActions> | undefined
->(undefined);
 
 export const useTusClientState = () => {
   const tusClientState = useContext(TusClientStateContext);
@@ -28,8 +26,5 @@ export const useTusClientDispatch = () => {
     throw new Error(ERROR_MESSAGES.tusClientHasNotFounded);
   }
 
-  return useMemo(
-    () => tusClientDispatch as Dispatch<TusClientActions>,
-    [tusClientDispatch]
-  );
+  return useMemo(() => tusClientDispatch as Dispatch<TusClientActions>, [tusClientDispatch]);
 };

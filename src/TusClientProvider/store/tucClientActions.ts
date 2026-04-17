@@ -9,29 +9,23 @@ export type TusClientActions = ReturnType<
   | typeof updateDefaultOptions
 >;
 
-export const insertUploadInstance = (
-  cacheKey: string,
-  state: TusTruthlyContext
-) =>
+export const insertUploadInstance = (cacheKey: string, state: TusTruthlyContext) =>
   ({
     type: "INSERT_UPLOAD_INSTANCE",
     payload: {
       cacheKey,
       uploadState: state,
     },
-  } as const);
+  }) as const;
 
-export const updateUploadContext = (
-  cacheKey: string,
-  context: Partial<TusTruthlyContext>
-) =>
+export const updateUploadContext = (cacheKey: string, context: Partial<TusTruthlyContext>) =>
   ({
     type: "UPDATE_UPLOAD_CONTEXT",
     payload: {
       cacheKey,
       context,
     },
-  } as const);
+  }) as const;
 
 export const removeUploadInstance = (cacheKey: string) =>
   ({
@@ -39,19 +33,17 @@ export const removeUploadInstance = (cacheKey: string) =>
     payload: {
       cacheKey,
     },
-  } as const);
+  }) as const;
 
 export const resetClient = () =>
   ({
     type: "RESET_CLIENT",
-  } as const);
+  }) as const;
 
-export const updateDefaultOptions = (
-  defaultOptions: DefaultOptions | undefined
-) =>
+export const updateDefaultOptions = (defaultOptions: DefaultOptions | undefined) =>
   ({
     type: "UPDATE_DEFAULT_OPTIONS",
     payload: {
       defaultOptions,
     },
-  } as const);
+  }) as const;

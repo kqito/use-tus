@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Upload, UploadOptions } from "tus-js-client";
 
 export interface TusHooksOptions {
@@ -8,10 +7,9 @@ export interface TusHooksOptions {
   Upload?: typeof Upload;
 }
 
-export type Merge<
-  T extends Record<PropertyKey, any>,
-  R extends Record<PropertyKey, any>
-> = { [P in keyof Omit<T, keyof R>]: T[P] } & R;
+export type Merge<T extends Record<PropertyKey, any>, R extends Record<PropertyKey, any>> = {
+  [P in keyof Omit<T, keyof R>]: T[P];
+} & R;
 
 type AddUploadParamater<F> = F extends (...args: infer A) => infer R
   ? (...args: [...A, ...[upload: Upload]]) => R
@@ -19,29 +17,20 @@ type AddUploadParamater<F> = F extends (...args: infer A) => infer R
 
 type Callbacks<T> = {
   [P in keyof T as P extends `on${string}`
-    ? // eslint-disable-next-line @typescript-eslint/ban-types
-      NonNullable<T[P]> extends Function
+    ? NonNullable<T[P]> extends Function
       ? P
       : never
     : never]: T[P];
 };
 
 export type TusHooksUploadFnOptions = {
-  [K in keyof Callbacks<UploadOptions>]: AddUploadParamater<
-    Callbacks<UploadOptions>[K]
-  >;
+  [K in keyof Callbacks<UploadOptions>]: AddUploadParamater<Callbacks<UploadOptions>[K]>;
 };
 
-export type TusHooksUploadOptions = Merge<
-  UploadOptions,
-  TusHooksUploadFnOptions
->;
+export type TusHooksUploadOptions = Merge<UploadOptions, TusHooksUploadFnOptions>;
 
 export type UploadFile = Upload["file"];
-export type SetUpload = (
-  file: Upload["file"],
-  options?: TusHooksUploadOptions
-) => void;
+export type SetUpload = (file: Upload["file"], options?: TusHooksUploadOptions) => void;
 
 export type TusHooksResultFn = {
   setUpload: SetUpload;

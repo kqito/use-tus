@@ -4,16 +4,10 @@ import { useRef } from "react";
 import { HttpResponse } from "tus-js-client";
 import { TusHooksOptions, useTus } from "../index";
 import { getBlob } from "./utils/getBlob";
-import {
-  createConsoleErrorMock,
-  createUploadMock,
-  startOrResumeUploadMock,
-} from "./utils/mock";
+import { createConsoleErrorMock, createUploadMock, startOrResumeUploadMock } from "./utils/mock";
 import { createMock } from "./utils/createMock";
 import { getDefaultOptions } from "./utils/getDefaultOptions";
 import { UploadFile } from "../types";
-
-/* eslint-disable no-console */
 
 const originProcess = process;
 

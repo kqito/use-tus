@@ -8,12 +8,7 @@ import {
   TusHooksUploadFnOptions,
   TusHooksUploadOptions,
 } from "../types";
-import {
-  mergeUseTusOptions,
-  createUpload,
-  startOrResumeUpload,
-  useAutoAbort,
-} from "../utils";
+import { mergeUseTusOptions, createUpload, startOrResumeUpload, useAutoAbort } from "../utils";
 import { splitTusHooksUploadOptions } from "../utils/core/splitTusHooksUploadOptions";
 
 type UseTusInternalState = {
@@ -37,15 +32,11 @@ export const useTus = (baseOption: TusHooksOptions = {}): TusHooksResult => {
   } = mergeUseTusOptions(baseOption);
 
   const [tusContext, setTusContext] = useState<TusContext>(initialTusContext);
-  const [tusInternalState, setTusInternalState] = useState<UseTusInternalState>(
-    {
-      originalAbort: undefined,
-    }
-  );
+  const [tusInternalState, setTusInternalState] = useState<UseTusInternalState>({
+    originalAbort: undefined,
+  });
 
-  const updateTusTruthlyContext = (
-    context: Omit<Partial<TusTruthlyContext>, "upload">
-  ) => {
+  const updateTusTruthlyContext = (context: Omit<Partial<TusTruthlyContext>, "upload">) => {
     setTusContext((prev) => {
       if (prev.upload === undefined) {
         return prev; // TODO: Add appriopriate error handling
@@ -94,8 +85,7 @@ export const useTus = (baseOption: TusHooksOptions = {}): TusHooksResult => {
         updateTusTruthlyContext({ isUploading: false, isAborted: true });
       };
 
-      const { uploadOptions, uploadFnOptions } =
-        splitTusHooksUploadOptions(mergedUploadOptions);
+      const { uploadOptions, uploadFnOptions } = splitTusHooksUploadOptions(mergedUploadOptions);
 
       const { upload, originalAbort } = createUpload({
         Upload,

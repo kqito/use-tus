@@ -1,17 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { HttpResponse, Upload as TusUpload } from "tus-js-client";
-import {
-  TusClientProvider,
-  TusClientProviderProps,
-} from "../TusClientProvider";
+import { TusClientProvider, TusClientProviderProps } from "../TusClientProvider";
 import { getBlob } from "./utils/getBlob";
 import { getDefaultOptions } from "./utils/getDefaultOptions";
 import { DefaultOptions, TusHooksOptions, useTusStore } from "..";
-import {
-  useTusClientState,
-  useTusClientDispatch,
-} from "../TusClientProvider/store/contexts";
+import { useTusClientState, useTusClientDispatch } from "../TusClientProvider/store/contexts";
 import {
   insertEnvValue,
   createConsoleErrorMock,
@@ -21,8 +15,6 @@ import {
 import { createMock } from "./utils/createMock";
 import { ERROR_MESSAGES } from "../TusClientProvider/constants";
 import { UploadFile } from "../types";
-
-/* eslint-disable no-console */
 
 const originProcess = process;
 const start = vi.fn();
@@ -34,7 +26,6 @@ type InitialProps = {
   options?: TusHooksOptions;
 };
 const renderUseTusStore = (
-  // eslint-disable-next-line default-param-last
   initialProps: InitialProps = {},
   providerProps?: TusClientProviderProps
 ) => {
@@ -48,7 +39,6 @@ const renderUseTusStore = (
     {
       initialProps,
       wrapper: ({ children }) => (
-        // eslint-disable-next-line react/jsx-props-no-spreading
         <TusClientProvider {...providerProps}>{children}</TusClientProvider>
       ),
     }
@@ -238,9 +228,7 @@ describe("useTusStore", () => {
       defaultOptions,
     });
 
-    expect(
-      result.current.tusClientState.defaultOptions?.(getBlob("hello")).endpoint
-    ).toBe("hoge");
+    expect(result.current.tusClientState.defaultOptions?.(getBlob("hello")).endpoint).toBe("hoge");
 
     const file: UploadFile = getBlob("hello");
 

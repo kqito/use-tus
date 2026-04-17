@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { UploadOptions, type Upload as UploadType } from "tus-js-client";
 import { TusHooksUploadFnOptions, UploadFile } from "../../types";
 

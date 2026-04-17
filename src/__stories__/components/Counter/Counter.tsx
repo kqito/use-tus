@@ -123,8 +123,8 @@ export default function Counter({
     const exponent = isInteger
       ? a.length - i - 1
       : i < dotIndex
-      ? dotIndex - i - 1
-      : -(i - dotIndex);
+        ? dotIndex - i - 1
+        : -(i - dotIndex);
 
     return 10 ** exponent;
   }),
@@ -185,13 +185,7 @@ export default function Counter({
     <span style={{ ...defaultContainerStyle, ...containerStyle }}>
       <span style={{ ...defaultCounterStyle, ...counterStyle }}>
         {places.map((place) => (
-          <Digit
-            key={place}
-            place={place}
-            value={value}
-            height={height}
-            digitStyle={digitStyle}
-          />
+          <Digit key={place} place={place} value={value} height={height} digitStyle={digitStyle} />
         ))}
       </span>
       <span style={gradientContainerStyle}>

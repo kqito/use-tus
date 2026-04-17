@@ -1,15 +1,9 @@
 import { isSupported } from "tus-js-client";
 import { useReducer, createElement, FC, useEffect } from "react";
 import { DefaultOptions } from "./types";
-import {
-  TusClientDispatchContext,
-  TusClientStateContext,
-} from "./store/contexts";
+import { TusClientDispatchContext, TusClientStateContext } from "./store/contexts";
 import { updateDefaultOptions } from "./store/tucClientActions";
-import {
-  tusClientReducer,
-  tusClientInitialState,
-} from "./store/tusClientReducer";
+import { tusClientReducer, tusClientInitialState } from "./store/tusClientReducer";
 import { ERROR_MESSAGES } from "./constants";
 
 export type TusClientProviderProps = Readonly<{
@@ -17,10 +11,7 @@ export type TusClientProviderProps = Readonly<{
   defaultOptions?: DefaultOptions;
 }>;
 
-export const TusClientProvider: FC<TusClientProviderProps> = ({
-  defaultOptions,
-  children,
-}) => {
+export const TusClientProvider: FC<TusClientProviderProps> = ({ defaultOptions, children }) => {
   const [tusClientState, tusClientDispatch] = useReducer(tusClientReducer, {
     ...tusClientInitialState,
     defaultOptions,
@@ -32,7 +23,6 @@ export const TusClientProvider: FC<TusClientProviderProps> = ({
       return;
     }
 
-    // eslint-disable-next-line no-console
     console.error(ERROR_MESSAGES.tusIsNotSupported);
   }, []);
 

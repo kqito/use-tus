@@ -1,10 +1,5 @@
 import React, { useState, useCallback, useRef } from "react";
-import {
-  motion,
-  useMotionValue,
-  useAnimationFrame,
-  useTransform,
-} from "motion/react";
+import { motion, useMotionValue, useAnimationFrame, useTransform } from "motion/react";
 
 interface ShinyTextProps {
   text: string;
@@ -88,10 +83,7 @@ const ShinyText: React.FC<ShinyTextProps> = ({
     }
   });
 
-  const backgroundPosition = useTransform(
-    progress,
-    (p) => `${150 - p * 2}% center`
-  );
+  const backgroundPosition = useTransform(progress, (p) => `${150 - p * 2}% center`);
 
   const handleMouseEnter = useCallback(() => {
     if (pauseOnHover) setIsPaused(true);

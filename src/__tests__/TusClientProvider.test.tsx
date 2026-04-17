@@ -27,17 +27,13 @@ describe("TusClientProvider", () => {
       render(<TusClientProvider />);
     });
 
-    expect(consoleErrorMock).toHaveBeenCalledWith(
-      ERROR_MESSAGES.tusIsNotSupported
-    );
+    expect(consoleErrorMock).toHaveBeenCalledWith(ERROR_MESSAGES.tusIsNotSupported);
   });
 
   describe("Should pass each props", () => {
     it("Nothing to pass", async () => {
       const { result } = renderHook(() => useTusClientState(), {
-        wrapper: ({ children }) => (
-          <TusClientProvider>{children}</TusClientProvider>
-        ),
+        wrapper: ({ children }) => <TusClientProvider>{children}</TusClientProvider>,
       });
 
       expect(result.current.defaultOptions?.(getBlob(""))).toBe(undefined);
@@ -57,21 +53,19 @@ describe("TusClientProvider", () => {
 
       const { result } = renderHook(() => useTusClientState(), {
         wrapper: ({ children }) => (
-          <TusClientProvider defaultOptions={defaultOptions}>
-            {children}
-          </TusClientProvider>
+          <TusClientProvider defaultOptions={defaultOptions}>{children}</TusClientProvider>
         ),
       });
 
-      expect(
-        result.current.defaultOptions?.(new File([], "name", { type: "type" }))
-      ).toStrictEqual({
-        endpoint: "hoge",
-        metadata: {
-          filename: "name",
-          filetype: "type",
-        },
-      });
+      expect(result.current.defaultOptions?.(new File([], "name", { type: "type" }))).toStrictEqual(
+        {
+          endpoint: "hoge",
+          metadata: {
+            filename: "name",
+            filetype: "type",
+          },
+        }
+      );
     });
   });
 });
